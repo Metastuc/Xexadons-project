@@ -5,4 +5,3 @@ tasks.txt
 backend/functions.txt
 backend/.env
 smart contract/contracts/testNFTCollection.sol
-smart contract/test/FactoryTest.js
