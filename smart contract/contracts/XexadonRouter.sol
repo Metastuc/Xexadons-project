@@ -27,24 +27,22 @@ contract XexadonRouter is Ownable{
         feeMultiplier = _fee;
     }
 
-    function swapETHforNFT(address token, uint256[] memory tokenIds, address to) external payable returns(bool) {
+    function swapETHforNFT(address token, uint256[] memory tokenIds, address to) external payable {
         address pairAddress = factory.getPair(token);
         IXexadonPair pair = IXexadonPair(pairAddress);
-        pair.swap(tokenIds, to, false);
-        return true;
+        pair.swap{value: msg.value}(tokenIds, to);
     }
 
-    function swapNFTforETH(address token, uint256[] memory tokenIds, address to) external payable returns(bool) {
+    function swapNFTforETH(address token, uint256[] memory tokenIds, address to) external payable {
         address pairAddress = factory.getPair(token);
         IXexadonPair pair = IXexadonPair(pairAddress);
-        pair.swap(tokenIds, to, true);
-        return true;
+        pair.swap{value: 0}(tokenIds, to);
     }
 
-    function addLiquidity(address token, uint256[] memory tokenIds, address from) external payable returns(bool) {
+    function addLiquidity(address token, uint256[] calldata tokenIds, address from) external payable {
+        require(msg.value > 0, "Xexadon: No Ether sent");
         address pairAddress = factory.getPair(token);
         IXexadonPair pair = IXexadonPair(pairAddress);
-        pair.addLiquidity(tokenIds, from);
-        return true;
+        pair.addLiquidity{value: msg.value}(tokenIds, from);
     }
 }

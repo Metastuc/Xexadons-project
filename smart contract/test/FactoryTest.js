@@ -12,6 +12,8 @@ const {
   
       const Factory = await ethers.getContractFactory("XexadonFactory");
       const factory = await Factory.deploy(owner);
+
+      console.log(factory.target, owner.address);
   
       return { factory, owner, otherAccount, token, router, curve };
     }
@@ -20,7 +22,6 @@ const {
       it("Should set the feeToSetter", async function () {
         const { factory, owner } = await loadFixture(deployFactory);
 
-        console.log(factory.address);
         expect(await factory.feeToSetter()).to.equal(owner);
       });
     });
