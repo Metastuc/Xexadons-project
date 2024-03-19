@@ -25,7 +25,8 @@ contract XexadonPair is XexadonShares {
     uint256 public reserve0;
     uint256 public reserve1;
 
-    event ();
+    event swapEthforNft(uint256 ethAmount, uint256[] tokenIds, address swapper);
+    event swapNftforEth(uint256[] tokenIds, uint256 ethAmount, address swapper);
 
     mapping (uint256 => address) private nftOwner;
     uint256 public _totalSupply;
@@ -106,6 +107,8 @@ contract XexadonPair is XexadonShares {
             // update reserve
             reserve0 = newReserve0;
             reserve1 = newReserve1;
+
+            emit swapNftforEth(tokenIds, amountOut, to);
         }
         else {
             // calculate amount of ETH to be sent
@@ -117,6 +120,8 @@ contract XexadonPair is XexadonShares {
             batchTransfer(tokenIds, to);
             reserve0 = newReserve0;
             reserve1 = newReserve1;
+
+            emit swapEthforNft(amountIn, tokenIds, to);
         }
     }
 
