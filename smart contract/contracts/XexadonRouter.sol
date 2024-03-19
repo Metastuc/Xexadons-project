@@ -45,4 +45,10 @@ contract XexadonRouter is Ownable{
         IXexadonPair pair = IXexadonPair(pairAddress);
         pair.addLiquidity{value: msg.value}(tokenIds, from);
     }
+
+    function removeLiquidity(address token, uint256[] memory tokenIds, address to) external {
+        address pairAddress = factory.getPair(token);
+        IXexadonPair pair = IXexadonPair(pairAddress);
+        pair.removeLiquidity(tokenIds, to);
+    }
 }
