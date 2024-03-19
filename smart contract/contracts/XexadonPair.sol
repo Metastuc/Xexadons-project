@@ -25,6 +25,8 @@ contract XexadonPair is XexadonShares {
     uint256 public reserve0;
     uint256 public reserve1;
 
+    event ();
+
     mapping (uint256 => address) private nftOwner;
     uint256 public _totalSupply;
 
@@ -33,7 +35,6 @@ contract XexadonPair is XexadonShares {
     }
 
     function initialize(address _router, address _curve, address _tokenAddress) external onlyFactory {
-        require(msg.sender == factoryAddress, 'Xexadon: Not Permitted');
         factory = IXexadonFactory(factoryAddress);
         routerAddress = _router;
         router = IXexadonRouter(_router);
