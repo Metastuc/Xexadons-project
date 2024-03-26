@@ -9,24 +9,39 @@ import "../libraries/Math.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "./XexadonERC20.sol";
 
+/// @title The xexadon pair contract template
+/// @author NatX
+/// @notice This contract when deployed enables users to swap their NFTs for ETH and vice versa
+/// @dev This contract should be deployed by the Xexadon factory contract
 contract XexadonPair is XexadonShares {
-    IERC721 public token;
-    address public tokenAddress;
+    IERC721 public token; // the NFT token instance
+    address public tokenAddress; // NFT token address
     
-    IXexadonRouter public router;
-    address public routerAddress;
+    IXexadonRouter public router; // the Router contract instance
+    address public routerAddress; // the Router contract address
 
-    IXexadonBondCurve public curve;
-    address public curveAddress;
+    IXexadonBondCurve public curve; // the bonding curve contract instance
+    address public curveAddress; // the bonding curve contract address
 
-    IXexadonFactory public factory;
-    address public factoryAddress;
+    IXexadonFactory public factory; // the Factory contract instance
+    address public factoryAddress; // the Factory contract address
 
-    uint256 public reserve0;
-    uint256 public reserve1;
+    uint256 public reserve0; // the balance of the NFTs in the contract
+    uint256 public reserve1; // the balance of the ETH in the contract
 
-    event swapEthforNft(uint256 ethAmount, uint256[] tokenIds, address swapper);
-    event swapNftforEth(uint256[] tokenIds, uint256 ethAmount, address swapper);
+    /// @notice Tracks activity in the smart contract
+    /// @dev Event is emitted when ETH is swaped for NFTs
+    /// @param ethAmount The amount of ETH used to buy the NFTs
+    /// @param tokenIds The token Ids of the NFTs purchased
+    /// @param to The receiver of the NFTs after the trade
+    event swapEthforNft(uint256 ethAmount, uint256[] tokenIds, address to);
+
+    /// @notice Tracks activity in the smart contract
+    /// @dev Event is emitted when ETH is swaped for NFTs
+    /// @param tokenIds The token Ids of the NFTs swapped for ETH
+    /// @param ethAmount The amount of ETH received from the swap
+    /// @param to The receiver of the ETH after the trade
+    event swapNftforEth(uint256[] tokenIds, uint256 ethAmount, address to);
 
     mapping (uint256 => address) private nftOwner;
     uint256 public _totalSupply;
@@ -146,13 +161,6 @@ contract XexadonPair is XexadonShares {
 
         fee = (amount * feeMultiplier) / 1000;
         platformFee = (amount * platformFeeMultiplier) / 1000;
-    }
-
-    modifier ownsAll(uint256[] memory tokenIds, address from) {
-        for (uint256 i = 0; i < tokenIds.length; i++) {
-            require(nftOwner[tokenIds[i]] == from);
-        }
-        _;
     }
 
     modifier onlyFactory {
