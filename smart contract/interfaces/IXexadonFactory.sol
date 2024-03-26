@@ -5,7 +5,7 @@ interface IXexadonFactory {
     function feeTo() external view returns (address);
     function feeToSetter() external view returns (address);
 
-    function getPair(address token) external view returns (address pair);
+    function getPairs(address token) external view returns (address[] memory pairs);
     function allPairs(uint) external view returns (address pair);
     function allPairsLength() external view returns (uint);
 
