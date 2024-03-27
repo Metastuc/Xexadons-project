@@ -14,6 +14,8 @@ import "./XexadonERC20.sol";
 /// @notice This contract when deployed enables users to swap their NFTs for ETH and vice versa
 /// @dev This contract should be deployed by the Xexadon factory contract
 contract XexadonPair is XexadonShares {
+    address public owner; // the deployer of the pair contract
+
     IERC721 public token; // the NFT token instance
     address public tokenAddress; // NFT token address
     
@@ -50,7 +52,7 @@ contract XexadonPair is XexadonShares {
         factoryAddress = msg.sender;
     }
 
-    function initialize(address _router, address _curve, address _tokenAddress) external onlyFactory {
+    function initialize(address _router, address _curve, address _tokenAddress, address _owner) external onlyFactory {
         factory = IXexadonFactory(factoryAddress);
         routerAddress = _router;
         router = IXexadonRouter(_router);
@@ -58,6 +60,7 @@ contract XexadonPair is XexadonShares {
         curve = IXexadonBondCurve(_curve);
         token = IERC721(_tokenAddress);
         tokenAddress = _tokenAddress;
+        owner = _owner;
     }
 
     function setDatails() internal {
@@ -77,6 +80,7 @@ contract XexadonPair is XexadonShares {
 
     function addLiquidity(uint256[] calldata tokenIds, address _from) external payable onlyRouter {
         require(msg.value > 0, "Xexadon: No Ether sent");
+        require(msg.sender == owner, "Xexadon: Access not granted");
         // check if the reserves are equal to zero
         if (reserve0 == 0 || reserve1 == 0) {
             batchTransferFrom(tokenIds, _from);
@@ -110,13 +114,13 @@ contract XexadonPair is XexadonShares {
         batchTransfer(tokenIds, _to);
     }
 
-    function swap(uint256[] memory tokenIds, address to) external payable {
+    function swap(uint256[] memory tokenIds, address to) external payable returns(uint256 amountOut) {
         if (msg.value == 0) { // calculate fee before hand, use another check
             batchTransferFrom(tokenIds, to);
             // calculate amount of ETH to send
             (uint256 _amountOut, uint256 newReserve0, uint256 newReserve1) = curve.getSellAmount(tokenIds.length, reserve0, reserve1);
             (uint256 fee, uint256 platformFee) = getFee(_amountOut);
-            uint256 amountOut = _amountOut - fee - platformFee;
+            amountOut = _amountOut - fee - platformFee;
             payable(factory.feeTo()).transfer(fee);
             payable(to).transfer(amountOut);
             // update reserve

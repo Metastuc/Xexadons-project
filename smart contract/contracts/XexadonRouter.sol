@@ -27,28 +27,37 @@ contract XexadonRouter is Ownable{
         feeMultiplier = _fee;
     }
 
-    function swapETHforNFT(address token, uint256[] memory tokenIds, address to) external payable {
-        address pairAddress = factory.getPair(token);
+    function swapETHforNFT(uint256[] memory tokenIds, address pairAddress, address to) external payable {
         IXexadonPair pair = IXexadonPair(pairAddress);
         pair.swap{value: msg.value}(tokenIds, to);
     }
 
-    function swapNFTforETH(address token, uint256[] memory tokenIds, address to) external payable {
-        address pairAddress = factory.getPair(token);
+    function swapNFTforETH(uint256[] memory tokenIds, address pairAddress, address to) external payable {
         IXexadonPair pair = IXexadonPair(pairAddress);
         pair.swap{value: 0}(tokenIds, to);
     }
 
-    function addLiquidity(address token, uint256[] calldata tokenIds, address from) external payable {
+    function addLiquidity(uint256[] calldata tokenIds, address pairAddress, address from) external payable {
         require(msg.value > 0, "Xexadon: No Ether sent");
-        address pairAddress = factory.getPair(token);
         IXexadonPair pair = IXexadonPair(pairAddress);
         pair.addLiquidity{value: msg.value}(tokenIds, from);
     }
 
-    function removeLiquidity(address token, uint256[] memory tokenIds, address to) external {
-        address pairAddress = factory.getPair(token);
+    function removeLiquidity(uint256[] memory tokenIds, address pairAddress, address to) external {
         IXexadonPair pair = IXexadonPair(pairAddress);
         pair.removeLiquidity(tokenIds, to);
     }
+
+    // function swapNFTforExactNFT(uint256[] memory inputTokenIds, uint256[] memory outputTokenIds, address[2] memory path, address to) external payable {
+    //     specify route pairs 
+    //     max 2 (path)
+    //     perform swaps through router
+    //     IXexadonPair pair0 = IXexadonPair(path[0]);
+    //     IXexadonPair pair1 = IXexadonPair(path[1]);
+
+    //     uint256 amountOut = pair0.swap{value: 0}(inputTokenIds, address(this));
+    //     pair1.
+    //     // curve.getBuyPrice(tokenIds.length, reserve0, reserve1)
+    //     convert from nft to eth, then eth to nft
+    // }
 }

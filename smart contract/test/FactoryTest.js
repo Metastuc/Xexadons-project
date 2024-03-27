@@ -30,6 +30,7 @@ const {
       it("Should deploy a pair contract", async function () {
         const { factory, owner, otherAccount, token, router, curve } = await loadFixture(deployFactory);
         
+        await factory.createPair(token, router, curve);
         await expect(factory.createPair(token, router, curve)).not.to.be.reverted;
       });
     });
@@ -43,7 +44,7 @@ const {
       });
     });
 
-    describe("Get pair", function () {
+    describe("Get pairs", function () {
       it("Should get pair", async function () {
         const { factory, owner, otherAccount, token, router, curve } = await loadFixture(deployFactory);
         
