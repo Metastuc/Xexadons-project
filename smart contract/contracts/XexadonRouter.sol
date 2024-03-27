@@ -4,6 +4,7 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "../interfaces/IXexadonFactory.sol";
 import "../interfaces/IXexadonPair.sol";
+import "../interfaces/IXexadonBondCurve.sol";
 
 contract XexadonRouter is Ownable{
     
@@ -12,9 +13,12 @@ contract XexadonRouter is Ownable{
 
     IXexadonFactory immutable factory;
 
-    constructor(address _factory, address owner) {
+    IXexadonBondCurve public curve;
+
+    constructor(address _factory, address owner, address _curve) {
         factory = IXexadonFactory(_factory);
         transferOwnership(owner);
+        curve = IXexadonBondCurve(_curve);
     }
 
     function getFee() external view returns(uint256, uint256) {
@@ -48,16 +52,16 @@ contract XexadonRouter is Ownable{
         pair.removeLiquidity(tokenIds, to);
     }
 
-    // function swapNFTforExactNFT(uint256[] memory inputTokenIds, uint256[] memory outputTokenIds, address[2] memory path, address to) external payable {
-    //     specify route pairs 
-    //     max 2 (path)
-    //     perform swaps through router
-    //     IXexadonPair pair0 = IXexadonPair(path[0]);
-    //     IXexadonPair pair1 = IXexadonPair(path[1]);
+    function swapNFTforExactNFT(uint256[] memory inputTokenIds, uint256[] memory outputTokenIds, address[2] memory path, address to) external payable {
+        IXexadonPair pair0 = IXexadonPair(path[0]);
+        IXexadonPair pair1 = IXexadonPair(path[1]);
 
-    //     uint256 amountOut = pair0.swap{value: 0}(inputTokenIds, address(this));
-    //     pair1.
-    //     // curve.getBuyPrice(tokenIds.length, reserve0, reserve1)
-    //     convert from nft to eth, then eth to nft
-    // }
+        uint256 amountOut0 = pair0.swap{value: 0}(inputTokenIds, address(this));
+
+        (uint256 reserveOut0, uint256 reserveOut1) = pair1.getReserves();
+
+        (uint256 amountIn1, , ) = curve.getBuyPrice(outputTokenIds.length, reserveOut0, reserveOut1);
+        require(amountOut0 + msg.value == amountIn1 || amountOut0 == amountIn1, "Xexadon: Insufficient funds");
+        pair1.swap{value: amountIn1}(outputTokenIds, to);
+    }
 }

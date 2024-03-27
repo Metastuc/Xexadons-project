@@ -114,13 +114,13 @@ contract XexadonPair is XexadonShares {
         batchTransfer(tokenIds, _to);
     }
 
-    function swap(uint256[] memory tokenIds, address to) external payable returns(uint256 amountOut) {
+    function swap(uint256[] memory tokenIds, address to) external payable returns(uint256) {
         if (msg.value == 0) { // calculate fee before hand, use another check
             batchTransferFrom(tokenIds, to);
             // calculate amount of ETH to send
             (uint256 _amountOut, uint256 newReserve0, uint256 newReserve1) = curve.getSellAmount(tokenIds.length, reserve0, reserve1);
             (uint256 fee, uint256 platformFee) = getFee(_amountOut);
-            amountOut = _amountOut - fee - platformFee;
+            uint256 amountOut = _amountOut - fee - platformFee;
             payable(factory.feeTo()).transfer(fee);
             payable(to).transfer(amountOut);
             // update reserve
@@ -128,6 +128,7 @@ contract XexadonPair is XexadonShares {
             reserve1 = newReserve1;
 
             emit swapNftforEth(tokenIds, amountOut, to);
+            return amountOut;
         }
         else {
             // calculate amount of ETH to be sent
@@ -141,6 +142,7 @@ contract XexadonPair is XexadonShares {
             reserve1 = newReserve1;
 
             emit swapEthforNft(amountIn, tokenIds, to);
+            return tokenIds.length;
         }
     }
 
@@ -159,6 +161,10 @@ contract XexadonPair is XexadonShares {
             token.transferFrom(address(this), to, tokenIds[i]);
         }
     }
+
+    function getReserves() external view returns(uint256, uint256) {
+        return (reserve0, reserve1);
+    } 
 
     function getFee(uint256 amount) public view returns(uint256 fee, uint256 platformFee) {
         (uint256 feeMultiplier, uint256 platformFeeMultiplier) = router.getFee();
