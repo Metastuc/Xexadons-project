@@ -22,13 +22,13 @@ contract XexadonFactory is IXexadonFactory {
         return allPairs.length;
     }
 
-    function createPair(address token, address _router, address _curve) external returns (address pair) {
+    function createPair(address token, address _router, address _curve, uint256 _fee) external returns (address pair) {
         require(token != address(0), 'Xexadon: Address can not be blank');
         bytes memory bytecode = type(XexadonPair).creationCode;
         assembly {
             pair := create2(0, add(bytecode, 32), mload(bytecode), 0)
         }
-        IXexadonPair(pair).initialize(_router, _curve, token);
+        IXexadonPair(pair).initialize(_router, _curve, token, _fee);
         getPair[token].push(pair);
         allPairs.push(pair);
         emit PairCreated(token, pair);
