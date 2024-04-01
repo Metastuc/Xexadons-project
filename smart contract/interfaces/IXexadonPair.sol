@@ -12,5 +12,5 @@ interface IXexadonPair {
     function addLiquidity(uint256[] memory tokenIds, address _from) external payable;
     function removeLiquidity(uint256[] memory tokenIds, address _to) external;
     function swap(uint256[] memory tokenIds, address to) external payable returns(uint256 amount);
-    function initialize(address _router, address _curve, address _tokenAddress) external;
+    function initialize(address _router, address _curve, address _tokenAddress, uint256 _fee) external;
 }
