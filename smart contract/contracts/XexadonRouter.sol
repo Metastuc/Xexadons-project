@@ -64,7 +64,7 @@ contract XexadonRouter is Ownable{
     function addLiquidity(uint256[] calldata tokenIds, address pairAddress, address from) external payable {
         require(msg.value > 0, "Xexadon: No Ether sent");
         IXexadonPair pair = IXexadonPair(pairAddress);
-        pair.addLiquidity{value: msg.value}(tokenIds, from);
+        pair.addLiquidity{value: msg.value}(tokenIds, msg.sender);
     }
 
     /// @notice this function enables pool owners to remove liquidity from a pool
