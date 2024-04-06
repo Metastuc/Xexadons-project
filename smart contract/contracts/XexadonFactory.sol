@@ -4,17 +4,26 @@ pragma solidity ^0.8.0;
 import "../interfaces/IXexadonFactory.sol";
 import "../interfaces/IXexadonPair.sol";
 import "./XexadonPair.sol";
+import "@openzeppelin/contracts/utils/Counters.sol";
 
 /// @title Xexadon Pool Factory
 /// @author NatX
 /// @notice This contract is used to create new Xexadon NFT trading pools
 /// @dev Create2 is used to deploy the xexadonPair contract
 contract XexadonFactory is IXexadonFactory {
+    using Counters for Counters.Counter; // OpenZeppelin Counter
+    Counters.Counter public _pairsCount; // Counter for pairs created
     address public feeTo; // the protocol fee collector
     address public feeToSetter; // the setter of fee collector
 
+    struct pairPool {
+        address tokenAddress;
+        address pairAddress;
+    }
+
     mapping(address => address[]) public getPair; // maps an NFT address to all its pools
-    address[] public allPairs; // all pool pair addresses
+    address[] public allPairs;
+    mapping (uint256 => pairPool) public pairPools; // all pool pair addresses and their token addresses
 
     /// @notice event when emitted when a pair is created
     /// @param token the NFT token address
@@ -27,11 +36,8 @@ contract XexadonFactory is IXexadonFactory {
         feeToSetter = _feeToSetter;
     }
 
-    /// @notice returns the number of pools created
-    /// @dev the number of pools is the length of the allPairs array
-    /// @return uint
-    function allPairsLength() external view returns (uint) {
-        return allPairs.length;
+    function getPoolCount() external view returns(uint256) {
+        return _pairsCount.current();
     }
 
     /// @notice creates a xexadon pair pool
@@ -50,6 +56,9 @@ contract XexadonFactory is IXexadonFactory {
         IXexadonPair(pair).initialize(_router, _curve, token, _fee);
         getPair[token].push(pair);
         allPairs.push(pair);
+        pairPool memory _pairPool = pairPool(token, pair);
+        pairPools[_pairsCount.current()] = _pairPool;
+        _pairsCount.increment(); 
         emit PairCreated(token, pair);
     }
 

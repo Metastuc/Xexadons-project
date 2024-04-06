@@ -2,15 +2,16 @@ const express = require("express");
 const cors = require('cors');
 const path = require('path');
 const axios = require('axios');
+const ethers = require('ethers');
+const factoryABI = require('./factoryABI')
 require('dotenv').config();
-
-// Add a variable for the api key, address and chain
-const moralisApiKey = process.env.MORALIS_API;
 
 // initializing firebase
 const admin = require('firebase-admin');
 const { initializeApp, applicationDefault, cert } = require('firebase-admin/app');
 const { getFirestore, Timestamp, FieldValue, Filter } = require('firebase-admin/firestore');
+const { rpcUrls } = require("./rpcURLs");
+const { deploymentAddresses } = require("./deploymentAddresses");
 
 const credentialPath = process.env.CREDPATH;
 const serviceAccount = require(credentialPath);
@@ -119,5 +120,55 @@ app.get("/getUserCollectionNFTs", async(req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+app.get("/getPoolCollections", async (req, res) => {
+  try {
+    const chain = req.query.chain;
+    const factoryAddress = deploymentAddresses.testnets[chain];
+    const provider = new ethers.JsonRpcProvider(rpcUrls.testnets[chain]);
+
+    var poolAddresses = [];
+    var collections = [];
+
+    const factoryContract = new ethers.Contract(factoryAddress, factoryABI, provider);
+    const length = await factoryContract.getPoolCount();
+    for (let i = 0; i < length; i++) {
+      const pool = await factoryContract.pairPools(i);
+      const poolAddress = pool[0];
+      poolAddresses.push(poolAddress);
+    }
+
+    for (let i = 0; i < poolAddresses.length; i++) {
+      const options = {
+        method: 'GET',
+        url: `https://testnet-api.rarible.org/v0.1/collections/ETHEREUM%3A${poolAddresses[i]}`,
+        headers: {
+          accept: 'application/json',
+          'X-API-KEY': raribleApiKey
+        }
+      };
+
+      try {
+        const _collection = await axios(options);
+        const collection = {
+          address: poolAddresses[i],
+          name: _collection.data.name,
+          symbol: _collection.data.symbol,
+          image: _collection.data.meta.content[0].url
+        };
+
+        collections.push(collection);
+      } catch (error) {
+        console.error(`Error fetching collection details for address ${poolAddresses[i]}:`, error);
+      }
+    }
+
+    res.status(200).json(collections);
+  } catch (error) {
+    console.error('Error in /getPoolNFTs:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
 
 startServer();
