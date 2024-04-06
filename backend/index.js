@@ -121,13 +121,13 @@ app.get("/getUserCollectionNFTs", async(req, res) => {
   }
 });
 
-app.get("/getPoolCollections", async (req, res) => {
+app.get("/getProtocolCollections", async (req, res) => {
   try {
     const chain = req.query.chain;
     const factoryAddress = deploymentAddresses.testnets[chain];
     const provider = new ethers.JsonRpcProvider(rpcUrls.testnets[chain]);
 
-    var poolAddresses = [];
+    var collectionAddresses = [];
     var collections = [];
 
     const factoryContract = new ethers.Contract(factoryAddress, factoryABI, provider);
@@ -135,13 +135,13 @@ app.get("/getPoolCollections", async (req, res) => {
     for (let i = 0; i < length; i++) {
       const pool = await factoryContract.pairPools(i);
       const poolAddress = pool[0];
-      poolAddresses.push(poolAddress);
+      collectionAddresses.push(poolAddress);
     }
 
-    for (let i = 0; i < poolAddresses.length; i++) {
+    for (let i = 0; i < collectionAddresses.length; i++) {
       const options = {
         method: 'GET',
-        url: `https://testnet-api.rarible.org/v0.1/collections/ETHEREUM%3A${poolAddresses[i]}`,
+        url: `https://testnet-api.rarible.org/v0.1/collections/ETHEREUM%3A${collectionAddresses[i]}`,
         headers: {
           accept: 'application/json',
           'X-API-KEY': raribleApiKey
@@ -151,7 +151,7 @@ app.get("/getPoolCollections", async (req, res) => {
       try {
         const _collection = await axios(options);
         const collection = {
-          address: poolAddresses[i],
+          address: collectionAddresses[i],
           name: _collection.data.name,
           symbol: _collection.data.symbol,
           image: _collection.data.meta.content[0].url
@@ -159,7 +159,7 @@ app.get("/getPoolCollections", async (req, res) => {
 
         collections.push(collection);
       } catch (error) {
-        console.error(`Error fetching collection details for address ${poolAddresses[i]}:`, error);
+        console.error(`Error fetching collection details for address ${collectionAddresses[i]}:`, error);
       }
     }
 
@@ -170,5 +170,61 @@ app.get("/getPoolCollections", async (req, res) => {
   }
 });
 
+app.get("/getCollection", async(req, res) => {
+  const collectionAddress = req.query.collectionAddress;
+  const collectionName= req.query.collectionName;
+  const chain = req.query.chain;
+
+  const factoryAddress = deploymentAddresses.testnets[chain];
+  const provider = new ethers.JsonRpcProvider(rpcUrls.testnets[chain]);
+
+  var poolAddresses;
+  var collectionPoolTotal;
+  var collectionNFTTotal = 0;
+  var NFTs = [];
+
+  try {
+    const factoryContract = new ethers.Contract(factoryAddress, factoryABI, provider);
+    poolAddresses = await factoryContract.getPairs(collectionAddress);
+
+    collectionPoolTotal = poolAddresses.length;
+    for (let i = 0; i < poolAddresses.length; i++) {
+      const options = {
+        method: 'GET',
+        url: `https://testnet-api.rarible.org/v0.1/items/byOwnerWithOwnership?owner=ETHEREUM%3A${poolAddresses[i]}`,
+        headers: {
+          accept: 'application/json',
+          'X-API-KEY': raribleApiKey
+        }
+      };
+
+      const response = await axios(options);
+      const items = response.data.items;
+
+      collectionNFTTotal = collectionNFTTotal + items.length;
+
+      for (let j = 0; j < items.length; j++) {
+        const nft = {
+          id: items[i].tokenId,
+          name: collectionName + " " + "#" + items[i].tokenId,
+          poolAddresses: poolAddresses[i],
+          image: items.meta.content[0].url
+        };
+
+        NFTs.push(nft);
+      }
+
+      const collection = {
+        PoolTotal: collectionPoolTotal,
+        nftTotal: collectionNFTTotal,
+        NFTs: NFTs
+      }
+
+      res.status(200).json(collection); 
+    }
+  } catch (error) {
+    
+  }
+});
 
 startServer();

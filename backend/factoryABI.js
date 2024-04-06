@@ -35,5 +35,24 @@ export const factoryABI = [
         ],
         "stateMutability": "view",
         "type": "function"
-    }
+    },
+    {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "token",
+            "type": "address"
+          }
+        ],
+        "name": "getPairs",
+        "outputs": [
+          {
+            "internalType": "address[]",
+            "name": "pairs",
+            "type": "address[]"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      }
 ]
