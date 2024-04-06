@@ -66,7 +66,8 @@ app.get("/getUserCollections", async(req, res) => {
         const collection = {
           name: collections[i].name,
           symbol: collections[i].symbol,
-          address: collections[i].id.match(/0x[a-fA-F0-9]{40}/)[0]
+          address: collections[i].id.match(/0x[a-fA-F0-9]{40}/)[0],
+          image: collections[i].meta.content[0].url
         }
         userCollections.push(collection);
       }
@@ -80,5 +81,43 @@ app.get("/getUserCollections", async(req, res) => {
   }
 });
 
+app.get("/getUserCollectionNFTs", async(req, res) => {
+  const userAddress = req.query.userAddress;
+  const nftAddress = req.query.nftAddress;
+
+  var userCollectionNFTs = [];
+  const options = {
+    method: 'GET',
+    url: `https://testnet-api.rarible.org/v0.1/items/byOwnerWithOwnership?owner=ETHEREUM%3A${userAddress}`,
+    headers: {
+      accept: 'application/json',
+      'X-API-KEY': raribleApiKey
+    }
+  };
+
+  try {
+    const response = await axios(options);
+    const items = response.data.items;
+
+    // check if contract address matches tokenAddress
+    for (let i = 0; i < items.length; i++) {
+      if (items[i].contract.includes(nftAddress)) {
+        const nft = {
+          nftId: items[i].tokenId,
+          name: items[i].meta.name,
+          desc: items[i].description,
+          image: items[i].meta.content[0].url
+        }
+        userCollectionNFTs.push(nft);
+      }
+    }
+    // Return the userCollections array as the response
+    res.status(200).json(userCollectionNFTs);
+  } catch (error) {
+    // Handle errors
+    console.error("Error fetching user collections:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
 
 startServer();
