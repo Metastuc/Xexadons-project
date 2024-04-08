@@ -3,7 +3,7 @@ const cors = require('cors');
 const path = require('path');
 const axios = require('axios');
 const ethers = require('ethers');
-const factoryABI = require('./factoryABI')
+const contractABIs = require('./ABIs')
 require('dotenv').config();
 
 // initializing firebase
@@ -124,13 +124,13 @@ app.get("/getUserCollectionNFTs", async(req, res) => {
 app.get("/getProtocolCollections", async (req, res) => {
   try {
     const chain = req.query.chain;
-    const factoryAddress = deploymentAddresses.testnets[chain];
+    const factoryAddress = deploymentAddresses.factory.testnets[chain];
     const provider = new ethers.JsonRpcProvider(rpcUrls.testnets[chain]);
 
     var collectionAddresses = [];
     var collections = [];
 
-    const factoryContract = new ethers.Contract(factoryAddress, factoryABI, provider);
+    const factoryContract = new ethers.Contract(factoryAddress, contractABIs.ABIs.factoryABI, provider);
     const length = await factoryContract.getPoolCount();
     for (let i = 0; i < length; i++) {
       const pool = await factoryContract.pairPools(i);
@@ -175,16 +175,17 @@ app.get("/getCollection", async(req, res) => {
   const collectionName= req.query.collectionName;
   const chain = req.query.chain;
 
-  const factoryAddress = deploymentAddresses.testnets[chain];
+  const factoryAddress = deploymentAddresses.factory.testnets[chain];
   const provider = new ethers.JsonRpcProvider(rpcUrls.testnets[chain]);
 
   var poolAddresses;
+  var pools = [];
   var collectionPoolTotal;
   var collectionNFTTotal = 0;
   var NFTs = [];
 
   try {
-    const factoryContract = new ethers.Contract(factoryAddress, factoryABI, provider);
+    const factoryContract = new ethers.Contract(factoryAddress, contractABIs.ABIs.factoryABI, provider);
     poolAddresses = await factoryContract.getPairs(collectionAddress);
 
     collectionPoolTotal = poolAddresses.length;
@@ -203,25 +204,45 @@ app.get("/getCollection", async(req, res) => {
 
       collectionNFTTotal = collectionNFTTotal + items.length;
 
+      const pairContract = new ethers.Contract(poolAddresses[i], contractABIs.ABIs.pairABI, provider);
+      const poolOwner = await pairContract.owner();
+      const reserve0 = await pairContract.reserve0();
+      const reserve1 = await pairContract.reserve1();
+
+      const curveContract = new ethers.Contract(deploymentAddresses.curve.testnets[chain], contractABIs.ABIs.curveABI, provider);
+      const buyPrice = await curveContract.getBuyPrice(1, reserve0, reserve1);
+      const sellPrice = await curveContract.getSellAmount(1, reserve0, reserve1);
+
+      const pool = {
+        poolAddress: poolAddresses[i],
+        owner: poolOwner,
+        buyPrice: buyPrice[0],
+        sellPrice: sellPrice[0],
+        nftAmount: reserve0,
+        tokenAmount: reserve1
+      }
+
+      pools.push(pool);
+
       for (let j = 0; j < items.length; j++) {
         const nft = {
-          id: items[i].tokenId,
-          name: collectionName + " " + "#" + items[i].tokenId,
+          id: items[j].tokenId,
+          name: collectionName + " " + "#" + items[j].tokenId,
           poolAddresses: poolAddresses[i],
-          image: items.meta.content[0].url
+          image: items[j].meta.content[0].url
         };
 
         NFTs.push(nft);
       }
-
-      const collection = {
-        PoolTotal: collectionPoolTotal,
-        nftTotal: collectionNFTTotal,
-        NFTs: NFTs
-      }
-
-      res.status(200).json(collection); 
     }
+    const collection = {
+      PoolTotal: collectionPoolTotal,
+      nftTotal: collectionNFTTotal,
+      pools: pools,
+      NFTs: NFTs,
+    }
+
+    res.status(200).json(collection); 
   } catch (error) {
     
   }

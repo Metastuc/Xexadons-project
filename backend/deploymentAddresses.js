@@ -1,8 +1,18 @@
 export const deploymentAddresses = {
-    mainnets: {
-        polygon: "0x.."
+    factory: {
+        mainnets: {
+            polygon: "0x.."
+        },
+        testnets: {
+            polygon: "0x..",
+        }
     },
-    testnets: {
-        polygon: "0x..",
+    curve: {
+        mainnets: {
+            polygon: "0x.."
+        },
+        testnets: {
+            polygon: "0x..",
+        }
     }
 }
