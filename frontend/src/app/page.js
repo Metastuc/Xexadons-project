@@ -1,7 +1,13 @@
+import Features from "@/components/landingPage/features";
+import Header from "@/components/landingPage/header";
+import Trade from "@/components/landingPage/trade";
+
 export default function MainPage() {
     return (
-      <div className="h-[200vh] z-50">
-        <p>Xexadons</p>
+      <div>
+        <Header />
+        <Features />
+        <Trade />
       </div>
     )
 }
