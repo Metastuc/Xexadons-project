@@ -260,7 +260,8 @@ app.post("recordActivity/:poolId", async(req, res) => {
       price: req.body.price,
       from: req.body.from,
       from: req.body.to,
-      time: FieldValue.serverTimestamp()
+      time: new Date().toISOString(),
+      hash: req.body.hash
     }
     const activityRef = db.collection('poolActivity').doc(poolId).collection('activities');
     await activityRef.add(activity);
@@ -273,19 +274,37 @@ app.post("recordActivity/:poolId", async(req, res) => {
 
 app.get("/getPoolActivity", async(req, res) => {
   const poolId = req.query.poolId;
-  var activity = [];
+  var allActivities = [];
   
   try {
     const activitySnapshot = await db.collection('poolActivity').doc(poolId).collection('activities').get();
 
     activitySnapshot.forEach((doc) => {
-      activity.push(doc.data());
+      allActivities.push(doc.data());
     });
-    res.status(200).json({ response: activity });
+
+    const activities = sortActivities(allActivities);
+
+    res.status(200).json({ response: activities });
   } catch (error) {
     res.status(500);
     res.json({ error: error.message });
   }
 });
+
+function sortActivities(activities) {
+  // Filter events to include only objects from the past 7 days
+  const filteredEvents = activities.filter(activity => {
+    const activityTime = new Date(activity.time);
+    const now = new Date();
+    const diffInDays = Math.floor((now - activityTime) / (1000 * 60 * 60 * 24));
+    return diffInDays <= 7;
+  });
+
+  // Sort filteredEvents based on the time parameter
+  filteredEvents.sort((a, b) => new Date(a.time) - new Date(b.time));
+
+  return filteredEvents;
+}
 
 startServer();
