@@ -48,6 +48,7 @@ contract XexadonFactory is IXexadonFactory {
     /// @param _fee the fee percentage the pool creator wants to impose on each trade on the pool
     /// @return pair the address of the newly created pair pool
     function createPair(address token, address _router, address _curve, uint256 _fee) external returns (address pair) {
+        // require fee 1 - 5 %
         require(token != address(0), 'Xexadon: Address can not be blank');
         bytes memory bytecode = type(XexadonPair).creationCode;
         assembly {
