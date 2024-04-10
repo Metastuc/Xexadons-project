@@ -272,7 +272,20 @@ app.post("recordActivity/:poolId", async(req, res) => {
 })
 
 app.get("/getPoolActivity", async(req, res) => {
+  const poolId = req.query.poolId;
+  var activity = [];
+  
+  try {
+    const activitySnapshot = await db.collection('poolActivity').doc(poolId).collection('activities').get();
 
+    activitySnapshot.forEach((doc) => {
+      activity.push(doc.data());
+    });
+    res.status(200).json({ response: activity });
+  } catch (error) {
+    res.status(500);
+    res.json({ error: error.message });
+  }
 });
 
 startServer();
