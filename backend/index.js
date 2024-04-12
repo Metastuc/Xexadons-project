@@ -292,6 +292,107 @@ app.get("/getPoolActivity", async(req, res) => {
   }
 });
 
+app.get("/getUser", async(req, res) => {
+  const userAddress = req.query.userAddress;
+  const chain = req.query.chain;
+
+  try {
+    const userPools = await getUserPools(userAddress, chain);
+    const userNFTs = await getUserNFTs(userAddress);
+    const userObject = {
+      userPools: userPools,
+      userNFTs: userNFTs
+    }
+
+    res.status(200).json(userObject);
+  } catch (error) {
+    res.status(500).json({ error: error })
+  }
+})
+
+
+async function getUserPools(address, chain) {
+  try {
+    const provider = new ethers.JsonRpcProvider(rpcUrls.testnets[chain]);
+
+    const factoryContract = new ethers.Contract(factoryAddress, contractABIs.ABIs.factoryABI, provider);
+    const userPools = await factoryContract.getUserPairss(address);
+    
+    var pools = [];
+
+    for (let i = 0; i < userPools.length; i++) {
+      const options = {
+        method: 'GET',
+        url: `https://testnet-api.rarible.org/v0.1/items/byOwnerWithOwnership?owner=ETHEREUM%3A${userPools[i]}`,
+        headers: {
+          accept: 'application/json',
+          'X-API-KEY': raribleApiKey
+        }
+      };
+
+      const response = await axios(options);
+      const items = response.data.items;
+
+      collectionNFTTotal = collectionNFTTotal + items.length;
+
+      const pairContract = new ethers.Contract(poolAddresses[i], contractABIs.ABIs.pairABI, provider);
+      const poolOwner = await pairContract.owner();
+      const reserve0 = await pairContract.reserve0();
+      const reserve1 = await pairContract.reserve1();
+
+      const curveContract = new ethers.Contract(deploymentAddresses.curve.testnets[chain], contractABIs.ABIs.curveABI, provider);
+      const buyPrice = await curveContract.getBuyPrice(1, reserve0, reserve1);
+      const sellPrice = await curveContract.getSellAmount(1, reserve0, reserve1);
+
+      const pool = {
+        poolAddress: poolAddresses[i],
+        owner: poolOwner,
+        buyPrice: buyPrice[0],
+        sellPrice: sellPrice[0],
+        nftAmount: reserve0,
+        tokenAmount: reserve1
+      }
+
+      pools.push(pool);
+    }
+
+    return pools;
+
+  } catch (error) {
+    return error;
+  }
+}
+
+async function getUserNFTs(address) {
+  const userNFTs = [];
+  try {
+    const options = {
+      method: 'GET',
+      url: `https://testnet-api.rarible.org/v0.1/items/byOwnerWithOwnership?owner=ETHEREUM%3A${address}`,
+      headers: {
+        accept: 'application/json',
+        'X-API-KEY': raribleApiKey
+      }
+    };
+
+    const response = await axios(options);
+    const items = response.data.items;
+
+    for (let j = 0; j < items.length; j++) {
+      const nft = {
+        id: items[j].tokenId,
+        name: collectionName + " " + "#" + items[j].tokenId,
+        poolAddresses: poolAddresses[i],
+        image: items[j].meta.content[0].url
+      };
+
+      userNFTs.push(nft);
+    }
+  } catch (error) {
+    return error;
+  }
+}
+
 function sortActivities(activities) {
   // Filter events to include only objects from the past 7 days
   const filteredEvents = activities.filter(activity => {

@@ -23,7 +23,8 @@ contract XexadonFactory is IXexadonFactory {
 
     mapping(address => address[]) public getPair; // maps an NFT address to all its pools
     address[] public allPairs;
-    mapping (uint256 => pairPool) public pairPools; // all pool pair addresses and their token addresses
+    mapping(uint256 => pairPool) public pairPools; // all pool pair addresses and their token addresses
+    mapping(address => address[]) userPools; // all pools created by address
 
     /// @notice event when emitted when a pair is created
     /// @param token the NFT token address
@@ -57,9 +58,10 @@ contract XexadonFactory is IXexadonFactory {
         IXexadonPair(pair).initialize(_router, _curve, token, _fee);
         getPair[token].push(pair);
         allPairs.push(pair);
+        userPools[msg.sender].push(pair);
         pairPool memory _pairPool = pairPool(token, pair);
         pairPools[_pairsCount.current()] = _pairPool;
-        _pairsCount.increment(); 
+        _pairsCount.increment();
         emit PairCreated(token, pair);
     }
 
@@ -85,5 +87,9 @@ contract XexadonFactory is IXexadonFactory {
     /// @return pairs an array of all token pairs
     function getPairs(address token) external view returns (address[] memory pairs) {
         pairs = getPair[token];
+    }
+
+    function getUserPairs(address user) public view returns(address[] memory userPairs) {
+        userPairs = userPools[user];
     }
 }

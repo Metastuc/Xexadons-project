@@ -56,6 +56,25 @@ export const ABIs = {
             "stateMutability": "view",
             "type": "function"
         },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "user",
+              "type": "address"
+            }
+          ],
+          "name": "getUserPairs",
+          "outputs": [
+            {
+              "internalType": "address[]",
+              "name": "userPairs",
+              "type": "address[]"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
     ],
     pairABI: [
         {
