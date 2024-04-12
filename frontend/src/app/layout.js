@@ -2,6 +2,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import BlurLayout from "@/components/ui/blurLayout";
 import Navbar from "@/components/ui/navbar";
+import Sparkles from "@/components/ui/sparkles";
 
 export const metadata = {
   title: "Xexadons",
@@ -54,8 +55,10 @@ export default function RootLayout({ children }) {
       <html lang="en">
           <body className={`${clashDisplay.className} bg-main text-white`}>
               {/* <BlurLayout /> */}
-              <Navbar />
-              {children}
+              {/* <Sparkles> */}
+                  <Navbar />
+                  {children}
+              {/* </Sparkles> */}
           </body>
       </html>
   );

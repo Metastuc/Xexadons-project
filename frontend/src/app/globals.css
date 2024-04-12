@@ -3,124 +3,20 @@
 @tailwind utilities;
 
 
-.gradient-border {
-  --border-width: 3px;
-
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 300px;
-  height: 200px;
-  font-family: Lato, sans-serif;
-  font-size: 2.5rem;
-  text-transform: uppercase;
-  color: white;
-  background: #222;
-  border-radius: var(--border-width);
-
-  &::after {
-    position: absolute;
-    content: "";
-    top: calc(-1 * var(--border-width));
-    left: calc(-1 * var(--border-width));
-    z-index: -1;
-    width: calc(100% + var(--border-width) * 2);
-    height: calc(100% + var(--border-width) * 2);
-    background: linear-gradient(
-      60deg,
-      hsl(224, 85%, 66%),
-      hsl(269, 85%, 66%),
-      hsl(314, 85%, 66%),
-      hsl(359, 85%, 66%),
-      hsl(44, 85%, 66%),
-      hsl(89, 85%, 66%),
-      hsl(134, 85%, 66%),
-      hsl(179, 85%, 66%)
-    );
-    background-size: 300% 300%;
-    background-position: 0 50%;
-    border-radius: calc(2 * var(--border-width));
-    animation: moveGradient 4s alternate infinite;
-  }
+body {
+  height: fit-content;
+  background: radial-gradient(at 18% 99%, #665977 0px, transparent 50%) repeat scroll 0% 0%, 
+                radial-gradient(at 0% 0%, #665977 0px, transparent 50%) repeat scroll 0% 0%;
+                /* radial-gradient(at 97% 8%, #665977 0px, transparent 50%) repeat scroll 0% 0%,  */
+                /* radial-gradient(at 79% 82%, #665977 0px, transparent 50%) repeat scroll 0% 0%, */
+                /* radial-gradient(at 42% 20%, rgb(116, 240, 251) 0px, transparent 50%) repeat scroll 0% 0%,
+                radial-gradient(at 4% 49%, rgb(203, 88, 218) 0px, transparent 50%) repeat scroll 0% 0%, rgba(0, 0, 0, 0) radial-gradient(at 57% 33%, rgb(218, 83, 228) 0px, #a299ff 50%) repeat scroll 0% 0%;   */
 }
 
-@keyframes moveGradient {
-  50% {
-    background-position: 100% 50%;
-  }
+.gradient-border-bg {
+  border: 5px solid;
+  border-image: linear-gradient(135deg, #DED620, rgba(0, 3, 26, 0.1), #B2FDB6);
+  padding: 1rem;
+  border-radius: 30px;
+  border-image-slice: 1;
 }
-
-
-
-/* Blur circles 
-body::before,
-body::after,
-body::before.top-left,
-body::before.top-right,
-body::before.bottom-left,
-body::before.bottom-right {
-  content: '';
-  position: absolute;
-  width: 200px;
-  height: 200px;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.8) 20%, transparent 70%);
-  filter: blur(2000px);
-  z-index: -1;
-}
-
-body::after,
-body::after.top-left,
-body::after.top-right,
-body::after.bottom-left,
-body::after.bottom-right {
-  content: '';
-  position: absolute;
-  width: 300px;
-  height: 300px;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.8) 20%, transparent 70%);
-  filter: blur(200px);
-  z-index: -1;
-}
-
-body::before.top-left {
-  top: -800px;
-  left: -800px;
-}
-
-body::before.top-right {
-  top: -100px;
-  right: -100px;
-}
-
-body::before.bottom-left {
-  bottom: -100px;
-  left: -100px;
-}
-
-body::before.bottom-right {
-  bottom: -100px;
-  right: -100px;
-}
-
-body::after.top-left {
-  top: -150px;
-  left: -150px;
-}
-
-body::after.top-right {
-  top: -150px;
-  right: -150px;
-}
-
-body::after.bottom-left {
-  bottom: -150px;
-  left: -150px;
-}
-
-body::after.bottom-right {
-  bottom: -150px;
-  right: -150px;
-}
-
-*/
