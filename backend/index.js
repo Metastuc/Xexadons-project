@@ -310,7 +310,6 @@ app.get("/getUser", async(req, res) => {
   }
 })
 
-
 async function getUserPools(address, chain) {
   try {
     const provider = new ethers.JsonRpcProvider(rpcUrls.testnets[chain]);
@@ -335,7 +334,7 @@ async function getUserPools(address, chain) {
 
       collectionNFTTotal = collectionNFTTotal + items.length;
 
-      const pairContract = new ethers.Contract(poolAddresses[i], contractABIs.ABIs.pairABI, provider);
+      const pairContract = new ethers.Contract(userPools[i], contractABIs.ABIs.pairABI, provider);
       const poolOwner = await pairContract.owner();
       const reserve0 = await pairContract.reserve0();
       const reserve1 = await pairContract.reserve1();
@@ -407,5 +406,58 @@ function sortActivities(activities) {
 
   return filteredEvents;
 }
+
+app.get("/getSellRoute", async(req, res) => {
+  const tokenIds = req.query.tokenIds;
+  const collectionAddress = req.query.collectionAddress;
+  const chain = req.query.chain;
+
+  var paths = [];
+
+  const factoryAddress = deploymentAddresses.factory.testnets[chain];
+  const provider = new ethers.JsonRpcProvider(rpcUrls.testnets[chain]);
+
+  const factoryContract = new ethers.Contract(factoryAddress, contractABIs.ABIs.factoryABI, provider);
+
+  try {
+    const poolAddresses = await factoryContract.getPairs(collectionAddress);
+    let ids = tokenIds;
+
+    for (let i = 0; i < poolAddresses.length; i++) {
+      const pairContract = new ethers.Contract(poolAddresses[i], contractABIs.ABIs.pairABI, provider);
+      const reserve0 = await pairContract.reserve0();
+      const reserve1 = await pairContract.reserve1();
+  
+      const amountOut = reserve1 * 0.7;
+     
+      const tokenLength = (amountOut * reserve0) / (reserve1 - amountOut);
+      const maxNFTs = Math.floor(tokenLength);
+
+      if (maxNFTs <= 0) {
+        continue;
+      }
+  
+      if (maxNFTs >= ids.length) {
+        const path = {
+          poolAddress: poolAddresses[i],
+          tokenNFTs: tokenIds
+        }
+        paths.push(path);
+      } else {
+        const poolNFTs = ids.slice(0, maxNFTs);
+        ids = ids.slice(maxNFTs);
+        const path = {
+          poolAddress: poolAddresses[i],
+          tokenNFTs: poolNFTs
+        }
+        paths.push(path);
+      }
+    }
+  
+    res.status(200).json(paths);
+  } catch (error) {
+    res.status(500).json({ error: error })
+  }
+})
 
 startServer();
