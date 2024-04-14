@@ -4,17 +4,27 @@ pragma solidity ^0.8.0;
 import "../interfaces/IXexadonFactory.sol";
 import "../interfaces/IXexadonPair.sol";
 import "./XexadonPair.sol";
+import "@openzeppelin/contracts/utils/Counters.sol";
 
 /// @title Xexadon Pool Factory
 /// @author NatX
 /// @notice This contract is used to create new Xexadon NFT trading pools
 /// @dev Create2 is used to deploy the xexadonPair contract
 contract XexadonFactory is IXexadonFactory {
+    using Counters for Counters.Counter; // OpenZeppelin Counter
+    Counters.Counter public _pairsCount; // Counter for pairs created
     address public feeTo; // the protocol fee collector
     address public feeToSetter; // the setter of fee collector
 
+    struct pairPool {
+        address tokenAddress;
+        address pairAddress;
+    }
+
     mapping(address => address[]) public getPair; // maps an NFT address to all its pools
-    address[] public allPairs; // all pool pair addresses
+    address[] public allPairs;
+    mapping(uint256 => pairPool) public pairPools; // all pool pair addresses and their token addresses
+    mapping(address => address[]) userPools; // all pools created by address
 
     /// @notice event when emitted when a pair is created
     /// @param token the NFT token address
@@ -27,11 +37,8 @@ contract XexadonFactory is IXexadonFactory {
         feeToSetter = _feeToSetter;
     }
 
-    /// @notice returns the number of pools created
-    /// @dev the number of pools is the length of the allPairs array
-    /// @return uint
-    function allPairsLength() external view returns (uint) {
-        return allPairs.length;
+    function getPoolCount() external view returns(uint256) {
+        return _pairsCount.current();
     }
 
     /// @notice creates a xexadon pair pool
@@ -42,6 +49,7 @@ contract XexadonFactory is IXexadonFactory {
     /// @param _fee the fee percentage the pool creator wants to impose on each trade on the pool
     /// @return pair the address of the newly created pair pool
     function createPair(address token, address _router, address _curve, uint256 _fee) external returns (address pair) {
+        // require fee 1 - 5 %
         require(token != address(0), 'Xexadon: Address can not be blank');
         bytes memory bytecode = type(XexadonPair).creationCode;
         assembly {
@@ -50,6 +58,10 @@ contract XexadonFactory is IXexadonFactory {
         IXexadonPair(pair).initialize(_router, _curve, token, _fee);
         getPair[token].push(pair);
         allPairs.push(pair);
+        userPools[msg.sender].push(pair);
+        pairPool memory _pairPool = pairPool(token, pair);
+        pairPools[_pairsCount.current()] = _pairPool;
+        _pairsCount.increment();
         emit PairCreated(token, pair);
     }
 
@@ -75,5 +87,9 @@ contract XexadonFactory is IXexadonFactory {
     /// @return pairs an array of all token pairs
     function getPairs(address token) external view returns (address[] memory pairs) {
         pairs = getPair[token];
+    }
+
+    function getUserPairs(address user) public view returns(address[] memory userPairs) {
+        userPairs = userPools[user];
     }
 }
