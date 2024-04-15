@@ -2,3 +2,21 @@
 @tailwind components;
 @tailwind utilities;
 
+
+body {
+  height: fit-content;
+  background: radial-gradient(at 18% 99%, #665977 0px, transparent 50%) repeat scroll 0% 0%, 
+                radial-gradient(at 0% 0%, #665977 0px, transparent 50%) repeat scroll 0% 0%;
+                /* radial-gradient(at 97% 8%, #665977 0px, transparent 50%) repeat scroll 0% 0%,  */
+                /* radial-gradient(at 79% 82%, #665977 0px, transparent 50%) repeat scroll 0% 0%, */
+                /* radial-gradient(at 42% 20%, rgb(116, 240, 251) 0px, transparent 50%) repeat scroll 0% 0%,
+                radial-gradient(at 4% 49%, rgb(203, 88, 218) 0px, transparent 50%) repeat scroll 0% 0%, rgba(0, 0, 0, 0) radial-gradient(at 57% 33%, rgb(218, 83, 228) 0px, #a299ff 50%) repeat scroll 0% 0%;   */
+}
+
+.gradient-border-bg {
+  border: 5px solid;
+  border-image: linear-gradient(135deg, #DED620, rgba(0, 3, 26, 0.1), #B2FDB6);
+  padding: 1rem;
+  border-radius: 30px;
+  border-image-slice: 1;
+}
