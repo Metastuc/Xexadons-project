@@ -299,6 +299,8 @@ app.get("/getUser", async(req, res) => {
   try {
     const userPools = await getUserPools(userAddress, chain);
     const userNFTs = await getUserNFTs(userAddress);
+    const userBalnce = await getUserBalance(userAddress, chain);
+
     const userObject = {
       userPools: userPools,
       userNFTs: userNFTs
@@ -309,6 +311,36 @@ app.get("/getUser", async(req, res) => {
     res.status(500).json({ error: error })
   }
 })
+
+async function getUserBalance(address, chain) {
+  try {
+    const provider = new ethers.JsonRpcProvider(rpcUrls.testnets[chain]);
+
+    const balanceWei = await provider.getBalance(address);
+
+    const balanceEth = ethers.parseEther(balanceWei.toString());
+
+
+    const options = {
+      method: 'GET',
+      url: 'https://api.rarible.org/v0.1/currencies/ETHEREUM%3A0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2/rates/usd?at=2022-01-01T12%3A00%3A00Z',
+      headers: {
+        accept: 'application/json',
+        'X-API-KEY': '5038109f-4d25-4d86-9e77-df64196caac4'
+      }
+    };
+
+    const response = await axios(options);
+
+  } catch (error) {
+    
+  }
+
+  const balance = await provider.getBalance(address);
+
+  // Convert the balance to Ether
+  const etherBalance = ethers.utils.formatEther(balance);
+}
 
 async function getUserPools(address, chain) {
   try {
