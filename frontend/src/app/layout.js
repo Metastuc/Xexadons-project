@@ -3,6 +3,51 @@ import "./globals.css";
 import BlurLayout from "@/components/ui/blurLayout";
 import Navbar from "@/components/ui/navbar";
 import Sparkles from "@/components/ui/sparkles";
+require('dotenv').config();
+
+import '@rainbow-me/rainbowkit/styles.css';
+import { http } from 'wagmi';
+import Script from "next/script";
+import { connectorsForWallets } from '@rainbow-me/rainbowkit';
+import {
+  rainbowWallet,
+  walletConnectWallet,
+  bitgetWallet,
+  metaMaskWallet,
+  trustWallet
+} from '@rainbow-me/rainbowkit/wallets';
+import { createConfig } from 'wagmi';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { WagmiProvider } from 'wagmi';
+import {
+  bsc
+} from 'wagmi/chains';
+import { getDefaultConfig, RainbowKitProvider } from '@rainbow-me/rainbowkit';
+
+const connectors = connectorsForWallets(
+  [
+    {
+      groupName: 'Recommended',
+      wallets: [metaMaskWallet, walletConnectWallet, bitgetWallet, trustWallet],
+    },
+  ],
+  {
+    appName: 'Xexadon',
+    projectId: process.env.PROJECT_ID,
+  }
+);
+
+const config = createConfig({
+  chains: [bsc],
+  connectors,
+  ssr: true, 
+  transports: {
+    [bsc.id]: http('https://bsc-dataseed1.binance.org/'),
+  },
+})
+
+const client = new QueryClient();
+
 
 export const metadata = {
   title: "Xexadons",
@@ -56,8 +101,12 @@ export default function RootLayout({ children }) {
           <body className={`${clashDisplay.className} bg-main text-white`}>
               {/* <BlurLayout /> */}
               {/* <Sparkles> */}
+              <WagmiProvider config={config}>
+                <QueryClientProvider client={client}> 
                   <Navbar />
                   {children}
+                </QueryClientProvider>
+              </WagmiProvider>
               {/* </Sparkles> */}
           </body>
       </html>
