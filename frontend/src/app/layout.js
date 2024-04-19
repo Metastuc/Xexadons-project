@@ -1,3 +1,4 @@
+"use client";
 import localFont from "next/font/local";
 import "./globals.css";
 import BlurLayout from "@/components/ui/blurLayout";
@@ -33,7 +34,8 @@ const connectors = connectorsForWallets(
   ],
   {
     appName: 'Xexadon',
-    projectId: process.env.PROJECT_ID,
+    // projectId: process.env.PROJECT_ID,
+    projectId: "2b4467b0ed7e948fc9ae1c86611b821b"
   }
 );
 
@@ -48,11 +50,10 @@ const config = createConfig({
 
 const client = new QueryClient();
 
-
-export const metadata = {
-  title: "Xexadons",
-  description: "NFT Market pllace",
-};
+// export const metadata = {
+//   title: "Xexadons",
+//   description: "NFT Market pllace",
+// };
 
 const clashDisplay = localFont({
     src: [
@@ -91,7 +92,6 @@ const clashDisplay = localFont({
             weight: "200",
             style: "normal",
         },
-        
     ],
 });
 
@@ -102,9 +102,11 @@ export default function RootLayout({ children }) {
               {/* <BlurLayout /> */}
               {/* <Sparkles> */}
               <WagmiProvider config={config}>
-                <QueryClientProvider client={client}> 
+                <QueryClientProvider client={client}>
+                <RainbowKitProvider>
                   <Navbar />
                   {children}
+                  </RainbowKitProvider>
                 </QueryClientProvider>
               </WagmiProvider>
               {/* </Sparkles> */}
