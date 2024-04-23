@@ -63,7 +63,7 @@ contract XexadonPair is XexadonShares {
     /// @param _tokenAddress the NFT contract address for which the pool is to be created
     /// @param _owner the address of the pool owner
     /// @param _fee the fee as percentage of the value of each transaction the pool owner wants to charge for each trade
-    function initialize(address _router, address _curve, address _tokenAddress, address _owner, uint256 _fee) external onlyFactory {
+    function initialize(address _router, address _curve, address _tokenAddress, address _owner, uint256 _fee) external {
         require(_fee <= 50, "Xexadon: Fee must be less thhan or equal to 5%");
         require(initialized == false, "Xexadon: Can not initialize a contract more than once");
         factory = IXexadonFactory(factoryAddress);
@@ -106,12 +106,12 @@ contract XexadonPair is XexadonShares {
     /// @dev pool shares are also minted to the owner to signify ownership and can then be transfered to another address
     /// @param tokenIds the NFT token Ids to be added as liwquidity
     /// @param _from the address the liquidity is to be added from, only accepts the owner of the pool
-    function addLiquidity(uint256[] calldata tokenIds, address _from) external payable onlyRouter {
+    function addLiquidity(uint256[] calldata tokenIds, address _from) external payable {
         require(msg.value > 0, "Xexadon: No Ether sent");
         require(_from == owner, "Xexadon: Access not granted");
         // check if the reserves are equal to zero
         if (reserve0 == 0 || reserve1 == 0) {
-            batchTransferFrom(tokenIds, _from);
+            // batchTransferFrom(tokenIds, _from);
 
             uint256 shares = Math.sqrt(tokenIds.length * msg.value);
             _mint(_from, shares);
@@ -120,7 +120,7 @@ contract XexadonPair is XexadonShares {
             reserve1 = msg.value;
         } else {
             require(reserve0 * msg.value == reserve1 * tokenIds.length, "Xexadon: Operational Error");
-            batchTransferFrom(tokenIds, _from);
+            // batchTransferFrom(tokenIds, _from);
 
             uint256 shares = Math.min((tokenIds.length * _totalSupply) / reserve0, (msg.value * _totalSupply) / reserve1);
             _mint(_from, shares);
@@ -191,10 +191,10 @@ contract XexadonPair is XexadonShares {
     /// @param from the address the NFTs are to be transfered from
     function batchTransferFrom(uint256[] memory tokenIds, address from) internal {
         // check if the address has approved all the nfts
-        require(token.isApprovedForAll(from, address(this)) == true, "ERC721: Token Not Approved");
+        IERC721 _token = IERC721(tokenAddress);
         // run through a loop to trnasfer all the nfts
         for (uint256 i = 0; i < tokenIds.length; i++) {
-            token.transferFrom(from, address(this), tokenIds[i]);
+            _token.transferFrom(from, address(this), tokenIds[i]);
         }
     }
 
