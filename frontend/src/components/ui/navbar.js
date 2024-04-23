@@ -14,7 +14,6 @@ export default function Navbar() {
     useEffect(() => {
       if (isConnected) {
         (async () => {
-          await approveAll(signer, address);
           await signer?.getAddress()
         })();
       }
