@@ -54,11 +54,13 @@ export default function RootLayout({ children }) {
   return (
       <html lang="en">
           <body className={`${clashDisplay.className} bg-main text-white`}>
-              {/* <BlurLayout /> */}
-              {/* <Sparkles> */}
+              <div>
+                  {/* <BlurLayout /> */}
+                  {/* <Sparkles> */}
                   <Navbar />
                   {children}
-              {/* </Sparkles> */}
+                  {/* </Sparkles> */}
+              </div>
           </body>
       </html>
   );

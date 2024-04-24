@@ -2,6 +2,7 @@
 import { Icon } from "@iconify/react";
 import Link from "next/link";
 import PrimaryButton from "./primaryButton";
+import Cart from "./cart";
 
 export default function Navbar() {
     return (
@@ -41,14 +42,7 @@ export default function Navbar() {
                 {/* Connect wallet */}
                 <PrimaryButton text="connect wallet" />
 
-                <PrimaryButton
-                    text={
-                        <Icon
-                            icon="solar:cart-linear"
-                            className="text-primary-blue"
-                        />
-                    }
-                />
+                <Cart />
             </div>
         </div>
     );

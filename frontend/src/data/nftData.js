@@ -54,3 +54,24 @@ export const nftData = [
         src: "/nft.png"
     }
 ]
+
+export const cartItem = [
+    {
+        name: "Xexadon1",
+        id: "#8979",
+        src: "/nft.png",
+        price: "210"
+    },
+    {
+        name: "Xexadon2",
+        id: "#34549",
+        src: "/nft.png",
+        price: "110"
+    },
+    {
+        name: "Xexadon3",
+        id: "#83435",
+        src: "/nft.png",
+        price: "250"
+    },
+]
