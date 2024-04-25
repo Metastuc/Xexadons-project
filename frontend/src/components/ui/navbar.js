@@ -1,10 +1,24 @@
 "use client"
+import { useEffect, useState } from "react";
 import { Icon } from "@iconify/react";
 import Link from "next/link";
 import PrimaryButton from "./primaryButton";
-import Cart from "./cart";
+import { useAccount } from "wagmi";
+import { useEthersSigner } from "@/utils/adapter";
+import { ConnectButton } from '@rainbow-me/rainbowkit';
 
 export default function Navbar() {
+    const { address, isConnected } = useAccount();
+    const signer = useEthersSigner();
+    
+    useEffect(() => {
+      if (isConnected) {
+        (async () => {
+          await signer?.getAddress()
+        })();
+      }
+    }, [isConnected, signer]);
+  
     return (
         <div className="py-5 flex items-center justify-between container mx-auto px-20">
             <nav>
@@ -40,7 +54,66 @@ export default function Navbar() {
                 <PrimaryButton text="enter app" />
 
                 {/* Connect wallet */}
-                <PrimaryButton text="connect wallet" />
+                <ConnectButton.Custom>
+                {({
+                    account,
+                    chain,
+                    openAccountModal,
+                    openChainModal,
+                    openConnectModal,
+                    authenticationStatus,
+                    mounted,
+                  }) => {
+                    // Note: If your app doesn't use authentication, you
+                    // can remove all 'authenticationStatus' checks
+                    const ready = mounted && authenticationStatus !== 'loading';
+                    const connected =
+                      ready &&
+                      account &&
+                      chain &&
+                      (!authenticationStatus ||
+                        authenticationStatus === 'authenticated');
+                    return (
+                      <div
+                        {...(!ready && {
+                          'aria-hidden': true,
+                        })}
+                      >
+                        {(() => {
+                          if (!connected) {
+                            return (
+                              <button onClick={openConnectModal} type="button" sm="true"
+                              variant="hovered"
+                              className="connect_btn">
+                                <PrimaryButton text="connect wallet" clickHandler={openAccountModal}/>
+                                
+                              </button>
+                            );
+                          }
+                          if (chain.unsupported) {
+                            return (
+                              <button onClick={openChainModal} type="button">
+                                Wrong network
+                              </button>
+                            );
+                          }
+                          return (
+                            <div style={{ display: 'flex', gap: 12 }}>
+                              <button onClick={openAccountModal} type="button" sm="true"
+                              variant="hovered"
+                              className="connect_btn">
+                                <PrimaryButton text={account.displayName} clickHandler={openAccountModal}/>
+                                {/* {account.displayBalance
+                                  ? ` (${account.displayBalance})`
+                                  : ''} */}
+                              </button>
+                            </div>
+                          );
+                        })()}
+                      </div>
+                    );
+                  }}
+                </ConnectButton.Custom>
 
                 <Cart />
             </div>

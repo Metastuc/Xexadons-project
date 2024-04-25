@@ -7,3 +7,6 @@ backend/.env
 smart contract/contracts/testNFTCollection.sol
 backend/xexadon-bf1cc-firebase-adminsdk-5o0n9-690a5eb52e.json
 backend/itemModel
+frontend/.env
+frontend/src/app/rainbowKit.js
+smart contract/scripts/deployInitialize.js
