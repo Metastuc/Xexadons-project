@@ -3,8 +3,34 @@ import Image from "next/image";
 import Button from "../ui/button";
 import TokenTag from "../ui/tokenTag";
 import { Icon } from "@iconify/react";
+import { useAccount } from "wagmi";
+import { useState, useEffect } from "react";
+import { buyNFT, getChainIcon } from "@/utils/app";
+import { useEthersSigner } from "@/utils/adapter";
 
-export default function Buy() {
+export default function Buy({ selectedNfts, collectionName, buyAmount, dollarAmount, nftIcon }) {
+    const { address, isConnected, chain, chainId } = useAccount();
+    const signer = useEthersSigner();
+    const [userAddress, setUserAddress] = useState(" ");
+    const [currency, setCurrency] = useState(" ");
+    const [chainIcon, setChainIcon] = useState("/matic.png");
+
+    useEffect(() => {
+        if (isConnected) {
+          (async () => {
+            const add = address.slice(0, 6) + "..." + address.slice(-3);
+            const icon = await getChainIcon(chainId);
+            setCurrency(chain.nativeCurrency.name);
+            setUserAddress(add);
+            setChainIcon(icon);
+          })();
+        }
+    }, [isConnected]);
+
+    const buyNFTs = async() => {
+        await buyNFT(selectedNfts, chainId, signer);
+        console.log("successfully");
+    }
     return (
         <div>
             <h2 className="text-2xl">Swap</h2>
@@ -16,10 +42,10 @@ export default function Buy() {
                 <div className="flex flex-col justify-between">
                     <p>from</p>
                     <div className="my-5">
-                        <p className="text-xl">690</p>
-                        <p>$800</p>
+                        <p className="text-xl">{buyAmount} {currency}</p>
+                        {/* <p>${dollarAmount}</p> */}
                     </div>
-                    <TokenTag src="/matic.png" />
+                    <TokenTag src={chainIcon} />
                 </div>
                 <div>
                     <Icon icon="octicon:arrow-right-16" />
@@ -27,9 +53,9 @@ export default function Buy() {
                 <div className="flex flex-col justify-between">
                     <p className="text-center">to</p>
                     <div className="my-5">
-                        <p className="mt-5 mb-3 text-xl">3 Xexadons</p>
+                        <p className="mt-5 mb-3 text-xl"> {selectedNfts.length} {collectionName}</p>
                     </div>
-                    <TokenTag src="/xexadons.png" />
+                    <TokenTag src={nftIcon} />
                 </div>
             </div>
 
@@ -44,32 +70,32 @@ export default function Buy() {
 
                         <div>
                             <div className="flex space-x-3 text-xs items-center mb-5">
-                                <p>Nft Pool</p>
+                                <p>user</p>
                                 <div className="w-6 h-6 rounded-full bg-gradient-to-r from-fuchsia-500 to-cyan-500"></div>
                                 {/* Replace with wallet addresss */}
-                                <p>0x0390535</p>
+                                <p>{userAddress}</p>
                             </div>
 
                             <div className="flex space-x-3 text-xs items-center">
-                                <p>Nft Pool</p>
+                                <p>Router</p>
                                 <div className="w-6 h-6 rounded-full bg-gradient-to-r from-fuchsia-500 to-cyan-500"></div>
                                 {/* Replace with wallet addresss */}
-                                <p>0x989849589</p>
+                                <p>0xe9c...26Ca</p>
                             </div>
                         </div>
                     </div>
-
+                    
                     <div className="flex items-start mb-5 w-full justify-center space-x-5">
                         <div className="flex flex-col items-center space-y-3">
                             <Image
-                                src="/matic.png"
+                                src={chainIcon}
                                 width="40"
                                 height="40"
                                 alt="Token icon"
                             />
 
                             {/* TODO: replace with actual figures */}
-                            <p>690 Matic</p>
+                            <p>{buyAmount} {currency}</p>
                         </div>
                         <div>
                             <Icon
@@ -80,21 +106,21 @@ export default function Buy() {
                             />
                         </div>
                         <div className="flex flex-col items-center space-y-3">
-                            <Image
-                                src="/xexadons.png"
+                            <img
+                                src={nftIcon}
                                 width="40"
                                 height="40"
                                 alt="Token icon"
                             />
 
                             {/* TODO: replace with actual figures */}
-                            <p>3 xexadons</p>
+                            <p>{selectedNfts.length} {collectionName}</p>
                         </div>
                     </div>
 
-                    <p className="mb-5">~swap 690matic for 3 xexadons</p>
+                    <p className="mb-5">~swap {buyAmount} {currency} for {selectedNfts.length} {collectionName}</p>
                     <div className="w-fit mx-auto">
-                        <Button text="Proceed" />
+                        <Button text="Proceed" clickHandler={buyNFTs}/>
                     </div>
                 </div>
             </div>

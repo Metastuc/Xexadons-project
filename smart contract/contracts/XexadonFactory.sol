@@ -50,9 +50,9 @@ contract XexadonFactory is IXexadonFactory {
     /// @return pair the address of the newly created pair pool
     function createPair(address token, address _router, address _curve, uint256 _fee) external returns (address pair) {
         require(token != address(0), 'Xexadon: Address can not be blank');
-        XexadonPair newContract = new XexadonPair();
+        XexadonPair newContract = new XexadonPair(address(this)); // deploy a contract using factory
         pair = address(newContract);
-        IXexadonPair(pair).initialize(_router, _curve, token, _fee);
+        IXexadonPair(pair).initialize(_router, _curve, token, msg.sender, _fee);
         getPair[token].push(pair);
         allPairs.push(pair);
         userPools[msg.sender].push(pair);
@@ -88,15 +88,5 @@ contract XexadonFactory is IXexadonFactory {
 
     function getUserPairs(address user) public view returns(address[] memory userPairs) {
         userPairs = userPools[user];
-    }
-
-    function recordPool(address token, address pair) external {
-        getPair[token].push(pair);
-        allPairs.push(pair);
-        userPools[msg.sender].push(pair);
-        pairPool memory _pairPool = pairPool(token, pair);
-        pairPools[_pairsCount.current()] = _pairPool;
-        _pairsCount.increment();
-        emit PairCreated(token, pair);
     }
 }

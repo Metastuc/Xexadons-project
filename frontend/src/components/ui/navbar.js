@@ -6,18 +6,26 @@ import PrimaryButton from "./primaryButton";
 import { useAccount } from "wagmi";
 import { useEthersSigner } from "@/utils/adapter";
 import { ConnectButton } from '@rainbow-me/rainbowkit';
+import Cart from "./cart"
+import { getCollections } from "@/utils/app";
+
 
 export default function Navbar() {
-    const { address, isConnected } = useAccount();
-    const signer = useEthersSigner();
-    
-    useEffect(() => {
-      if (isConnected) {
-        (async () => {
-          await signer?.getAddress()
-        })();
-      }
-    }, [isConnected, signer]);
+  const { address, isConnected, chain, chainId } = useAccount();
+  const signer = useEthersSigner();
+  const [collections, setCollections] = useState([]);
+
+  useEffect(() => {
+    if (isConnected) {
+      (async () => {
+        await signer?.getAddress();
+        const response = await getCollections(chainId)
+        const result = await response.json();
+        setCollections(result); // Update state with the fetched array
+        console.log(signer, chain, chainId, 'Data fetched:', result);
+      })();
+    }
+  }, [isConnected, signer]);
   
     return (
         <div className="py-5 flex items-center justify-between container mx-auto px-20">

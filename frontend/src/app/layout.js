@@ -21,7 +21,8 @@ import { createConfig } from 'wagmi';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { WagmiProvider } from 'wagmi';
 import {
-  bsc
+  bsc,
+  polygonAmoy,
 } from 'wagmi/chains';
 import { getDefaultConfig, RainbowKitProvider } from '@rainbow-me/rainbowkit';
 
@@ -40,7 +41,7 @@ const connectors = connectorsForWallets(
 );
 
 const config = createConfig({
-  chains: [bsc],
+  chains: [bsc, polygonAmoy],
   connectors,
   ssr: true, 
   transports: {

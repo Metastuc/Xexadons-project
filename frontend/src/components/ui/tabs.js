@@ -30,8 +30,13 @@ export default function Tabs({
     link = false,
     options,
     setActiveTab,
-    activeTab
+    setPool,
+    activeTab,
 }) {
+    const setTab = (id) => {
+        setActiveTab(id);
+        setPool(id);
+    }
     const pathname = usePathname();
 
     // Next JS router hook
@@ -75,7 +80,7 @@ export default function Tabs({
                             <button
                                 className="w-full h-full"
                                 type="button"
-                                onClick={() => setActiveTab(id)}
+                                onClick={() => setTab(id)}
                             >
                                 {option}
                             </button>
