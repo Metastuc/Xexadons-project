@@ -1,0 +1,76 @@
+@use "../../../styles/index"as *;
+
+.hero {
+    width: 100%;
+
+    &__wrapper {
+        @include equal(100%);
+        @include flex($j: space-between);
+    }
+
+    &__left {
+        @include flex($d: column, $a: flex-start);
+        @include min-w(38.25rem);
+
+        h1 {
+            @include flex($d: column);
+
+            font: {
+                family: map-get($map: $ff, $key: clash);
+                size: 5rem;
+            }
+
+            span {
+                &:nth-of-type(1) {
+                    font-weight: map-get($map: $fw, $key: sbd);
+                }
+
+                &:nth-of-type(2) {
+                    font-weight: map-get($map: $fw, $key: reg);
+                }
+            }
+        }
+
+        p {
+            font: {
+                family: map-get($map: $ff, $key: clash);
+                size: map-get($map: $fz, $key: nrm);
+                weight: map-get($map: $fw, $key: reg);
+            }
+
+            @include min-w(30.5rem);
+            text-align: center;
+        }
+
+        div {
+            --height: 3.5rem;
+
+            @include flex;
+            @include debug-dark;
+            width: 100%;
+
+            a>* {
+                border-radius: $radius;
+            }
+
+            span {
+                @include flex;
+                @include font("lufga", "xlg", "med");
+                height: var(--height);
+                width: 12rem;
+                color:$white-100;
+            }
+
+            i {
+                height: var(--height);
+                width: calc(var(--height) + .25rem);
+            }
+        }
+
+        article {}
+    }
+
+    &__right {
+        width: 28rem;
+    }
+}

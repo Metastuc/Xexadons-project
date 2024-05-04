@@ -1,0 +1,25 @@
+// font imports
+@import url('https://api.fontshare.com/v2/css?f[]=clash-display@200,400,700,500,600,1,300&display=swap');
+@import url('https://fonts.cdnfonts.com/css/lufga');
+
+// font
+$ff: (clash: ("Clash Display", sans-serif), lufga: ("Lufga", sans-serif));
+$fz: (nrm: 1rem, lrg: 1.125rem, xlg: 1.25rem);
+$fw: (reg: 400, med: 500, sbd: 600);
+
+// colors
+$white-100: #FFFFFF;
+$white-200: rgba($white-100, 80%);
+
+$black-100: #000000;
+$black-200: #1B111E;
+
+$blue-100: #15BFFD;
+
+// sizing
+$screen-width: 90em;
+$radius: 1.75rem;
+
+* {
+    background: rgba(0, 100, 0, 0.1) !important
+}

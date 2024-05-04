@@ -1,0 +1,56 @@
+@use "./mixins"as *;
+@use "./variables"as *;
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    background-color: $black-200;
+    color: $white-100;
+}
+
+button,
+input {
+    border: none;
+    outline: none;
+    background-color: transparent;
+}
+
+ul {
+    list-style: none;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+    font: inherit;
+    @include flex;
+}
+
+img,
+svg {
+    @include equal(100%);
+}
+
+i {
+    @include flex;
+}
+
+[data-group="wrapper"] {
+    @include debug-light;
+    @include min-w($screen-width);
+
+    // width:min(90rem, 100% - 4rem);
+}
+
+[data-group="parent"] {
+    @include debug-dark;
+    @include flex;
+}

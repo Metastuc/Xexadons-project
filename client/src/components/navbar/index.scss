@@ -1,0 +1,87 @@
+@use "../../styles/index"as *;
+
+.header {
+
+    --height: 3.25rem;
+    --radius: 1.75rem;
+
+    %header-right-contents {
+        @include flex;
+        color: $blue-100;
+        border: .0625rem solid $blue-100;
+        border-radius: var(--radius);
+        height: var(--height);
+    }
+
+    %typography {
+        font: {
+            family: map-get($map: $ff, $key: lufga);
+            size: map-get($map: $fz, $key: lrg);
+            weight: map-get($map: $fw, $key: reg);
+        }
+    }
+
+    &__wrapper {
+        @include flex($j: space-between);
+        padding: 2rem 7rem;
+    }
+
+    &__left {
+        ul {
+            @include flex;
+            gap: 5.25rem;
+        }
+
+        li {
+            @extend %typography;
+        }
+
+        a {
+            text-transform: capitalize;
+            color: $white-100;
+        }
+    }
+
+    &__right {
+        @include flex;
+        gap: 2.5rem;
+
+        div {
+            @extend %header-right-contents;
+            width: 14.5rem;
+            gap: .625rem;
+
+            i {
+                @include equal(1.25rem);
+            }
+
+            input {
+                @extend %typography;
+                height: 1.5rem;
+                width: 10rem;
+                color: $blue-100;
+            }
+        }
+
+        &-button {
+            @extend %header-right-contents;
+            @extend %typography;
+
+            i {
+                @include equal(1.5rem);
+            }
+
+            &:nth-of-type(1) {
+                width: 7.75rem;
+            }
+
+            &:nth-of-type(2) {
+                width: 7rem;
+            }
+
+            &:nth-of-type(3) {
+                width: 4rem;
+            }
+        }
+    }
+}
