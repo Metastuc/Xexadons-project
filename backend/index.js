@@ -287,11 +287,11 @@ const rpcUrls = {
 
 const raribleApiKey = process.env.RARIBLE_APIKEY;
 
-initializeApp({
-  credential: cert(serviceAccount),
-});
+// initializeApp({
+//   credential: cert(serviceAccount),
+// });
 
-const db = getFirestore();
+// const db = getFirestore();
 
 const app = express();
 const port = process.env.PORT || 3300;
@@ -517,29 +517,29 @@ app.get("/getCollection", async(req, res) => {
   }
 });
 
-app.post("recordActivity/:poolId", async(req, res) => {
-  const poolId = req.params.poolId;
-  try {
-    const activity = {
-      event: req.body.event,
-      item: {
-        image: req.body.itemImage,
-        name: req.body.itemName,
-      },
-      price: req.body.price,
-      from: req.body.from,
-      from: req.body.to,
-      time: new Date().toISOString(),
-      hash: req.body.hash
-    }
-    const activityRef = db.collection('poolActivity').doc(poolId).collection('activities');
-    await activityRef.add(activity);
+// app.post("recordActivity/:poolId", async(req, res) => {
+//   const poolId = req.params.poolId;
+//   try {
+//     const activity = {
+//       event: req.body.event,
+//       item: {
+//         image: req.body.itemImage,
+//         name: req.body.itemName,
+//       },
+//       price: req.body.price,
+//       from: req.body.from,
+//       from: req.body.to,
+//       time: new Date().toISOString(),
+//       hash: req.body.hash
+//     }
+//     const activityRef = db.collection('poolActivity').doc(poolId).collection('activities');
+//     await activityRef.add(activity);
 
-    res.status(200).json({ response: "successful"});
-  } catch (error) {
-    res.status(500).json({ error: error })
-  }
-})
+//     res.status(200).json({ response: "successful"});
+//   } catch (error) {
+//     res.status(500).json({ error: error })
+//   }
+// })
 
 // app.get("/getPoolActivity", async(req, res) => {
 //   const poolId = req.query.poolId;
