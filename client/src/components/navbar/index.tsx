@@ -4,15 +4,22 @@ import { Cart, NAVIGATION_LINKS, Search } from "@/assets";
 import { commonProps, navigationLink } from "@/types";
 import "./index.scss";
 
-import { useWeb3Modal } from "@web3modal/wagmi/react";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
+
 import Link from "next/link";
-import { Fragment, JSX, ReactNode } from "react";
+import { Fragment, JSX, ReactNode, useState } from "react";
 
 type RenderButtonOnTheRightProps = commonProps & {
 	children: ReactNode | string;
 };
 
+type RenderConnectButtonProps = commonProps & {
+	setIsNetworkValid: Function;
+};
+
 export function NavBar({ group }: commonProps): JSX.Element {
+	const [isNetworkValid, setIsNetworkValid] = useState<boolean>(true);
+
 	return (
 		<>
 			<section
@@ -24,22 +31,24 @@ export function NavBar({ group }: commonProps): JSX.Element {
 				</Fragment>
 
 				<div className={`${group}__right`}>
-					<div>
-						<i>{Search()}</i>
-						<input
-							type="text"
-							placeholder="search collections"
-						/>
-					</div>
+					{isNetworkValid && (
+						<div>
+							<i>{Search()}</i>
+							<input
+								type="text"
+								placeholder="search collections"
+							/>
+						</div>
+					)}
 
 					<RenderButtonOnTheRight
 						group={group}
 						children={"enter app"}
 					/>
 
-					<RenderButtonOnTheRight
+					<RenderConnectButton
 						group={group}
-						children={"connect"}
+						setIsNetworkValid={setIsNetworkValid}
 					/>
 
 					<RenderButtonOnTheRight
@@ -74,13 +83,7 @@ function RenderButtonOnTheRight({
 	group,
 	children,
 }: RenderButtonOnTheRightProps): JSX.Element {
-	const { open } = useWeb3Modal();
-
-	function handleClick() {
-		if (children === "connect") {
-			open();
-		}
-	}
+	function handleClick() {}
 
 	return (
 		<>
@@ -94,6 +97,92 @@ function RenderButtonOnTheRight({
 					<i>{children}</i>
 				)}
 			</button>
+		</>
+	);
+}
+
+function RenderConnectButton({
+	group,
+	setIsNetworkValid,
+}: RenderConnectButtonProps): JSX.Element {
+	return (
+		<>
+			<ConnectButton.Custom>
+				{({
+					account,
+					chain,
+					openAccountModal,
+					openChainModal,
+					openConnectModal,
+					authenticationStatus,
+					mounted,
+				}) => {
+					const ready = mounted && authenticationStatus !== "loading";
+					const connected =
+						ready &&
+						account &&
+						chain &&
+						(!authenticationStatus ||
+							authenticationStatus === "authenticated");
+
+					return (
+						<span
+							{...(!ready && {
+								"aria-hidden": true,
+								"style": {
+									opacity: 0,
+									pointerEvents: "none",
+									userSelect: "none",
+								},
+							})}
+						>
+							{(() => {
+								if (!connected) {
+									return (
+										<button
+											className={`${group}__right-button`}
+											onClick={openConnectModal}
+											type="button"
+										>
+											connect
+										</button>
+									);
+								}
+
+								if (chain.unsupported) {
+									setIsNetworkValid(false);
+									return (
+										<button
+											className={`${group}__right-button`}
+											onClick={openChainModal}
+											type="button"
+											style={{
+												width: "11rem",
+											}}
+										>
+											wrong network
+										</button>
+									);
+								}
+
+								return (
+									<button
+										className={`${group}__right-button`}
+										onClick={openAccountModal}
+										type="button"
+									>
+										{setIsNetworkValid(true)}
+										{account.displayName}
+										{account.displayBalance
+											? ` (${account.displayBalance})`
+											: ""}
+									</button>
+								);
+							})()}
+						</span>
+					);
+				}}
+			</ConnectButton.Custom>
 		</>
 	);
 }

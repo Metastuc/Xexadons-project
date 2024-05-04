@@ -1,4 +1,4 @@
-import { Web3ModalProvider } from "@/lib";
+import { Web3Provider } from "@/lib";
 import "@/styles/_index.scss";
 
 import type { Metadata } from "next";
@@ -14,9 +14,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 		<Fragment>
 			<html lang="en">
 				<body className="app">
-					<Web3ModalProvider>
+					<Web3Provider>
 						<section className="app__wrapper">{children}</section>
-					</Web3ModalProvider>
+					</Web3Provider>
 				</body>
 			</html>
 		</Fragment>
