@@ -1,4 +1,11 @@
 {
   "extends": "next/core-web-vitals",
-  "indent": 4
+  "plugins": [
+    "simple-import-sort"
+  ],
+  "rules": {
+    "indent": ["error", "tab"],
+    "simple-import-sort/imports": "error",
+    "simple-import-sort/exports": "error"
+  }
 }

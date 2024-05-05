@@ -1,8 +1,9 @@
-import { commonProps } from "@/types";
 import "./index.scss";
 
-import { JSX } from "react";
 import Link from "next/link";
+import { JSX } from "react";
+
+import { commonProps } from "@/types";
 
 export function Hero({ group }: commonProps): JSX.Element {
 	return (

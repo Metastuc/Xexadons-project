@@ -1,8 +1,10 @@
-import { Web3Provider } from "@/lib";
 import "@/styles/_index.scss";
 
 import type { Metadata } from "next";
-import { Fragment, ReactNode } from "react";
+import { ReactNode } from "react";
+
+import { Web3Provider } from "@/lib";
+import { NavigationBar } from "@/views";
 
 export const metadata: Metadata = {
 	title: "xexadons",
@@ -11,14 +13,15 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
 	return (
-		<Fragment>
-			<html lang="en">
-				<body className="app">
-					<Web3Provider>
-						<section className="app__wrapper">{children}</section>
-					</Web3Provider>
-				</body>
-			</html>
-		</Fragment>
+		<html lang="en">
+			<body className="app">
+				<Web3Provider>
+					<section className="app__wrapper">
+						{/* <>{NavigationBar()}</> */}
+						<>{children}</>
+					</section>
+				</Web3Provider>
+			</body>
+		</html>
 	);
 }

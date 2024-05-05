@@ -1,13 +1,14 @@
 "use client";
 
+import "@rainbow-me/rainbowkit/styles.css";
+
 import {
+	darkTheme,
 	getDefaultConfig,
 	getDefaultWallets,
 	RainbowKitProvider,
-	darkTheme,
 	WalletList,
 } from "@rainbow-me/rainbowkit";
-import "@rainbow-me/rainbowkit/styles.css";
 import {
 	bitgetWallet,
 	metaMaskWallet,

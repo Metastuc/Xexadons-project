@@ -1,6 +1,6 @@
-@use "../../styles/index"as *;
+@use "../../styles/"as *;
 
-.header {
+.header-navbar {
 
     --height: 3.25rem;
     --radius: 1.75rem;
@@ -60,12 +60,18 @@
                 height: 1.5rem;
                 width: 10rem;
                 color: $blue-100;
+
+                &::placeholder {
+                    color: $blue-100;
+                    opacity: .5;
+                }
             }
         }
 
         &-button {
             @extend %header-right-contents;
             @extend %typography;
+            cursor: pointer;
 
             i {
                 @include equal(1.5rem);

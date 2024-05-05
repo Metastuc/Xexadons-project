@@ -1,14 +1,16 @@
-import { Hero, NavBar } from "@/components";
 import "./page.scss";
+
+import { Hero } from "@/components";
+import { NavigationBar } from "@/views";
 
 export default function Landing() {
 	return (
 		<>
 			<header
-				className="header"
+				className="header-navbar"
 				data-group="parent"
 			>
-				<NavBar group={`header`} />
+				<NavigationBar group={"header-navbar"} />
 			</header>
 
 			<main
