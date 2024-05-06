@@ -23,7 +23,7 @@
 
     &__wrapper {
         @include flex($j: space-between);
-        padding: 2rem 7rem;
+        padding: 2rem 4rem;
     }
 
     &__left {
@@ -65,6 +65,32 @@
                     color: $blue-100;
                     opacity: .5;
                 }
+            }
+        }
+
+        >span {
+            >button {
+                width: 12.25rem;
+                gap: .75rem;
+            }
+
+            span {
+                &:nth-of-type(1) {
+                    @include flex;
+                    @include equal(1.25rem);
+
+                    img {
+                        mix-blend-mode: luminosity;
+                    }
+                }
+
+                &:nth-of-type(2) {
+                    @extend %typography;
+                }
+            }
+
+            i {
+                @include equal(1rem);
             }
         }
 

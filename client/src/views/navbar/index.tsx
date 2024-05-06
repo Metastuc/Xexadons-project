@@ -2,19 +2,26 @@
 
 import "./index.scss";
 
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { Cart, Search } from "@/assets";
 import {
 	LeftNavigationLinks,
 	RightNavigationButton,
-	SignedOutConnectButton,
+	Web3ConnectButton,
 } from "@/components";
 import { commonProps } from "@/types";
 
+type handleEnterAppButtonUIProps = commonProps & {
+	pathname: string;
+	router: any;
+};
+
 export function NavigationBar({ group }: commonProps) {
 	const router = useRouter();
+	const pathname = usePathname();
+
 	const [isNetworkValid, setIsNetworkValid] = useState<boolean>(true);
 	const [isCartOpen, setIsCartOpen] = useState<boolean>(false);
 
@@ -37,13 +44,13 @@ export function NavigationBar({ group }: commonProps) {
 						</div>
 					)}
 
-					<RightNavigationButton
-						group={group}
-						content={"enter app"}
-						clickAction={() => router.push("/nfts")}
-					/>
+					{handleEnterAppButtonUI({
+						pathname,
+						router,
+						group,
+					})}
 
-					<SignedOutConnectButton
+					<Web3ConnectButton
 						group={group}
 						setIsNetworkValid={setIsNetworkValid}
 					/>
@@ -57,4 +64,26 @@ export function NavigationBar({ group }: commonProps) {
 			</section>
 		</>
 	);
+}
+
+function handleEnterAppButtonUI({
+	pathname,
+	group,
+	router,
+}: handleEnterAppButtonUIProps) {
+	switch (pathname === "/") {
+		case true:
+			return (
+				<>
+					<RightNavigationButton
+						group={group}
+						content={"enter app"}
+						clickAction={() => router.push("/nfts")}
+					/>
+				</>
+			);
+
+		case false:
+			return <>sumn</>;
+	}
 }

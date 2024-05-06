@@ -1,1 +1,2 @@
-export * from "./web-3-auth/rainbowkit";
+export * from "./rainbowkit";
+export * from "./store";
