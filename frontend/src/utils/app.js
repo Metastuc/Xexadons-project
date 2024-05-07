@@ -90,10 +90,6 @@ const factoryABI = [
     },
 ]
 
-const rpcUrls = {
-  80002: "https://rpc-amoy.polygon.technology"
-}
-
 const chainName = {
   80002: "matic-network",
 }
@@ -354,6 +350,10 @@ const deploymentAddresses = {
   }
 }
 
+export const getAppAddress = (chainId) => {
+  return deploymentAddresses.xexadon[chainId];
+}
+
 export const createPool = async(ids, ethAmount, nftAddress, fee, chainId, signer) => {
   //get factory Contract, call createpair, approve pair, add 
   const factoryAddress = deploymentAddresses.factory[chainId];
@@ -447,22 +447,22 @@ export const getUserCollectionNFTs = async(chainId, collectionAddress, address) 
   return nfts;
 }
 
-export const fetchPrice = async(chainId) => {
-  const name = chainName[chainId];
-  const options = {
-    method: 'GET',
-    headers: { accept: 'application/json', 'x-cg-pro-api-key': 'CG-Dm7Z3kTRPVcQcBpQtfYQyPZn' }
-  };
+// export const fetchPrice = async(chainId) => {
+//   const name = chainName[chainId];
+//   const options = {
+//     method: 'GET',
+//     headers: { accept: 'application/json', 'x-cg-pro-api-key': 'CG-Dm7Z3kTRPVcQcBpQtfYQyPZn' }
+//   };
 
-  try {
-      const response = await fetch(`https://pro-api.coingecko.com/api/v3/simple/price?ids=${name}&vs_currencies=usd`, options);
-      const _data = await response.json();
-      console.log(data);
-      return data;
-  } catch (err) {
-      console.error(err);
-  }
-};
+//   try {
+//       const response = await fetch(`https://pro-api.coingecko.com/api/v3/simple/price?ids=${name}&vs_currencies=usd`, options);
+//       const _data = await response.json();
+//       console.log(data);
+//       return data;
+//   } catch (err) {
+//       console.error(err);
+//   }
+// };
 
 export const getChainIcon = async(chainId) => {
   const icon = chainIcon[chainId];

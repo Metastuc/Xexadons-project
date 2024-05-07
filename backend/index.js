@@ -282,7 +282,8 @@ const deploymentAddresses = {
 }
 
 const rpcUrls = {
-  80002: "https://rpc-amoy.polygon.technology"
+  80002: "https://rpc-amoy.polygon.technology",
+  97: "https://data-seed-prebsc-1-s1.bnbchain.org:8545"
 }
 
 const raribleApiKey = process.env.RARIBLE_APIKEY;
@@ -450,6 +451,7 @@ app.get("/getProtocolCollections", async (req, res) => {
 app.get("/getCollection", async(req, res) => {
   const collectionAddress = req.query.collectionAddress;
   const chainId = req.query.chainId;
+  console.log(chainId);
 
   const factoryAddress = deploymentAddresses.factory[chainId];
   const provider = new ethers.JsonRpcProvider(rpcUrls[chainId]);

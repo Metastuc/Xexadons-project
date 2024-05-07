@@ -21,7 +21,7 @@ import { createConfig } from 'wagmi';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { WagmiProvider } from 'wagmi';
 import {
-  bsc,
+  bscTestnet,
   polygonAmoy,
 } from 'wagmi/chains';
 import { getDefaultConfig, RainbowKitProvider } from '@rainbow-me/rainbowkit';
@@ -41,11 +41,11 @@ const connectors = connectorsForWallets(
 );
 
 const config = createConfig({
-  chains: [bsc, polygonAmoy],
+  chains: [bscTestnet, polygonAmoy],
   connectors,
   ssr: true, 
   transports: {
-    [bsc.id]: http('https://bsc-dataseed1.binance.org/'),
+    [bscTestnet.id]: http('https://bsc-testnet-rpc.publicnode.com'),
   },
 })
 
