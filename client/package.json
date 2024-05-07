@@ -22,8 +22,7 @@
 		"react-dom": "^18",
 		"sass": "^1.72.0",
 		"viem": "^2.9.31",
-		"wagmi": "^2.8.0",
-		"zustand": "^4.5.2"
+		"wagmi": "^2.8.0"
 	},
 	"devDependencies": {
 		"@types/node": "^20",

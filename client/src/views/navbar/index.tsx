@@ -11,6 +11,7 @@ import {
 	RightNavigationButton,
 	Web3ConnectButton,
 } from "@/components";
+import { ContextWrapper } from "@/hooks";
 import { commonProps } from "@/types";
 
 type handleEnterAppButtonUIProps = commonProps & {
@@ -21,8 +22,10 @@ type handleEnterAppButtonUIProps = commonProps & {
 export function NavigationBar({ group }: commonProps) {
 	const router = useRouter();
 	const pathname = usePathname();
+	const {
+		navContext: { isNetworkValid },
+	} = ContextWrapper();
 
-	const [isNetworkValid, setIsNetworkValid] = useState<boolean>(true);
 	const [isCartOpen, setIsCartOpen] = useState<boolean>(false);
 
 	return (
@@ -50,10 +53,7 @@ export function NavigationBar({ group }: commonProps) {
 						group,
 					})}
 
-					<Web3ConnectButton
-						group={group}
-						setIsNetworkValid={setIsNetworkValid}
-					/>
+					<Web3ConnectButton group={group} />
 
 					<RightNavigationButton
 						group={group}
@@ -71,6 +71,7 @@ function handleEnterAppButtonUI({
 	group,
 	router,
 }: handleEnterAppButtonUIProps) {
+	/*eslint indent: ["error", tab, { "SwitchCase": 1 }]*/
 	switch (pathname === "/") {
 		case true:
 			return (

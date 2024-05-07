@@ -1,13 +1,10 @@
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 import { DropDown as DropDownIcon } from "@/assets";
+import { ContextWrapper } from "@/hooks";
 import { commonProps } from "@/types";
 
 import { NextOptimizedImage } from "../reusable";
-
-type ConnectButtonProps = commonProps & {
-	setIsNetworkValid: Function;
-};
 
 type renderConnectProps = commonProps & {
 	openConnectModal: () => void | undefined;
@@ -20,13 +17,13 @@ type renderInvalidNetworkProps = commonProps & {
 type renderConnectedUIProps = commonProps & {
 	openAccountModal: () => void | undefined;
 	account: any;
-	setIsNetworkValid: Function;
 };
 
-export function Web3ConnectButton({
-	group,
-	setIsNetworkValid,
-}: ConnectButtonProps) {
+export function Web3ConnectButton({ group }: commonProps) {
+	const {
+		navContext: { setIsNetworkValid },
+	} = ContextWrapper();
+
 	return (
 		<>
 			<ConnectButton.Custom>
@@ -67,7 +64,6 @@ export function Web3ConnectButton({
 								}
 
 								if (chain.unsupported) {
-									setIsNetworkValid(false);
 									return renderInvalidNetworkPrompt({
 										openChainModal,
 										group,
@@ -77,7 +73,6 @@ export function Web3ConnectButton({
 								return renderConnectedUI({
 									openAccountModal,
 									account,
-									setIsNetworkValid,
 									group,
 								});
 							})()}
@@ -122,11 +117,8 @@ function renderInvalidNetworkPrompt({
 function renderConnectedUI({
 	openAccountModal,
 	account,
-	setIsNetworkValid,
 	group,
 }: renderConnectedUIProps) {
-	setIsNetworkValid(true);
-
 	return (
 		<>
 			<button
