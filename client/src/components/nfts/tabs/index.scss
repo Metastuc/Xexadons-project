@@ -1,0 +1,20 @@
+@use "../../../styles/"as *;
+
+.nft_tabs {
+    @include flex($j: flex-end);
+
+    &__wrapper {
+        @include debug-light;
+        @include flex;
+        border-radius: $radius - .25rem;
+    }
+
+    &__button {
+        width: 7.25rem;
+        height: 2.25rem;
+
+        span {
+            text-transform: capitalize;
+        }
+    }
+}

@@ -1,0 +1,23 @@
+@use "../../styles/"as *;
+
+
+.nfts {
+    position: relative;
+
+    &__wrapper {
+        @include debug-dark;
+        width: 72.75rem;
+        height: 51rem;
+        border-radius: $radius + .125rem;
+        @include flex;
+        gap: 1rem;
+        padding: 2rem 1.75rem;
+    }
+
+    &__content {
+        @include debug-dark;
+        @include equal(100%);
+        border-radius: inherit;
+        padding: 1.5rem;
+    }
+}
