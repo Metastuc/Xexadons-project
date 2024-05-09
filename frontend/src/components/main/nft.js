@@ -9,7 +9,7 @@ import { useEthersSigner } from "@/utils/adapter";
 // call get collection function
 // pool number and nfts(user NFTs if it sell, collection nfts if it is buy)
 
-export default function Nft({ activeTab, collectionAddress, selectedNfts, setSelectedNfts, setCollectionName, setBuyAmount, setSellAmount, setDollarAmount, setNFTIcon, poolTab }) {
+export default function Nft({ activeTab, collectionAddress, selectedNfts, setSelectedNfts, selectedSellNfts, setSelectedSellNfts, setCollectionName, setBuyAmount, setSellAmount, setDollarAmount, setNFTIcon, poolTab }) {
     const { address, isConnected, chainId } = useAccount();
     const [isLoading, setIsLoading] = useState(true);
     const [poolCount, setpoolCount] = useState(0);
@@ -23,6 +23,7 @@ export default function Nft({ activeTab, collectionAddress, selectedNfts, setSel
             if (activeTab === 0) {
                 const response = await getCollection(chainId, collectionAddress);
                 const result = await response.json();
+                console.log(result);
                 setpoolCount(result.pools.length);
                 setNFTs(result.NFTs);
                 setCollectionName(result.NFTs[0].name);
@@ -34,6 +35,7 @@ export default function Nft({ activeTab, collectionAddress, selectedNfts, setSel
                 const result = await response.json();
                 setpoolCount(0);
                 setNFTs(result.nfts);
+                console.log(result.nfts);
                 setCollectionName(result.NFTs[0].name);
                 // setPools(result.pools);
                 setNFTIcon(result.icon);
@@ -66,30 +68,41 @@ export default function Nft({ activeTab, collectionAddress, selectedNfts, setSel
     }, [isConnected, activeTab]);
 
     useEffect(() => {
-        const calculateAmounts = async () => {
+        const calculateBuyAmount = async () => {
             if (isConnected) {
             // Calculate total amountIn for all pools
             const _newTotalAmountIn = pools.reduce((sum, pool) => {
                 const C = selectedNfts.filter(nft => nft.poolAddress === pool.poolAddress);
                 return sum + ((pool.reserve1 * C.length) / (pool.reserve0 - C.length));
             }, 0);
-            const price = fetchPrice(chainId);
-            const dollarAmount = price * _newTotalAmountIn;
+            // const price = fetchPrice(chainId);
+            // const dollarAmount = price * _newTotalAmountIn;
             const newTotalAmountIn = formatEther(_newTotalAmountIn);
+            setBuyAmount(newTotalAmountIn);
+            // setDollarAmount(dollarAmount);
+            }
+        };
+    
+        calculateBuyAmount();
+    }, [isConnected, pools, selectedNfts]);
+
+    useEffect(() => {
+        const calculateSellAmount = async () => {
+            if (isConnected) {
             let sellAmount = 0;
-            if (selectedNfts.length > 0) {
-                const response = await getSellPrice(selectedNfts.length, collectionAddress, chainId)
+            if (selectedSellNfts.length > 0) {
+                const response = await getSellPrice(selectedSellNfts.length, collectionAddress, chainId)
                 const _sellAmount = await response.json();
                 sellAmount = _sellAmount.sellAmount;
             }
             setSellAmount(sellAmount);
-            setBuyAmount(newTotalAmountIn);
-            setDollarAmount(dollarAmount);
+            // setDollarAmount(dollarAmount);
             }
         };
     
-        calculateAmounts();
-    }, [isConnected, pools, selectedNfts]);
+        calculateSellAmount();
+    }, [isConnected, selectedSellNfts.length]);
+
     return (
         <div>
             {isLoading ? (
@@ -134,7 +147,7 @@ export default function Nft({ activeTab, collectionAddress, selectedNfts, setSel
                     {
                         nfts.map((nft, id) => {
                             return (
-                                <NftCard details={nft} key={id} selectedNfts={selectedNfts} setSelectedNfts={setSelectedNfts} />
+                                <NftCard details={nft} key={id} selectedNfts={selectedNfts} setSelectedNfts={setSelectedNfts} selectedSellNfts={selectedSellNfts} setSelectedSellNfts={setSelectedSellNfts} activeTab={activeTab}/>
                             )
                         })
                     }

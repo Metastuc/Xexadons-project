@@ -90,10 +90,6 @@ const factoryABI = [
     },
 ]
 
-const rpcUrls = {
-  80002: "https://rpc-amoy.polygon.technology"
-}
-
 const chainName = {
   80002: "matic-network",
 }
@@ -336,18 +332,26 @@ const routerABI = [
 ]
 
 const deploymentAddresses = {
-    factory: {
-        56: "0x",
-        80002: "0x8428a9D2d92eFdb13919E3a370240a9eaD6698AF"
-    },
-    curve: {
-        56: "",
-        80002: "0x5e70ac9386A9fc36682C507Ba78D3Cb916e2d0a1"
-    },
-    router: {
-        56: "",
-        80002: "0xe9cd8A5Bcb7a8e1F54F7B10264c9Ef7D604626Ca"
-    }
+  factory: {
+    80002: "0x63f52C7d448cFdd3ED6F8B4Ad92272B1419895b0",
+    97: "0xFa2C0D7AD5bf7259F564380D707cF95683CBe264"
+  },
+  curve: {
+    80002: "0x471367B20F644E058F7092a34b2d2Ea90B26BB0d",
+    97: "0xCc045dCb5C6FEf4273B498e0c364f760F0415997"
+  },
+  router: {
+    80002: "0x7937b7787E1236685162EedE657b9d631025F2Fb",
+    97: "0x5C67Bf96A7508bFf7a8B3bfe53E6108066F7b41E"
+  },
+  xexadon: {
+    80002: "0x64dCb39317940d74b711eCE72595b6a80D37B8ad",
+    97: "0x5f74e9D1EDA4fcd81B2Aa9C842eB1EE47561f70d"
+  }
+}
+
+export const getAppAddress = (chainId) => {
+  return deploymentAddresses.xexadon[chainId];
 }
 
 export const createPool = async(ids, ethAmount, nftAddress, fee, chainId, signer) => {
@@ -443,22 +447,22 @@ export const getUserCollectionNFTs = async(chainId, collectionAddress, address) 
   return nfts;
 }
 
-export const fetchPrice = async(chainId) => {
-  const name = chainName[chainId];
-  const options = {
-    method: 'GET',
-    headers: { accept: 'application/json', 'x-cg-pro-api-key': 'CG-Dm7Z3kTRPVcQcBpQtfYQyPZn' }
-  };
+// export const fetchPrice = async(chainId) => {
+//   const name = chainName[chainId];
+//   const options = {
+//     method: 'GET',
+//     headers: { accept: 'application/json', 'x-cg-pro-api-key': 'CG-Dm7Z3kTRPVcQcBpQtfYQyPZn' }
+//   };
 
-  try {
-      const response = await fetch(`https://pro-api.coingecko.com/api/v3/simple/price?ids=${name}&vs_currencies=usd`, options);
-      const _data = await response.json();
-      console.log(data);
-      return data;
-  } catch (err) {
-      console.error(err);
-  }
-};
+//   try {
+//       const response = await fetch(`https://pro-api.coingecko.com/api/v3/simple/price?ids=${name}&vs_currencies=usd`, options);
+//       const _data = await response.json();
+//       console.log(data);
+//       return data;
+//   } catch (err) {
+//       console.error(err);
+//   }
+// };
 
 export const getChainIcon = async(chainId) => {
   const icon = chainIcon[chainId];
