@@ -32,8 +32,12 @@ export function renderLeftContent({
 			content = PurchaseNft({ group: "sell_left", activeTab: "sell" });
 			break;
 
-		case "pool":
-			content = Pool({ group: "pool_left", activeTab: "pool" });
+		case "liquidity":
+			content = <>liquidity</>;
+			break;
+
+		case "create":
+			content = <>create</>;
 			break;
 	}
 

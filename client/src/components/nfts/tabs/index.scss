@@ -2,6 +2,7 @@
 
 .nft_tabs {
     @include flex($j: flex-end);
+    position: relative;
 
     &__wrapper {
         @include debug-light;
@@ -16,5 +17,9 @@
         span {
             text-transform: capitalize;
         }
+    }
+
+    &__dropdown {
+        position: absolute;
     }
 }

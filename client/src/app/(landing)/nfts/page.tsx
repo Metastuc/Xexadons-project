@@ -13,7 +13,8 @@ export default function NFTs() {
 	const activeTabContent: activeTabProps = {
 		buy: <>buy</>,
 		sell: <>sell</>,
-		pool: <>pool</>,
+		liquidity: <>liquidity</>,
+		create: <>create</>,
 	};
 
 	function renderTabContent(): ReactNode {
