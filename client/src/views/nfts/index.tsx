@@ -2,7 +2,7 @@ import "./index.scss";
 
 import { ReactNode } from "react";
 
-import { BuyLeftContent,Tabs } from "@/components";
+import { Pool, PurchaseNft, Tabs } from "@/components";
 
 type renderLeftContentProps = {
 	activeTab: string;
@@ -25,15 +25,15 @@ export function renderLeftContent({
 	/*eslint indent: ["error", tab, { "SwitchCase": 1 }]*/
 	switch (activeTab) {
 		case "buy":
-			content = BuyLeftContent();
+			content = PurchaseNft({ group: "buy_left", activeTab: "buy" });
 			break;
 
 		case "sell":
-			content = <div>sell</div>;
+			content = PurchaseNft({ group: "sell_left", activeTab: "sell" });
 			break;
 
 		case "pool":
-			content = <div>pool</div>;
+			content = Pool({ group: "pool_left", activeTab: "pool" });
 			break;
 	}
 
@@ -50,4 +50,16 @@ export function renderRightContent({
 	renderTabContent,
 }: renderRightContentProps) {
 	return <section className="nfts__content">{renderTabContent()}</section>;
+}
+
+export function contentWrapper({
+	group,
+	children,
+}: {
+	group: string;
+	children: ReactNode;
+}) {
+	return (
+		<section className={`${group}__content-wrapper`}>{children}</section>
+	);
 }
