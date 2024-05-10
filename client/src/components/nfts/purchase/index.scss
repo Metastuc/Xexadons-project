@@ -32,7 +32,7 @@
     &__from-to {
         @include debug-dark;
         @include flex($j: space-between);
-        padding: 0 8% 0 2.5%;
+        padding: 0 18% 0 2.5%;
 
         span {
             @include font($f: clash, $s: sm, $w: reg);
@@ -40,6 +40,8 @@
     }
 
     &__price {
+        $size: map-get($map: $fz, $key: xlg)+.5rem;
+
         @include debug-dark;
         @include flex($j: space-between, $a: flex-start);
         margin-block: 1.5rem;
@@ -50,20 +52,37 @@
 
             span {
                 &:first-of-type {
-                    $size: map-get($map: $fz, $key: xlg) + .5rem;
-
-                    @include font($f: clash, $w: med);
-                    font-size: $size;
+                    @include font($f: clash, $s: $size, $w: reg);
                 }
 
-                &:last-of-type {}
+                &:last-of-type {
+                    @include font($f: clash, $s: sm, $w: reg);
+                }
             }
         }
 
-        >span {}
+        >span {
+            @include font($f: clash, $s: $size, $w: reg);
+        }
 
         >*:not(i) {
             width: 40%;
+        }
+
+        i {
+            @include debug-dark;
+            @include equal(1.5rem);
+            border-radius: 50%;
+        }
+
+        &.sell {
+            >span {
+                text-align: left;
+            }
+
+            div {
+                align-items: center;
+            }
         }
     }
 
@@ -78,6 +97,11 @@
             width: 8.5rem;
             border-radius: $radius - .25rem;
             padding-left: .75rem;
+
+            span {
+                @include font($f: lufga, $s: lrg, $w: reg);
+                text-transform: lowercase
+            }
         }
 
         i {
@@ -94,7 +118,12 @@
 
         >div {
             @include flex($d: column, $a: flex-start);
-            gap: 1rem;
+            gap: 1.5rem;
+        }
+
+        span {
+            $size: map-get($map: $fz, $key: xs) - .25rem;
+            @include font($f: clash, $s: $size, $w: reg);
         }
 
         &-1 {
@@ -116,7 +145,7 @@
                 }
 
                 &::before {
-                    @include equal(50%);
+                    @include equal(62.5%);
                     content: "";
                     position: absolute;
                     border-radius: inherit;
@@ -130,8 +159,6 @@
                 border-right: dashed .0313rem rgba(241, 230, 230, 0.8);
             }
         }
-
-        &-2 {}
 
         &-3 {
             gap: 0 !important;
@@ -154,12 +181,10 @@
                 height: 1.5rem;
             }
 
-            &.sell-content {
+            &.sell {
                 flex-direction: column-reverse;
             }
         }
-
-        &-4 {}
     }
 
     &__swap {
@@ -176,6 +201,11 @@
                 @include equal(2rem);
                 @include debug-dark;
                 border-radius: 50%;
+            }
+
+            span {
+                @include font($f: clash, $s: nrm, $w: reg);
+                color: $white-200;
             }
         }
 
@@ -194,8 +224,16 @@
     &__description {
         @include debug-light;
         @include flex;
+        @include font($f: clash, $s: sm, $w: reg);
         gap: .25rem;
         margin: .75rem 0;
+        color: $white-300;
+
+        i {
+            @include debug-dark;
+            @include equal(.75rem);
+            border-radius: 50%;
+        }
     }
 
     &__confirmation {
@@ -206,6 +244,10 @@
 
         button {
             @include debug-light;
+            @include font($f: clash, $s: sm, $w: reg);
+            background-color: $purple-100;
+            color: $white-100;
+            text-transform: capitalize;
             height: inherit;
             width: 8.75rem;
             border-radius: $radius + .125rem;

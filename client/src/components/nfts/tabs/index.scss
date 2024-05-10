@@ -42,7 +42,7 @@
         }
 
         &.sell {
-            left: calc(50% - var(--button-width) / 2);
+            left: calc(50% - calc(var(--button-width) - .25rem) / 2);
         }
     }
 

@@ -29,32 +29,14 @@
     outline: .25rem groove random-dark-color();
 }
 
-// @mixin font($f, $s, $w) {
-//     $font-family: if(map-has-key($ff, $f), map-get($ff, $f), $f);
-//     $font-size: if(map-has-key($fz, $s), map-get($fz, $s), $s);
-//     $font-weight: if(map-has-key($fw, $w), map-get($fw, $w), $w);
-
-//     font: {
-//         family: $font-family;
-//         size: $font-size;
-//         weight: $font-weight;
-//     }
-// }
-
 @mixin font($f: null, $s: null, $w: null) {
     $font-family: if($f !=null and map-has-key($ff, $f), map-get($ff, $f), $f);
     $font-size: if($s !=null and map-has-key($fz, $s), map-get($fz, $s), $s);
     $font-weight: if($w !=null and map-has-key($fw, $w), map-get($fw, $w), $w);
 
-    @if $font-family !=null {
-        font-family: $font-family;
-    }
-
-    @if $font-size !=null {
-        font-size: $font-size;
-    }
-
-    @if $font-weight !=null {
-        font-weight: $font-weight;
+    font: {
+        family: $font-family;
+        size: $font-size;
+        weight: $font-weight;
     }
 }

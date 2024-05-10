@@ -7,30 +7,26 @@ type purchaseNftProps = commonProps & {
 	activeTab: string;
 };
 
-type renderProps = commonProps & {
-	styleClass?: string;
-};
-
 export function PurchaseNft({ group, activeTab }: purchaseNftProps) {
-	const styleClass: string = `${activeTab}-content`;
+	// const styleClass: string = `${activeTab}-content`;
 
 	return (
 		<section className={group}>
-			<>{renderTitle({ group, styleClass })}</>
-			<>{renderContent({ group, styleClass })}</>
+			<>{renderTitle({ group, activeTab })}</>
+			<>{renderContent({ group, activeTab })}</>
 		</section>
 	);
 }
 
-function renderTitle({ group }: renderProps) {
+function renderTitle({ group, activeTab }: purchaseNftProps) {
 	let text: string | null = "";
 
-	switch (true) {
-		case group.includes("buy"):
+	switch (activeTab) {
+		case "buy":
 			text = `~ select nft you wish to buy from the collection and proceed to swap`;
 			break;
 
-		case group.includes("sell"):
+		case "sell":
 			text = `~ select nft you wish to sell from your wallet, proceed to swap to token`;
 			break;
 	}
@@ -44,25 +40,25 @@ function renderTitle({ group }: renderProps) {
 	);
 }
 
-function renderContent({ group, styleClass }: renderProps) {
+function renderContent({ group, activeTab }: purchaseNftProps) {
 	return (
 		<section className={`${group}__content`}>
 			<>
 				{contentWrapper({
-					children: renderTopContent({ group }),
+					children: renderTopContent({ group, activeTab }),
 				})}
 			</>
 
 			<>
 				{contentWrapper({
-					children: renderBottomContent({ group, styleClass }),
+					children: renderBottomContent({ group, activeTab }),
 				})}
 			</>
 		</section>
 	);
 }
 
-function renderTopContent({ group }: renderProps) {
+function renderTopContent({ group, activeTab }: purchaseNftProps) {
 	return (
 		<div className={`${group}__content-top`}>
 			<article className={`${group}__from-to`}>
@@ -85,7 +81,7 @@ function renderTopContent({ group }: renderProps) {
 				</>
 			) : (
 				<>
-					<article className={`${group}__price`}>
+					<article className={`${group}__price ${activeTab}`}>
 						<span>3 xexadons</span>
 
 						<i>icon</i>
@@ -131,7 +127,7 @@ function renderTopContent({ group }: renderProps) {
 	);
 }
 
-function renderBottomContent({ group, styleClass }: renderProps) {
+function renderBottomContent({ group, activeTab }: purchaseNftProps) {
 	return (
 		<div className={`${group}__content-bottom`}>
 			{group.includes("buy") ? (
@@ -174,7 +170,7 @@ function renderBottomContent({ group, styleClass }: renderProps) {
 							<span>nft pool</span>
 						</div>
 
-						<div className={`${group}__detail-3 ${styleClass}`}>
+						<div className={`${group}__detail-3 ${activeTab}`}>
 							<span></span>
 							<i></i>
 							<span></span>
@@ -225,13 +221,13 @@ function renderBottomContent({ group, styleClass }: renderProps) {
 			{group.includes("buy") ? (
 				<>
 					<p className={`${group}__description`}>
-						swap 690 matic <i>icon</i> for 3 xexadons
+						~swap 690 matic <i></i> for 3 xexadons
 					</p>
 				</>
 			) : (
 				<>
 					<p className={`${group}__description`}>
-						swap 3 xexadons for 690 matic <i>icon</i>
+						~swap 3 xexadons for 690 matic <i></i>
 					</p>
 				</>
 			)}
