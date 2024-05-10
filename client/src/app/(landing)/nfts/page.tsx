@@ -8,12 +8,15 @@ import { renderLeftContent, renderRightContent } from "@/views";
 type activeTabProps = Record<string, ReactNode>;
 
 export default function NFTs() {
-	const { activeTab, handleTabClick, tabIsActive } = useTabSwitcher("buy");
+	const { activeTab, handleTabClick, tabIsActive } =
+		useTabSwitcher("buy");
 
 	const activeTabContent: activeTabProps = {
 		buy: <>buy</>,
 		sell: <>sell</>,
-		liquidity: <>liquidity</>,
+		liquidity: <>deposit</>,
+		// deposit: <>deposit</>,
+		withdraw: <>withdraw</>,
 		create: <>create</>,
 	};
 
@@ -25,7 +28,7 @@ export default function NFTs() {
 		<>
 			<div className="nfts__wrapper">
 				{renderLeftContent({ activeTab, handleTabClick, tabIsActive })}
-				{renderRightContent({ activeTab, renderTabContent })}
+				{renderRightContent({ renderTabContent })}
 			</div>
 		</>
 	);

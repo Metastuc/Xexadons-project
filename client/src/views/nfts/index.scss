@@ -19,5 +19,12 @@
         @include equal(100%);
         border-radius: inherit;
         padding: 1.5rem;
+
+        &-wrapper {
+            @include debug-dark;
+            width: inherit;
+            border-radius: $radius + .125rem;
+            padding: 1rem 1.5rem;
+        }
     }
 }

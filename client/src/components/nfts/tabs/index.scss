@@ -1,25 +1,73 @@
 @use "../../../styles/"as *;
 
 .nft_tabs {
+    --height: 2.25rem;
+    --width: 7.25rem;
+
     @include flex($j: flex-end);
-    position: relative;
 
     &__wrapper {
         @include debug-light;
         @include flex;
         border-radius: $radius - .25rem;
+        padding: .25rem;
+        position: relative;
     }
 
     &__button {
-        width: 7.25rem;
-        height: 2.25rem;
+        height: var(--height);
+        width: var(--width);
 
         span {
+            @include font($f: clash, $s: xlg, $w: reg);
             text-transform: capitalize;
+            color: $white-100;
+        }
+    }
+
+    &__indicator {
+        --button-width: calc(var(--width) + .25rem);
+
+        @include debug-light;
+        position: absolute;
+        height: var(--height);
+        width: var(--width);
+        border-radius: inherit;
+        z-index: -5;
+        transition: 200ms;
+        left: calc(100% - var(--button-width));
+
+        &.buy {
+            left: calc(0% + .25rem);
+        }
+
+        &.sell {
+            left: calc(50% - var(--button-width) / 2);
         }
     }
 
     &__dropdown {
+        @include debug-dark;
         position: absolute;
+        right: 0;
+        top: 50%;
+        width: var(--width);
+        border-radius: $radius / 7;
+
+        ul {
+            @include flex($d: column, $a: flex-start);
+            gap: .5rem;
+            padding: .5rem;
+        }
+
+        li {
+            cursor: pointer;
+            width: 100%;
+
+            &:hover {
+                @include debug-dark;
+                border-radius: $radius - .25rem;
+            }
+        }
     }
 }

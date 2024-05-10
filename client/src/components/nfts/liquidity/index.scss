@@ -1,0 +1,215 @@
+@use "../../../styles/"as *;
+
+
+.liquidity_left {
+    margin: 1rem 0 0 0;
+    @include debug-dark;
+
+    h2 {
+        text-transform: capitalize;
+    }
+
+    &__tabs {
+        @include flex($d: column, $a: flex-start);
+        gap: .75rem;
+
+        ul {
+            @include flex;
+            border-radius: $radius - .25rem;
+            padding: .25rem;
+            margin-top: 1.5rem;
+
+            li {
+                @include flex;
+                width: 7rem;
+                height: 2rem;
+                @include debug-dark;
+                border-radius: inherit;
+
+                span {
+                    text-transform: capitalize;
+                }
+            }
+        }
+    }
+
+    &__content {
+        @include debug-dark;
+
+        &_wrapper {
+            @include debug-dark;
+
+            h3 {
+                margin-top: 2rem;
+            }
+        }
+
+        &_top {
+            margin: 1.5rem 0 2.75rem 0;
+
+            &-content {
+                @include flex($d: column, $a: flex-start);
+                gap: 1.75rem;
+
+                >span {
+                    @include debug-light;
+                }
+
+                >div {
+                    @include flex($j: space-between);
+                    width: 100%;
+
+                    aside {
+                        @include flex($d: column, $a: flex-start);
+                        gap: 2rem;
+
+                        div {
+                            @include flex;
+                            @include debug-dark;
+                            width: 8.5rem;
+                            height: 2.25rem;
+                            gap: .5rem;
+                            border-radius: $radius - .25rem;
+
+                            i {
+                                @include equal(1.75rem);
+                                @include debug-dark;
+                                border-radius: 50%;
+                            }
+
+                            span {
+                                text-transform: capitalize;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        &_bottom {
+            // @include flex($d: column, $a: flex-start);
+            // gap: 1.5rem;
+        }
+
+        &_detail {
+            @include debug-dark;
+            @include flex;
+            gap: .5rem;
+
+            >div {
+                @include flex($d: column, $a: flex-start);
+                gap: 1rem;
+            }
+
+            &-1 {
+                gap: 0 !important;
+                align-items: center !important;
+
+                span {
+                    position: relative;
+                    @include equal(1rem);
+                    @include flex;
+                    border-radius: 50%;
+
+                    &:first-of-type {
+                        background-color: #98D076;
+                    }
+
+                    &:last-of-type {
+                        background-color: #B06ECF;
+                    }
+
+                    &::before {
+                        content: "";
+                        position: absolute;
+                        @include equal(50%);
+                        border-radius: inherit;
+                        background-color: white;
+                    }
+                }
+
+                i {
+                    width: .0625rem;
+                    height: 1.25rem;
+                    border-right: dashed .0313rem rgba(241, 230, 230, 0.8);
+                }
+            }
+
+            &-2 {}
+
+            &-3 {
+                gap: 0 !important;
+
+                span {
+                    @include equal(.75rem);
+                    @include flex;
+                    border-radius: 50%;
+
+                    &:first-of-type {
+                        background-color: #B06ECF;
+                    }
+
+                    &:last-of-type {
+                        background-color: #98D076;
+                    }
+                }
+
+                i {
+                    height: 1.5rem;
+                }
+
+                &.sell-content {
+                    flex-direction: column-reverse;
+                }
+            }
+
+            &-4 {}
+        }
+
+        &_swap {
+            @include flex($d: column);
+            gap: .75rem;
+            margin-block: 1.5rem;
+
+            div {
+                @include flex;
+                position: relative;
+                width: 4.5rem;
+                height: 2.5rem;
+
+                i {
+                    @include equal(2.25rem);
+                    position: absolute;
+                    @include debug-dark;
+                    border-radius: 50%;
+
+                    &:first-of-type {
+                        left: 0;
+                    }
+
+                    &:last-of-type {
+                        right: 0;
+                        z-index: -1;
+                    }
+                }
+            }
+        }
+
+        &_confirm {
+            @include debug-dark;
+            @include flex;
+
+            button {
+                @include flex;
+                @include debug-dark;
+                width: 8.75rem;
+                height: 2.5rem;
+                border-radius: $radius + .125rem;
+
+                span {
+                    text-transform: capitalize;
+                }
+            }
+        }
+    }
+}

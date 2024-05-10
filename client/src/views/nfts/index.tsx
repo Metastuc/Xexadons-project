@@ -2,27 +2,26 @@ import "./index.scss";
 
 import { ReactNode } from "react";
 
-import { Pool, PurchaseNft, Tabs } from "@/components";
+import { Liquidity, PurchaseNft, Tabs } from "@/components";
 
 type renderLeftContentProps = {
 	activeTab: string;
-	handleTabClick: (tab: string) => void;
-	tabIsActive: (tab: string) => "active" | null;
+	handleTabClick: Function;
+	tabIsActive: Function;
 };
 
 type renderRightContentProps = {
-	activeTab: string;
+	activeTab?: string;
 	renderTabContent: () => ReactNode;
 };
 
 export function renderLeftContent({
 	activeTab,
 	handleTabClick,
-	tabIsActive,
 }: renderLeftContentProps) {
 	let content: ReactNode;
+	let currentPool = activeTab == "liquidity" ? "deposit" : "withdraw";
 
-	/*eslint indent: ["error", tab, { "SwitchCase": 1 }]*/
 	switch (activeTab) {
 		case "buy":
 			content = PurchaseNft({ group: "buy_left", activeTab: "buy" });
@@ -33,7 +32,14 @@ export function renderLeftContent({
 			break;
 
 		case "liquidity":
-			content = <>liquidity</>;
+		case "deposit":
+		case "withdraw":
+			content = Liquidity({
+				group: "liquidity_left",
+				activeTab: "liquidity",
+				handleTabClick,
+				currentPool,
+			});
 			break;
 
 		case "create":
@@ -43,27 +49,21 @@ export function renderLeftContent({
 
 	return (
 		<section className="nfts__content">
-			<Tabs handleTabClick={handleTabClick} />
+			<Tabs
+				handleTabClick={handleTabClick}
+				activeTab={activeTab}
+			/>
 			<section className="glass background">{content}</section>
 		</section>
 	);
 }
 
 export function renderRightContent({
-	activeTab,
 	renderTabContent,
 }: renderRightContentProps) {
 	return <section className="nfts__content">{renderTabContent()}</section>;
 }
 
-export function contentWrapper({
-	group,
-	children,
-}: {
-	group: string;
-	children: ReactNode;
-}) {
-	return (
-		<section className={`${group}__content-wrapper`}>{children}</section>
-	);
+export function contentWrapper({ children }: { children: ReactNode }) {
+	return <section className={`nfts__content-wrapper`}>{children}</section>;
 }

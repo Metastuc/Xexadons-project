@@ -6,6 +6,7 @@ import { useState } from "react";
 
 type TabsProps = {
 	handleTabClick: Function;
+	activeTab: string;
 };
 
 type poolProps = {
@@ -17,7 +18,7 @@ type poolDropDownProps = {
 	handlePoolTabClick: Function;
 };
 
-export function Tabs({ handleTabClick }: TabsProps) {
+export function Tabs({ handleTabClick, activeTab }: TabsProps) {
 	const [poolOptions, setPoolOptions] = useState<poolProps>({
 		isDropDownOpen: false,
 		activePoolOption: "liquidity",
@@ -36,7 +37,7 @@ export function Tabs({ handleTabClick }: TabsProps) {
 		<section className="nft_tabs">
 			<div className="nft_tabs__wrapper">
 				<button
-					className="nft_tabs__button"
+					className={`nft_tabs__button`}
 					onClick={() => {
 						handleTabClick("buy");
 
@@ -50,7 +51,7 @@ export function Tabs({ handleTabClick }: TabsProps) {
 				</button>
 
 				<button
-					className="nft_tabs__button"
+					className={`nft_tabs__button`}
 					onClick={() => {
 						handleTabClick("sell");
 
@@ -82,7 +83,7 @@ export function Tabs({ handleTabClick }: TabsProps) {
 					)}
 				</button>
 
-				{/* <span>indicator</span> */}
+				<span className={`nft_tabs__indicator ${activeTab}`}></span>
 			</div>
 		</section>
 	);

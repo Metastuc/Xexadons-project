@@ -14,11 +14,7 @@
     }
 
     %typography {
-        font: {
-            family: map-get($map: $ff, $key: lufga);
-            size: map-get($map: $fz, $key: lrg);
-            weight: map-get($map: $fw, $key: reg);
-        }
+        @include font($f: lufga, $s: lrg, $w: reg);
     }
 
     &__wrapper {

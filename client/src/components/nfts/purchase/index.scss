@@ -1,10 +1,11 @@
 @use "../../../styles/"as *;
+@use "sass:math";
 
 
 .buy_left,
 .sell_left {
-    margin-top: 4rem;
     @include flex($d: column, $a: flex-start);
+    margin-top: 4rem;
     gap: 5rem;
 
     &__title {
@@ -12,31 +13,30 @@
         gap: .75rem;
 
         h2 {
+            @include font($f: clash, $s: xlg, $w: reg);
             text-transform: capitalize;
         }
 
         p {
+            @include font($f: clash, $s: xs, $w: reg);
             padding-left: .25rem;
         }
     }
 
     &__content {
         @include flex($d: column, $a: flex-start);
-        gap: 2.75rem;
         @include equal(100%);
-
-        &-wrapper {
-            @include debug-dark;
-            width: inherit;
-            border-radius: $radius + .125rem;
-            padding: 1rem 1.5rem;
-        }
+        gap: 2.75rem;
     }
 
     &__from-to {
         @include debug-dark;
         @include flex($j: space-between);
         padding: 0 8% 0 2.5%;
+
+        span {
+            @include font($f: clash, $s: sm, $w: reg);
+        }
     }
 
     &__price {
@@ -47,7 +47,20 @@
         div {
             @include flex($d: column, $a: flex-start);
             gap: .5rem;
+
+            span {
+                &:first-of-type {
+                    $size: map-get($map: $fz, $key: xlg) + .5rem;
+
+                    @include font($f: clash, $w: med);
+                    font-size: $size;
+                }
+
+                &:last-of-type {}
+            }
         }
+
+        >span {}
 
         >*:not(i) {
             width: 40%;
@@ -89,9 +102,9 @@
             align-items: center !important;
 
             span {
-                position: relative;
                 @include equal(1rem);
                 @include flex;
+                position: relative;
                 border-radius: 50%;
 
                 &:first-of-type {
@@ -103,9 +116,9 @@
                 }
 
                 &::before {
+                    @include equal(50%);
                     content: "";
                     position: absolute;
-                    @include equal(50%);
                     border-radius: inherit;
                     background-color: white;
                 }
@@ -186,15 +199,15 @@
     }
 
     &__confirmation {
+        @include flex;
         margin-top: 1rem;
         width: 100%;
         height: 2.5rem;
-        @include flex;
 
         button {
+            @include debug-light;
             height: inherit;
             width: 8.75rem;
-            @include debug-light;
             border-radius: $radius + .125rem;
             text-transform: capitalize;
             cursor: pointer;

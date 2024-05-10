@@ -71,7 +71,6 @@ function handleEnterAppButtonUI({
 	group,
 	router,
 }: handleEnterAppButtonUIProps) {
-	/*eslint indent: ["error", tab, { "SwitchCase": 1 }]*/
 	switch (pathname === "/") {
 		case true:
 			return (

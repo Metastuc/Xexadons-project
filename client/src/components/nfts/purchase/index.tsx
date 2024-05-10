@@ -1,7 +1,4 @@
-/*eslint indent: ["error", tab, { "SwitchCase": 1 }]*/
 import "./index.scss";
-
-import { ReactNode } from "react";
 
 import { commonProps } from "@/types";
 import { contentWrapper } from "@/views";
@@ -11,36 +8,21 @@ type purchaseNftProps = commonProps & {
 };
 
 type renderProps = commonProps & {
-	styleClass: string;
-};
-
-type contentWrapperProps = commonProps & {
-	children: ReactNode;
+	styleClass?: string;
 };
 
 export function PurchaseNft({ group, activeTab }: purchaseNftProps) {
-	let styleClass: string = "";
-
-	switch (activeTab) {
-		case "buy":
-			styleClass = `${activeTab}-content`;
-			break;
-
-		case "sell":
-			styleClass = `${activeTab}-content`;
-			break;
-	}
+	const styleClass: string = `${activeTab}-content`;
 
 	return (
 		<section className={group}>
-			{/* purchase {styleClass + "  " + group} */}
 			<>{renderTitle({ group, styleClass })}</>
 			<>{renderContent({ group, styleClass })}</>
 		</section>
 	);
 }
 
-function renderTitle({ group, styleClass }: renderProps) {
+function renderTitle({ group }: renderProps) {
 	let text: string | null = "";
 
 	switch (true) {
@@ -67,14 +49,12 @@ function renderContent({ group, styleClass }: renderProps) {
 		<section className={`${group}__content`}>
 			<>
 				{contentWrapper({
-					group,
-					children: renderTopContent({ group, styleClass }),
+					children: renderTopContent({ group }),
 				})}
 			</>
 
 			<>
 				{contentWrapper({
-					group,
 					children: renderBottomContent({ group, styleClass }),
 				})}
 			</>
@@ -82,7 +62,7 @@ function renderContent({ group, styleClass }: renderProps) {
 	);
 }
 
-function renderTopContent({ group, styleClass }: renderProps) {
+function renderTopContent({ group }: renderProps) {
 	return (
 		<div className={`${group}__content-top`}>
 			<article className={`${group}__from-to`}>

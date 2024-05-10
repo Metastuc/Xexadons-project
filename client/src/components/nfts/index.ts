@@ -1,3 +1,3 @@
-export * from "./pool";
+export * from "./liquidity";
 export * from "./purchase";
 export * from "./tabs";
