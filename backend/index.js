@@ -5,13 +5,17 @@ const axios = require('axios');
 const ethers = require('ethers');
 require('dotenv').config();
 
+const Moralis = require("moralis").default;
+// Import the EvmChain dataType
+const { EvmChain } = require("@moralisweb3/common-evm-utils");
+
 // initializing firebase
 const admin = require('firebase-admin');
 const { initializeApp, applicationDefault, cert } = require('firebase-admin/app');
 const { getFirestore, Timestamp, FieldValue, Filter } = require('firebase-admin/firestore');
 
-// const credentialPath = process.env.CREDPATH;
-// const serviceAccount = require(credentialPath);
+const credentialPath = process.env.CREDPATH;
+const serviceAccount = require(credentialPath);
 
 const ABIs = {
   factoryABI: [
@@ -286,13 +290,19 @@ const rpcUrls = {
   97: "https://data-seed-prebsc-1-s1.bnbchain.org:8545"
 }
 
+const tokenAddresses = {
+  80002: "0x7c9f4C87d911613Fe9ca58b579f737911AAD2D43",
+  97: " "
+}
+
 const raribleApiKey = process.env.RARIBLE_APIKEY;
+const moralisApiKey = process.env.MORALIS_API_KEY;
 
-// initializeApp({
-//   credential: cert(serviceAccount),
-// });
+initializeApp({
+  credential: cert(serviceAccount),
+});
 
-// const db = getFirestore();
+const db = getFirestore();
 
 const app = express();
 const port = process.env.PORT || 3300;
@@ -305,6 +315,10 @@ app.use(cors({
 app.use(express.json());
 
 const startServer = async () => {
+  await Moralis.start({
+    apiKey: moralisApiKey,
+  });
+
   app.listen(port, "0.0.0.0", () => {
     console.log(`Example app listening on port ${port}`);
   });
@@ -519,183 +533,183 @@ app.get("/getCollection", async(req, res) => {
   }
 });
 
-// app.post("recordActivity/:poolId", async(req, res) => {
-//   const poolId = req.params.poolId;
-//   try {
-//     const activity = {
-//       event: req.body.event,
-//       item: {
-//         image: req.body.itemImage,
-//         name: req.body.itemName,
-//       },
-//       price: req.body.price,
-//       from: req.body.from,
-//       from: req.body.to,
-//       time: new Date().toISOString(),
-//       hash: req.body.hash
-//     }
-//     const activityRef = db.collection('poolActivity').doc(poolId).collection('activities');
-//     await activityRef.add(activity);
+app.post("recordActivity/:poolId", async(req, res) => {
+  const poolId = req.params.poolId;
+  try {
+    const activity = {
+      event: req.body.event,
+      item: {
+        image: req.body.itemImage,
+        name: req.body.itemName,
+      },
+      price: req.body.price,
+      from: req.body.from,
+      from: req.body.to,
+      time: new Date().toISOString(),
+      hash: req.body.hash
+    }
+    const activityRef = db.collection('poolActivity').doc(poolId).collection('activities');
+    await activityRef.add(activity);
 
-//     res.status(200).json({ response: "successful"});
-//   } catch (error) {
-//     res.status(500).json({ error: error })
-//   }
-// })
+    res.status(200).json({ response: "successful"});
+  } catch (error) {
+    res.status(500).json({ error: error })
+  }
+})
 
-// app.get("/getPoolActivity", async(req, res) => {
-//   const poolId = req.query.poolId;
-//   var allActivities = [];
+app.get("/getPoolActivity", async(req, res) => {
+  const poolId = req.query.poolId;
+  var allActivities = [];
   
-//   try {
-//     const activitySnapshot = await db.collection('poolActivity').doc(poolId).collection('activities').get();
+  try {
+    const activitySnapshot = await db.collection('poolActivity').doc(poolId).collection('activities').get();
 
-//     activitySnapshot.forEach((doc) => {
-//       allActivities.push(doc.data());
-//     });
+    activitySnapshot.forEach((doc) => {
+      allActivities.push(doc.data());
+    });
 
-//     const activities = sortActivities(allActivities);
+    const activities = sortActivities(allActivities);
 
-//     res.status(200).json({ response: activities });
-//   } catch (error) {
-//     res.status(500);
-//     res.json({ error: error.message });
-//   }
-// });
+    res.status(200).json({ response: activities });
+  } catch (error) {
+    res.status(500);
+    res.json({ error: error.message });
+  }
+});
 
-// app.get("/getUser", async(req, res) => {
-//   const userAddress = req.query.userAddress;
-//   const chain = req.query.chain;
+app.get("/getUser", async(req, res) => {
+  const userAddress = req.query.userAddress;
+  const chain = req.query.chain;
 
-//   try {
-//     const userPools = await getUserPools(userAddress, chain);
-//     const userNFTs = await getUserNFTs(userAddress);
-//     const userBalnce = await getUserBalance(userAddress, chain);
+  try {
+    const userPools = await getUserPools(userAddress, chain);
+    const userNFTs = await getUserNFTs(userAddress);
+    const userBalnce = await getUserBalance(userAddress, chain);
 
-//     const userObject = {
-//       userPools: userPools,
-//       userNFTs: userNFTs
-//     }
+    const userObject = {
+      userPools: userPools,
+      userNFTs: userNFTs
+    }
 
-//     res.status(200).json(userObject);
-//   } catch (error) {
-//     res.status(500).json({ error: error })
-//   }
-// })
+    res.status(200).json(userObject);
+  } catch (error) {
+    res.status(500).json({ error: error })
+  }
+})
 
-// async function getUserBalance(address, chain) {
-//   try {
-//     const provider = new ethers.JsonRpcProvider(rpcUrls.testnets[chain]);
+async function getUserBalance(address, chain) {
+  try {
+    const provider = new ethers.JsonRpcProvider(rpcUrls.testnets[chain]);
 
-//     const balanceWei = await provider.getBalance(address);
+    const balanceWei = await provider.getBalance(address);
 
-//     const balanceEth = ethers.parseEther(balanceWei.toString());
+    const balanceEth = ethers.parseEther(balanceWei.toString());
 
 
-//     const options = {
-//       method: 'GET',
-//       url: 'https://api.rarible.org/v0.1/currencies/ETHEREUM%3A0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2/rates/usd?at=2022-01-01T12%3A00%3A00Z',
-//       headers: {
-//         accept: 'application/json',
-//         'X-API-KEY': '5038109f-4d25-4d86-9e77-df64196caac4'
-//       }
-//     };
+    const options = {
+      method: 'GET',
+      url: 'https://api.rarible.org/v0.1/currencies/ETHEREUM%3A0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2/rates/usd?at=2022-01-01T12%3A00%3A00Z',
+      headers: {
+        accept: 'application/json',
+        'X-API-KEY': '5038109f-4d25-4d86-9e77-df64196caac4'
+      }
+    };
 
-//     const response = await axios(options);
+    const response = await axios(options);
 
-//   } catch (error) {
+  } catch (error) {
     
-//   }
+  }
 
-//   const balance = await provider.getBalance(address);
+  const balance = await provider.getBalance(address);
 
-//   // Convert the balance to Ether
-//   const etherBalance = ethers.utils.formatEther(balance);
-// }
+  // Convert the balance to Ether
+  const etherBalance = ethers.utils.formatEther(balance);
+}
 
-// async function getUserPools(address, chain) {
-//   try {
-//     const provider = new ethers.JsonRpcProvider(rpcUrls.testnets[chain]);
+async function getUserPools(address, chain) {
+  try {
+    const provider = new ethers.JsonRpcProvider(rpcUrls.testnets[chain]);
 
-//     const factoryContract = new ethers.Contract(factoryAddress, ABIs.factoryABI, provider);
-//     const userPools = await factoryContract.getUserPairss(address);
+    const factoryContract = new ethers.Contract(factoryAddress, ABIs.factoryABI, provider);
+    const userPools = await factoryContract.getUserPairss(address);
     
-//     var pools = [];
+    var pools = [];
 
-//     for (let i = 0; i < userPools.length; i++) {
-//       const pairContract = new ethers.Contract(userPools[i], ABIs.pairABI, provider);
-//       const poolOwner = await pairContract.owner();
-//       const reserve0 = await pairContract.reserve0();
-//       const reserve1 = await pairContract.reserve1();
+    for (let i = 0; i < userPools.length; i++) {
+      const pairContract = new ethers.Contract(userPools[i], ABIs.pairABI, provider);
+      const poolOwner = await pairContract.owner();
+      const reserve0 = await pairContract.reserve0();
+      const reserve1 = await pairContract.reserve1();
 
-//       const curveContract = new ethers.Contract(deploymentAddresses.curve.testnets[chain], ABIs.curveABI, provider);
-//       // use function that returns only one uint
-//       const buyPrice = await curveContract.getBuyPrice(1, reserve0, reserve1, userPools[i]);
-//       const sellPrice = await curveContract.getSellAmount(1, reserve0, reserve1, userPools[i]);
+      const curveContract = new ethers.Contract(deploymentAddresses.curve.testnets[chain], ABIs.curveABI, provider);
+      // use function that returns only one uint
+      const buyPrice = await curveContract.getBuyPrice(1, reserve0, reserve1, userPools[i]);
+      const sellPrice = await curveContract.getSellAmount(1, reserve0, reserve1, userPools[i]);
 
-//       const pool = {
-//         poolAddress: poolAddresses[i],
-//         owner: poolOwner,
-//         buyPrice: buyPrice[0],
-//         sellPrice: sellPrice[0],
-//         nftAmount: reserve0,
-//         tokenAmount: reserve1
-//       }
+      const pool = {
+        poolAddress: poolAddresses[i],
+        owner: poolOwner,
+        buyPrice: buyPrice[0],
+        sellPrice: sellPrice[0],
+        nftAmount: reserve0,
+        tokenAmount: reserve1
+      }
 
-//       pools.push(pool);
-//     }
+      pools.push(pool);
+    }
 
-//     return pools;
+    return pools;
 
-//   } catch (error) {
-//     return error;
-//   }
-// }
+  } catch (error) {
+    return error;
+  }
+}
 
-// async function getUserNFTs(address) {
-//   const userNFTs = [];
-//   try {
-//     const options = {
-//       method: 'GET',
-//       url: `https://testnet-api.rarible.org/v0.1/items/byOwnerWithOwnership?owner=ETHEREUM%3A${address}`,
-//       headers: {
-//         accept: 'application/json',
-//         'X-API-KEY': raribleApiKey
-//       }
-//     };
+async function getUserNFTs(address) {
+  const userNFTs = [];
+  try {
+    const options = {
+      method: 'GET',
+      url: `https://testnet-api.rarible.org/v0.1/items/byOwnerWithOwnership?owner=ETHEREUM%3A${address}`,
+      headers: {
+        accept: 'application/json',
+        'X-API-KEY': raribleApiKey
+      }
+    };
 
-//     const response = await axios(options);
-//     const items = response.data.items;
+    const response = await axios(options);
+    const items = response.data.items;
 
-//     for (let j = 0; j < items.length; j++) {
-//       const nft = {
-//         id: items[j].tokenId,
-//         name: collectionName + " " + "#" + items[j].tokenId,
-//         poolAddresses: poolAddresses[i],
-//         image: items[j].meta.content[0].url
-//       };
+    for (let j = 0; j < items.length; j++) {
+      const nft = {
+        id: items[j].tokenId,
+        name: collectionName + " " + "#" + items[j].tokenId,
+        poolAddresses: poolAddresses[i],
+        image: items[j].meta.content[0].url
+      };
 
-//       userNFTs.push(nft);
-//     }
-//   } catch (error) {
-//     return error;
-//   }
-// }
+      userNFTs.push(nft);
+    }
+  } catch (error) {
+    return error;
+  }
+}
 
-// function sortActivities(activities) {
-//   // Filter events to include only objects from the past 7 days
-//   const filteredEvents = activities.filter(activity => {
-//     const activityTime = new Date(activity.time);
-//     const now = new Date();
-//     const diffInDays = Math.floor((now - activityTime) / (1000 * 60 * 60 * 24));
-//     return diffInDays <= 7;
-//   });
+function sortActivities(activities) {
+  // Filter events to include only objects from the past 7 days
+  const filteredEvents = activities.filter(activity => {
+    const activityTime = new Date(activity.time);
+    const now = new Date();
+    const diffInDays = Math.floor((now - activityTime) / (1000 * 60 * 60 * 24));
+    return diffInDays <= 7;
+  });
 
-//   // Sort filteredEvents based on the time parameter
-//   filteredEvents.sort((a, b) => new Date(a.time) - new Date(b.time));
+  // Sort filteredEvents based on the time parameter
+  filteredEvents.sort((a, b) => new Date(a.time) - new Date(b.time));
 
-//   return filteredEvents;
-// }
+  return filteredEvents;
+}
 
 app.get("/getSellPrice", async (req, res) => {
   const tokenLength = req.query.tokenLength;
@@ -803,6 +817,26 @@ app.get("/getSellRoute", async(req, res) => {
     console.log(error);
     res.status(500).json({ error: 'An error occurred' });
   }
+})
+
+app.get("/getCoinPrice", async(req, res) => {
+  const chainId = req.query.chainId;
+
+  const address = tokenAddresses[chainId];
+
+  try {
+    const response = await Moralis.EvmApi.token.getTokenPrice({
+      "chain": EvmChain.ETHEREUM,
+      "address": address
+    });
+  
+    const price = response.raw.usdPrice;
+    res.status(200).json({ "price": price });
+  } catch (error) {
+    console.error('Error in /getCoinPrice', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+
 })
 
 startServer();

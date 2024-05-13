@@ -90,10 +90,6 @@ const factoryABI = [
     },
 ]
 
-const chainName = {
-  80002: "matic-network",
-}
-
 const chainIcon = {
   80002: "/matic.png",
 }
@@ -394,7 +390,6 @@ export const createPool = async(ids, ethAmount, nftAddress, fee, chainId, signer
   console.log("liquidity added");
 }
 
-
 export const buyNFT = async(nfts, chainId, signer) => {
     console.log(nfts, chainId, signer);
     const userAddress = await signer.getAddress();
@@ -549,4 +544,8 @@ export const sellNFT = async(tokenIds, nftAddress, chainId, signer) => {
   } catch (error) {
   console.log(error);
   }
+}
+
+export const getPrice = async(chainId) => {
+  // 
 }
