@@ -91,9 +91,8 @@ export default function Nft({ activeTab, collectionAddress, selectedNfts, setSel
             if (isConnected) {
             let sellAmount = 0;
             if (selectedSellNfts.length > 0) {
-                const response = await getSellPrice(selectedSellNfts.length, collectionAddress, chainId)
-                const _sellAmount = await response.json();
-                sellAmount = _sellAmount.sellAmount;
+                const price = await getSellPrice(selectedSellNfts.length, collectionAddress, chainId)
+                sellAmount = price;
             }
             setSellAmount(sellAmount);
             // setDollarAmount(dollarAmount);
