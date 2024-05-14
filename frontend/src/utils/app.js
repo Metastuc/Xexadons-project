@@ -90,10 +90,6 @@ const factoryABI = [
     },
 ]
 
-const chainName = {
-  80002: "matic-network",
-}
-
 const chainIcon = {
   80002: "/matic.png",
 }
@@ -350,6 +346,11 @@ const deploymentAddresses = {
   }
 }
 
+const rpcUrls = {
+  80002: "https://rpc-amoy.polygon.technology",
+  97: "https://data-seed-prebsc-1-s1.bnbchain.org:8545"
+}
+
 export const getAppAddress = (chainId) => {
   return deploymentAddresses.xexadon[chainId];
 }
@@ -388,7 +389,6 @@ export const createPool = async(ids, ethAmount, nftAddress, fee, chainId, signer
   await addLiqTx.wait();
   console.log("liquidity added");
 }
-
 
 export const buyNFT = async(nfts, chainId, signer) => {
     console.log(nfts, chainId, signer);
@@ -470,8 +470,49 @@ export const getChainIcon = async(chainId) => {
 }
 
 export const getSellPrice = async(length, collectionAddress, chainId) => {
-  const price = fetch(`${baseAPIURL}getSellPrice?tokenLength=${length}&nftAddress=${collectionAddress}&chainId=${chainId}`);
-  return price;
+  const factoryAddress = deploymentAddresses.factory[chainId];
+  const provider = new ethers.JsonRpcProvider(rpcUrls[chainId]);
+  console.log(chainId, factoryAddress);
+
+  const factoryContract = new ethers.Contract(factoryAddress, factoryABI, provider);
+
+  let sellAmount = 0;
+
+  try {
+    const poolAddresses = await factoryContract.getPairs(collectionAddress);
+    let tokens = length;
+
+    for (let i = 0; i < poolAddresses.length; i++) {
+      const pairContract = new ethers.Contract(poolAddresses[i], pairABI, provider);
+      const _reserve0 = await pairContract.reserve0();
+      const _reserve1 = await pairContract.reserve1();
+
+      const reserve0 = Number(_reserve0);
+      const reserve1 = Number(_reserve1);
+
+      const amountOut = reserve1 * 0.7;
+      
+      const poolMax = (amountOut * reserve0) / (reserve1 - amountOut);
+      const maxNFTs = Math.floor(poolMax);
+
+      if (maxNFTs <= 0) {
+        continue;
+      }
+
+      if (maxNFTs >= length) {
+        const amountOut = ((reserve1 * length) / (reserve0 + length));
+        sellAmount = sellAmount + amountOut;
+      } else {
+        tokens = tokens - maxNFTs;
+        const amountOut = ((reserve1 * maxNFTs) / (reserve0 + maxNFTs));
+        sellAmount = sellAmount + amountOut;
+      }
+    }
+
+    return sellAmount;
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 export const sellNFT = async(tokenIds, nftAddress, chainId, signer) => {
@@ -503,4 +544,8 @@ export const sellNFT = async(tokenIds, nftAddress, chainId, signer) => {
   } catch (error) {
   console.log(error);
   }
+}
+
+export const getPrice = async(chainId) => {
+  // 
 }
