@@ -43,7 +43,7 @@ export default function Buy({ selectedNfts, collectionName, buyAmount, dollarAmo
                     <p>from</p>
                     <div className="my-5">
                         <p className="text-xl">{buyAmount} {currency}</p>
-                        {/* <p>${dollarAmount}</p> */}
+                        <p>${dollarAmount}</p>
                     </div>
                     <TokenTag src={chainIcon} />
                 </div>

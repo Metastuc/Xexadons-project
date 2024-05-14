@@ -2,7 +2,7 @@
 import { nftData } from "@/data/nftData";
 import NftCard from "./nftCard";
 import { useAccount } from "wagmi";
-import { fetchPrice, getChainIcon, getCollection, getSellPrice, getUserCollectionNFTs } from "@/utils/app";
+import { fetchPrice, getChainIcon, getCoinPrice, getCollection, getSellPrice, getUserCollectionNFTs } from "@/utils/app";
 import { useState, useEffect } from "react";
 import { formatEther } from "viem";
 import { useEthersSigner } from "@/utils/adapter";
@@ -15,11 +15,15 @@ export default function Nft({ activeTab, collectionAddress, selectedNfts, setSel
     const [poolCount, setpoolCount] = useState(0);
     const [pools, setPools] = useState([]);
     const [nfts, setNFTs] = useState([]);
+    const [coinPrice, setCoinPrice] = useState(0);
     const signer = useEthersSigner();
 
     useEffect(() => {
         if (isConnected) {
           (async () => {
+            const coinPrice = await getCoinPrice(chainId);
+            console.log(coinPrice);
+            setCoinPrice(coinPrice);
             if (activeTab === 0) {
                 const response = await getCollection(chainId, collectionAddress);
                 const result = await response.json();
@@ -75,11 +79,10 @@ export default function Nft({ activeTab, collectionAddress, selectedNfts, setSel
                 const C = selectedNfts.filter(nft => nft.poolAddress === pool.poolAddress);
                 return sum + ((pool.reserve1 * C.length) / (pool.reserve0 - C.length));
             }, 0);
-            // const price = fetchPrice(chainId);
-            // const dollarAmount = price * _newTotalAmountIn;
             const newTotalAmountIn = formatEther(_newTotalAmountIn);
+            const dollarAmount = coinPrice * newTotalAmountIn;
             setBuyAmount(newTotalAmountIn);
-            // setDollarAmount(dollarAmount);
+            setDollarAmount(dollarAmount);
             }
         };
     
@@ -94,8 +97,10 @@ export default function Nft({ activeTab, collectionAddress, selectedNfts, setSel
                 const price = await getSellPrice(selectedSellNfts.length, collectionAddress, chainId)
                 sellAmount = price;
             }
-            setSellAmount(sellAmount);
-            // setDollarAmount(dollarAmount);
+            const _sellAmount = formatEther(sellAmount);
+            const dollarAmount = coinPrice * _sellAmount;
+            setSellAmount(_sellAmount);
+            setDollarAmount(dollarAmount);
             }
         };
     
