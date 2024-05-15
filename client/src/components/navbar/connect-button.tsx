@@ -1,7 +1,7 @@
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 import { DropDown as DropDownIcon } from "@/assets";
-import { ContextWrapper } from "@/hooks";
+// import { ContextWrapper } from "@/hooks";
 import { commonProps } from "@/types";
 
 import { NextOptimizedImage } from "../reusable";
@@ -20,9 +20,9 @@ type renderConnectedUIProps = commonProps & {
 };
 
 export function Web3ConnectButton({ group }: commonProps) {
-	const {
-		navContext: { setIsNetworkValid },
-	} = ContextWrapper();
+	// const {
+	// 	navContext: { setIsNetworkValid },
+	// } = ContextWrapper();
 
 	return (
 		<>
@@ -115,7 +115,7 @@ function renderInvalidNetworkPrompt({
 }
 
 function renderConnectedUI({
-	openAccountModal,
+	// openAccountModal,
 	account,
 	group,
 }: renderConnectedUIProps) {

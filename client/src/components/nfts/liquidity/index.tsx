@@ -16,7 +16,7 @@ type renderTabProps = commonProps & {
 
 export function Liquidity({
 	group,
-	activeTab,
+	// activeTab,
 	handleTabClick,
 	currentPool,
 }: poolProps) {
@@ -43,7 +43,7 @@ export function Liquidity({
 	);
 }
 
-function renderTabs({ handleTabClick, currentPool, group }: renderTabProps) {
+function renderTabs({ handleTabClick, currentPool }: renderTabProps) {
 	return (
 		<>
 			<ul>
