@@ -13,9 +13,12 @@
         height: var(--height);
     }
 
-    %typography {
-        @include font($f: lufga, $s: lrg, $w: reg);
-    }
+    position: sticky;
+    top: 0;
+    width: 100%;
+    z-index: 5;
+    backdrop-filter: blur(1rem);
+    transition: 150ms;
 
     &__wrapper {
         @include flex($j: space-between);
@@ -29,7 +32,7 @@
         }
 
         li {
-            @extend %typography;
+            @include font($f: lufga, $s: lrg, $w: reg);
         }
 
         a {
@@ -52,7 +55,7 @@
             }
 
             input {
-                @extend %typography;
+                @include font($f: lufga, $s: lrg, $w: reg);
                 height: 1.5rem;
                 width: 10rem;
                 color: $blue-100;
@@ -81,7 +84,7 @@
                 }
 
                 &:nth-of-type(2) {
-                    @extend %typography;
+                    @include font($f: lufga, $s: lrg, $w: reg);
                 }
             }
 
@@ -92,7 +95,7 @@
 
         &-button {
             @extend %header-right-contents;
-            @extend %typography;
+            @include font($f: lufga, $s: lrg, $w: reg);
             cursor: pointer;
 
             i {

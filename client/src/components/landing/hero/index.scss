@@ -5,7 +5,10 @@
 
     &__wrapper {
         @include equal(100%);
-        @include flex($j: space-between);
+        @include flex;
+        gap: 7rem;
+        margin-top: 8rem;
+        position: relative;
     }
 
     &__left {
@@ -13,12 +16,10 @@
         @include min-w(38.25rem);
 
         h1 {
-            @include flex($d: column);
+            $size: map-get($map: $fz, $key: xlg)+3.75rem;
 
-            font: {
-                family: map-get($map: $ff, $key: clash);
-                size: 5rem;
-            }
+            @include flex($d: column, $a: flex-start);
+            @include font($f: clash, $s: $size);
 
             span {
                 &:nth-of-type(1) {
@@ -32,45 +33,79 @@
         }
 
         p {
-            font: {
-                family: map-get($map: $ff, $key: clash);
-                size: map-get($map: $fz, $key: nrm);
-                weight: map-get($map: $fw, $key: reg);
-            }
-
+            @include font($f: clash, $s: nrm, $w: reg);
             @include min-w(30.5rem);
             text-align: center;
+            margin: 2rem 0 4rem 0;
         }
 
         div {
-            --height: 3.5rem;
+            --height: 3.25rem;
 
             @include flex;
-            @include debug-dark;
             width: 100%;
 
             a>* {
-                border-radius: $radius;
+                border-radius: $radius + .125rem;
+                background-color: $blue-100;
             }
 
             span {
                 @include flex;
-                @include font("lufga", "xlg", "med");
-                height: var(--height);
-                width: 12rem;
-                color:$white-100;
+
+                &:first-of-type {
+                    @include font($f: lufga, $s: xlg, $w: med);
+                    height: var(--height);
+                    width: 12rem;
+                    color: $white-100;
+                }
+
+                &:last-of-type {
+                    height: var(--height);
+                    width: calc(var(--height) + .25rem);
+                }
             }
 
             i {
-                height: var(--height);
-                width: calc(var(--height) + .25rem);
+                @include equal(.75rem);
             }
         }
 
-        article {}
+        article {
+            @include flex($d: column, $a: flex-start);
+            gap: 1rem;
+            margin-top: 6.75rem;
+
+            span {
+                $size: map-get($map: $fz, $key: xlg) + .625rem;
+                @include font($f: clash, $s: $size, $w: med);
+
+
+                &:first-of-type {
+                    background: linear-gradient(to right, #FFFFFF 0%, #B7949A 100%);
+                    -webkit-background-clip: text;
+                    -webkit-text-fill-color: transparent;
+                    background-clip: text;
+                }
+
+                &:last-of-type {
+                    padding-left: 7rem;
+                    background: linear-gradient(to right, #D7D7D7 0%, #FFFFFF 100%);
+                    -webkit-background-clip: text;
+                    -webkit-text-fill-color: transparent;
+                    background-clip: text;
+                }
+            }
+        }
     }
 
     &__right {
         width: 28rem;
+        height: 38rem;
+
+        svg {
+            scale: 1.5;
+            pointer-events: none;
+        }
     }
 }

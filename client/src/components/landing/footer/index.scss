@@ -1,0 +1,38 @@
+@use "@/styles/"as *;
+
+
+.footer {
+
+    &__wrapper {
+        @include flex($d: column);
+        gap: 4rem;
+        margin: 4.5rem 0 3rem 0;
+    }
+
+    &__links {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+
+        &:first-of-type {
+            @include font($f: lufga, $s: xlg, $w: reg);
+            gap: 1rem 2rem;
+            color: $white-200;
+
+            li:not(:nth-of-type(3)) {
+                text-transform: capitalize;
+            }
+
+            li {
+                cursor: pointer;
+            }
+        }
+
+        &:last-of-type {
+            gap: 1.5rem;
+
+            i {
+                @include equal(2rem);
+            }
+        }
+    }
+}

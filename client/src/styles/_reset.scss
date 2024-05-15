@@ -1,6 +1,9 @@
 @use "./mixins"as *;
 @use "./variables"as *;
 
+
+// defaults
+
 * {
     margin: 0;
     padding: 0;
@@ -9,12 +12,21 @@
 
 html {
     scroll-behavior: smooth;
+
+    ::-webkit-scrollbar {
+        display: none;
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
 }
 
 body {
     background-color: $purple-100;
     color: $white-100;
 }
+
+
+// resets
 
 button,
 input {
@@ -43,19 +55,26 @@ i {
     @include flex;
 }
 
-[data-group="wrapper"] {
-    @include debug-light;
-    @include min-w($screen-width);
 
-    // width:min(90rem, 100% - 4rem);
+// misc
+
+.app__wrapper {
+    background: url("/bg.png");
+    background-size: cover;
+    background-repeat: no-repeat;
+    position: relative;
+}
+
+[data-group="wrapper"] {
+    // @include debug-light;
+    width: min($screen-width, 100% - 5rem);
 }
 
 [data-group="parent"] {
-    @include debug-dark;
+    // @include debug-dark;
     @include flex;
 }
 
-// misc
 .iekbcc0.iekbcc9.ju367v4.ju367va0.ju367vc6.ju367vs.ju367vt.ju367vv.ju367vff.ju367va.ju367v2b.ju367v2q.ju367v8u.ju367v94._12cbo8i3.ju367v8r._12cbo8i5._12cbo8i7 svg {
     @include equal(.625rem);
 }

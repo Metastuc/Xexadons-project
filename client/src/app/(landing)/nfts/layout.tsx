@@ -12,6 +12,9 @@ export default function RootLayout({
 		<main
 			className="nfts"
 			data-group="parent"
+			style={{
+				marginTop: "8rem",
+			}}
 		>
 			{children}
 		</main>

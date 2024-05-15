@@ -16,7 +16,7 @@ import {
 } from "@rainbow-me/rainbowkit/wallets";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactNode } from "react";
-import { http, WagmiProvider } from "wagmi";
+import { WagmiProvider } from "wagmi";
 import { mainnet, polygonAmoy } from "wagmi/chains";
 
 const { wallets }: { wallets: WalletList } = getDefaultWallets();

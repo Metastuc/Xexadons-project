@@ -3,7 +3,7 @@
 import "./index.scss";
 
 import { usePathname, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { Cart, Search } from "@/assets";
 import {
@@ -27,6 +27,34 @@ export function NavigationBar({ group }: commonProps) {
 	} = ContextWrapper();
 
 	const [isCartOpen, setIsCartOpen] = useState<boolean>(false);
+	const [isScrolled, setIsScrolled] = useState<boolean>(window.scrollY <= 50);
+
+	useEffect(() => {
+		const navBarParent = document.querySelector(
+			".header-navbar",
+		) as HTMLElement;
+
+		function handleScroll() {
+			if (window.scrollY <= 50) {
+				navBarParent?.style.setProperty(
+					"background-color",
+					"transparent",
+				);
+
+				setIsScrolled(false);
+			} else {
+				navBarParent?.style.setProperty(
+					"background-color",
+					"rgba(27, 17, 30, 0.95)",
+				);
+
+				setIsScrolled(true);
+			}
+		}
+
+		window.addEventListener("scroll", handleScroll);
+		return () => window.removeEventListener("scroll", handleScroll);
+	}, [isScrolled]);
 
 	return (
 		<>

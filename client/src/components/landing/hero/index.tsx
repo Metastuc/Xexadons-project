@@ -3,6 +3,7 @@ import "./index.scss";
 import Link from "next/link";
 import { JSX } from "react";
 
+import { ArrowDeg45, HeroRightImage } from "@/assets";
 import { commonProps } from "@/types";
 
 export function Hero({ group }: commonProps): JSX.Element {
@@ -40,15 +41,17 @@ function renderLeftContent({ group }: commonProps): JSX.Element {
 				</p>
 
 				<div>
-					<Link href={"/"}>
+					<Link href={"/nfts"}>
 						<span>enter app</span>
-						<i>icon</i>
+						<span>
+							<i>{ArrowDeg45()}</i>
+						</span>
 					</Link>
 				</div>
 
 				<article>
-					<span>common--rare</span>
-					<span>legendary--mythic</span>
+					<span>common---rare</span>
+					<span>legendary---mythic</span>
 				</article>
 			</div>
 		</>
@@ -58,7 +61,9 @@ function renderLeftContent({ group }: commonProps): JSX.Element {
 function renderRightContent({ group }: commonProps): JSX.Element {
 	return (
 		<>
-			<div className={`${group}__right`}></div>
+			<div className={`${group}__right`}>
+				<HeroRightImage />
+			</div>
 		</>
 	);
 }

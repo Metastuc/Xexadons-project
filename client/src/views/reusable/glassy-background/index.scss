@@ -1,0 +1,41 @@
+@use "@/styles/"as *;
+
+.glassy-background {
+    @include equal(100%);
+    background-color: rgba($white-100, .0005);
+    backdrop-filter: blur(5rem);
+    border-radius: .75rem;
+    border: .25rem solid transparent;
+    // background-clip: content-box, padding-box, border-box;
+
+
+
+
+
+
+
+
+
+
+    // background-image: radial-gradient(circle at 100% 100%, transparent 16px, #d50000 16px, #d50000 20px, transparent 20px),
+    //     linear-gradient(to right, #d50000, #304ffe),
+    //     radial-gradient(circle at 0% 100%, transparent 16px, #304ffe 16px, #304ffe 20px, transparent 20px),
+    //     linear-gradient(to bottom, #304ffe, #00bfa5),
+    //     radial-gradient(circle at 0% 0%, transparent 16px, #00bfa5 16px, #00bfa5 20px, transparent 20px),
+    //     linear-gradient(to left, #00bfa5, #ffd600),
+    //     radial-gradient(circle at 100% 0%, transparent 16px, #ffd600 16px, #ffd600 20px, transparent 20px),
+    //     linear-gradient(to top, #ffd600, #d50000);
+    // background-size: 20px 20px,
+    //     calc(100% - 40px) 4px,
+    //     20px 20px,
+    //     4px calc(100% - 40px);
+    // background-position: top left,
+    //     top center,
+    //     top right,
+    //     center right,
+    //     bottom right,
+    //     bottom center,
+    //     bottom left,
+    //     center left;
+    // background-repeat: no-repeat;
+}
