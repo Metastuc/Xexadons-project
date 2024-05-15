@@ -22,12 +22,16 @@ type handleEnterAppButtonUIProps = commonProps & {
 export function NavigationBar({ group }: commonProps) {
 	const router = useRouter();
 	const pathname = usePathname();
+	const windowEl = typeof window !== "undefined" ? window : null;
+
 	const {
 		navContext: { isNetworkValid },
 	} = ContextWrapper();
 
 	const [isCartOpen, setIsCartOpen] = useState<boolean>(false);
-	const [isScrolled, setIsScrolled] = useState<boolean>(window.scrollY <= 50);
+	const [isScrolled, setIsScrolled] = useState<boolean>(
+		(windowEl?.scrollY || 0) <= 50,
+	);
 
 	useEffect(() => {
 		const navBarParent = document.querySelector(
@@ -35,7 +39,7 @@ export function NavigationBar({ group }: commonProps) {
 		) as HTMLElement;
 
 		function handleScroll() {
-			if (window.scrollY <= 50) {
+			if ((windowEl?.scrollY || 0) <= 50) {
 				navBarParent?.style.setProperty(
 					"background-color",
 					"transparent",
@@ -54,7 +58,7 @@ export function NavigationBar({ group }: commonProps) {
 
 		window.addEventListener("scroll", handleScroll);
 		return () => window.removeEventListener("scroll", handleScroll);
-	}, [isScrolled]);
+	}, [isScrolled, windowEl?.scrollY]);
 
 	return (
 		<>
