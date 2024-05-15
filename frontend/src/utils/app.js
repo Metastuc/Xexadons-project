@@ -546,6 +546,9 @@ export const sellNFT = async(tokenIds, nftAddress, chainId, signer) => {
   }
 }
 
-export const getPrice = async(chainId) => {
-  // 
+export const getCoinPrice = async(chainId) => {
+  const res = await fetch(`${baseAPIURL}getCoinPrice?chainId=${chainId}`);
+ const data = await res.json();
+ const price = data.price;
+ return price;
 }
