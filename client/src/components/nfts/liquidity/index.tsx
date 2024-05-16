@@ -1,5 +1,6 @@
 import "./index.scss";
 
+import { Polygon, Xexadons } from "@/assets";
 import { commonProps } from "@/types";
 import { contentWrapper } from "@/views";
 
@@ -65,12 +66,23 @@ function renderTabs({ handleTabClick, currentPool }: renderTabProps) {
 					<span>withdraw</span>
 				</li>
 
-				{/* <span>indicator</span> */}
+				<span
+					className={currentPool}
+					style={{
+						left:
+							currentPool === "deposit"
+								? "calc(0% + .25rem)"
+								: "50%",
+					}}
+				></span>
 			</ul>
 
 			<p>
-				~ when you deposit liquidity, you earn a 1% fee on each trade
-				made on the pool
+				{currentPool === "deposit"
+					? `~ when you deposit liquidity, you earn a 1% fee on each trade
+				made on the pool`
+					: `~ when you withdraw liquidity, you take out selected Nft, token
+				and the fees earned in the pool`}
 			</p>
 		</>
 	);
@@ -80,7 +92,7 @@ function deposit({ group }: commonProps) {
 	const styleClass = `${group}__content`;
 
 	return (
-		<section className={`${styleClass}_wrapper`}>
+		<>
 			<h3>Add liquidity</h3>
 
 			<div className={`${styleClass}_top`}>
@@ -98,7 +110,7 @@ function deposit({ group }: commonProps) {
 
 									<aside>
 										<div>
-											<i>icon</i>
+											<i>{Polygon()}</i>
 											<span>polygon</span>
 										</div>
 										<span>845matic available</span>
@@ -123,8 +135,8 @@ function deposit({ group }: commonProps) {
 									</div>
 
 									<div className={`${styleClass}_detail-2`}>
+										<span>from</span>
 										<span>nft pool</span>
-										<span>receiver</span>
 									</div>
 
 									<div className={`${styleClass}_detail-3`}>
@@ -141,8 +153,8 @@ function deposit({ group }: commonProps) {
 
 								<article className={`${styleClass}_swap`}>
 									<div>
-										<i>icon</i>
-										<i>icon</i>
+										<i>{Xexadons()}</i>
+										<i>{Polygon()}</i>
 									</div>
 
 									<span>3 xexadons & 500matic</span>
@@ -160,7 +172,7 @@ function deposit({ group }: commonProps) {
 					),
 				})}
 			</div>
-		</section>
+		</>
 	);
 }
 
