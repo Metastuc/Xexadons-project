@@ -3,45 +3,66 @@
 
 .liquidity_left {
     margin: 1rem 0 0 0;
-    @include debug-dark;
 
     h2 {
+        @include font($f: clash, $s: xlg, $w: reg);
         text-transform: capitalize;
     }
 
     &__tabs {
+        --height: 1.5rem;
+        --width: 7rem;
+
         @include flex($d: column, $a: flex-start);
         gap: .75rem;
 
         ul {
             @include flex;
+            position: relative;
             border-radius: $radius - .25rem;
             padding: .25rem;
             margin-top: 1.5rem;
+            background: linear-gradient(rgba(#2b212d, 100%), rgba(#2b212d, 100%)) padding-box,
+                linear-gradient(170deg, rgba(#15BFFD, 50%) 0%, rgba(#B2FDB6, 50%) 100%) border-box;
+            border: .0625rem solid transparent;
 
             li {
                 @include flex;
-                width: 7rem;
-                height: 2rem;
-                @include debug-dark;
+                width: var(--width);
+                height: var(--height);
                 border-radius: inherit;
 
                 span {
+                    @include font($f: clash, $s: sm, $w: reg);
                     text-transform: capitalize;
+                    z-index: 5;
+                    color: $white-200;
                 }
             }
+
+            >span {
+                width: var(--width);
+                height: var(--height);
+                position: absolute;
+                background: linear-gradient(rgba(#2b212d, 100%), rgba(#2b212d, 100%)) padding-box,
+                    linear-gradient(170deg, rgba(#15BFFD, 50%) 0%, rgba(#B2FDB6, 50%) 100%) border-box;
+                border: .0625rem solid transparent;
+                border-radius: inherit;
+                transition: 200ms;
+            }
+        }
+
+        p {
+            $size: map-get($map: $fz, $key: sm) - .25rem;
+            @include font($f: clash, $s: $size, $w: reg);
         }
     }
 
     &__content {
-        @include debug-dark;
-
-        &_wrapper {
-            @include debug-dark;
-
-            h3 {
-                margin-top: 2rem;
-            }
+        h3 {
+            @include font($f: clash, $s: xlg, $w: reg);
+            margin-top: 2rem;
+            padding-left: .5rem;
         }
 
         &_top {
@@ -52,7 +73,8 @@
                 gap: 1.75rem;
 
                 >span {
-                    @include debug-light;
+                    @include font($f: clash, $s: lrg, $w: reg);
+                    color: $white-200;
                 }
 
                 >div {
@@ -61,23 +83,44 @@
 
                     aside {
                         @include flex($d: column, $a: flex-start);
-                        gap: 2rem;
+                        gap: 1.5rem;
+
+                        &:first-of-type {
+                            span {
+                                &:first-of-type {
+                                    $size: map-get($map: $fz, $key: xlg) + .5rem;
+                                    @include font($f: clash, $s: $size, $w: reg);
+                                }
+
+                                &:last-of-type {
+                                    @include font($f: clash, $s: sm, $w: reg);
+                                    color: rgba($color: $white-100, $alpha: .9)
+                                }
+                            }
+                        }
+
+                        &:last-of-type {
+                            >span {
+                                @include font($f: clash, $s: sm, $w: reg);
+                                color: rgba($color: $white-100, $alpha: .9)
+                            }
+                        }
 
                         div {
                             @include flex;
-                            @include debug-dark;
                             width: 8.5rem;
                             height: 2.25rem;
                             gap: .5rem;
                             border-radius: $radius - .25rem;
+                            background-color: #777179;
 
                             i {
                                 @include equal(1.75rem);
-                                @include debug-dark;
                                 border-radius: 50%;
                             }
 
                             span {
+                                @include font($f: lufga, $s: lrg, $w: reg);
                                 text-transform: capitalize;
                             }
                         }
@@ -86,19 +129,18 @@
             }
         }
 
-        &_bottom {
-            // @include flex($d: column, $a: flex-start);
-            // gap: 1.5rem;
-        }
-
         &_detail {
-            @include debug-dark;
             @include flex;
             gap: .5rem;
 
             >div {
                 @include flex($d: column, $a: flex-start);
                 gap: 1rem;
+            }
+
+            span {
+                $size: map-get($map: $fz, $key: xs) - .25rem;
+                @include font($f: clash, $s: $size, $w: reg);
             }
 
             &-1 {
@@ -130,12 +172,10 @@
 
                 i {
                     width: .0625rem;
-                    height: 1.25rem;
+                    height: 1rem;
                     border-right: dashed .0313rem rgba(241, 230, 230, 0.8);
                 }
             }
-
-            &-2 {}
 
             &-3 {
                 gap: 0 !important;
@@ -146,30 +186,28 @@
                     border-radius: 50%;
 
                     &:first-of-type {
-                        background-color: #B06ECF;
+                        background: linear-gradient(-45deg, #4634BA 0%, #AAC830 100%);
                     }
 
                     &:last-of-type {
-                        background-color: #98D076;
+                        background: linear-gradient(to bottom, #E91A1A 0%, #01EF0B 100%);
                     }
                 }
 
                 i {
-                    height: 1.5rem;
+                    height: .75rem;
                 }
 
                 &.sell-content {
                     flex-direction: column-reverse;
                 }
             }
-
-            &-4 {}
         }
 
         &_swap {
             @include flex($d: column);
             gap: .75rem;
-            margin-block: 1.5rem;
+            margin-block: .75rem;
 
             div {
                 @include flex;
@@ -180,34 +218,44 @@
                 i {
                     @include equal(2.25rem);
                     position: absolute;
-                    @include debug-dark;
                     border-radius: 50%;
 
                     &:first-of-type {
                         left: 0;
+                        z-index: 2;
                     }
 
                     &:last-of-type {
-                        right: 0;
-                        z-index: -1;
+                        right: 10%;
                     }
                 }
+            }
+
+            span {
+                @include font($f: clash, $s: nrm, $w: reg);
+                color: rgba($color: $white-100, $alpha: .8)
+            }
+
+            p {
+                @include font($f: clash, $s: sm, $w: reg);
+                color: rgba($color: $white-100, $alpha: .6)
             }
         }
 
         &_confirm {
-            @include debug-dark;
             @include flex;
 
             button {
                 @include flex;
-                @include debug-dark;
                 width: 8.75rem;
                 height: 2.5rem;
                 border-radius: $radius + .125rem;
+                background-color: $purple-100;
 
                 span {
+                    @include font($f: clash, $s: sm, $w: reg);
                     text-transform: capitalize;
+                    color: $white-100;
                 }
             }
         }
