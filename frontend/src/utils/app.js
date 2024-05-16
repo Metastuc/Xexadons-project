@@ -426,28 +426,32 @@ export const buyNFT = async(nfts, chainId, signer) => {
         const buyTx = await routerContract.swapETHforNFT(result[i].ids, result[i].poolAddress, userAddress, {value: price});
         await buyTx.wait();
         console.log("bought");
+        const ids = result[i].ids
 
-        // const poolAddress = result[i].poolAddress
-        // const reqBody = {
-        //   event:
-        //   item:
-        //   price:
-        //   from: userAddress,
-        //   to: poolAddress,
-        //   hash: 
-        // }
+        const poolAddress = result[i].poolAddress
+        const reqBody = {
+          event: "Buy",
+          item: ids,
+          price: Number(ethers.parseEther(price.toString())),
+          from: userAddress,
+          to: poolAddress,
+          hash: buyTx.hash
+        }
 
-        // const response = await fetch(`${baseAPIURL}recordActivity/${poolAddress}`, {
-        //   method: "POST",
-        //   headers: {
-        //     "Content-Type": "application/json",
-        //   },
-        //   body: JSON.stringify(reqBody),
-        // });
+        const response = await fetch(`${baseAPIURL}recordActivity/${poolAddress}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(reqBody),
+        });
     
-        // if (!response.ok) {
-        //   throw new Error("Server Error");
-        // }
+        if (!response.ok) {
+          throw new Error("Server Error");
+        } else{
+          console.log("done");
+        }
+
     }
 }
 
