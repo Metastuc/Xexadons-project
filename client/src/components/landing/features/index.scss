@@ -1,0 +1,43 @@
+@use "@/styles/"as *;
+
+.features {
+    @include flex;
+    width: 100%;
+    margin: 7.75rem 0 8.25rem 0;
+    background-color: rgba($white-100, .05);
+    backdrop-filter: blur(5rem);
+    padding: 0 2rem 2rem 2rem;
+
+    &__wrapper {
+        @include flex;
+        gap: 2rem;
+    }
+
+    li {
+        height: 26.25rem;
+        width: 26.5rem;
+
+        &:nth-of-type(2) {
+            margin-top: 4rem;
+        }
+    }
+
+    h2 {
+        $size: map-get($map: $fz, $key: xlg) + .25rem;
+        @include font($f: clash, $s: $size, $w: med);
+        letter-spacing: .03rem;
+    }
+
+    p{
+        @include font($f: clash, $s: nrm, $w: reg);
+        text-align: center;
+        line-height: 2.5rem;
+        letter-spacing: .05rem;
+    }
+
+    section.glassy-background {
+        @include flex($d: column, $a: flex-start, $j: flex-start);
+        gap: 1.5rem;
+        padding: 3rem 1.5rem;
+    }
+}

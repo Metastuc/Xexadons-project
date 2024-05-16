@@ -1,0 +1,42 @@
+@use "./functions"as *;
+@use "./variables"as *;
+
+@mixin equal($h-w) {
+    height: $h-w;
+    width: $h-w;
+}
+
+@mixin flex($d: row, $j: center, $a: center) {
+    display: flex;
+    flex-direction: $d;
+    justify-content: $j;
+    align-items: $a;
+}
+
+@mixin min-w($w:0, $p:100%) {
+    width: min($w, $p);
+}
+
+@mixin max-w($w:0, $p:100%) {
+    width: max($w, $p);
+}
+
+@mixin debug-light {
+    outline: .25rem groove random-light-color();
+}
+
+@mixin debug-dark {
+    outline: .25rem groove random-dark-color();
+}
+
+@mixin font($f: null, $s: null, $w: null) {
+    $font-family: if($f !=null and map-has-key($ff, $f), map-get($ff, $f), $f);
+    $font-size: if($s !=null and map-has-key($fz, $s), map-get($fz, $s), $s);
+    $font-weight: if($w !=null and map-has-key($fw, $w), map-get($fw, $w), $w);
+
+    font: {
+        family: $font-family;
+        size: $font-size;
+        weight: $font-weight;
+    }
+}

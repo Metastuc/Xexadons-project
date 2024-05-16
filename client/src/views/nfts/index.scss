@@ -1,0 +1,39 @@
+@use "@/styles/"as *;
+
+
+.nfts {
+    position: relative;
+
+    &__wrapper {
+        width: 72.75rem;
+        height: 51rem;
+        border-radius: $radius + .125rem;
+
+        >section {
+            @include flex;
+            gap: 1.25rem;
+            padding: 2rem 1.75rem;
+            border-radius: inherit;
+        }
+    }
+
+    &__content {
+        @include equal(100%);
+        border-radius: inherit;
+
+        >section {
+            padding: .75rem 1.5rem;
+            border-radius: inherit;
+            border: .0625rem solid #574a64;
+            background-color: #2c222e;
+        }
+
+        &-wrapper {
+            width: inherit;
+            border-radius: $radius + .125rem;
+            padding: 1rem 1.5rem;
+            border: .125rem dashed #5e5469;
+            background-color: #322935;
+        }
+    }
+}

@@ -1,0 +1,111 @@
+@use "../../../styles/index"as *;
+
+.hero {
+    width: 100%;
+
+    &__wrapper {
+        @include equal(100%);
+        @include flex;
+        gap: 7rem;
+        margin-top: 8rem;
+        position: relative;
+    }
+
+    &__left {
+        @include flex($d: column, $a: flex-start);
+        @include min-w(38.25rem);
+
+        h1 {
+            $size: map-get($map: $fz, $key: xlg)+3.75rem;
+
+            @include flex($d: column, $a: flex-start);
+            @include font($f: clash, $s: $size);
+
+            span {
+                &:nth-of-type(1) {
+                    font-weight: map-get($map: $fw, $key: sbd);
+                }
+
+                &:nth-of-type(2) {
+                    font-weight: map-get($map: $fw, $key: reg);
+                }
+            }
+        }
+
+        p {
+            @include font($f: clash, $s: nrm, $w: reg);
+            @include min-w(30.5rem);
+            text-align: center;
+            margin: 2rem 0 4rem 0;
+        }
+
+        div {
+            --height: 3.25rem;
+
+            @include flex;
+            width: 100%;
+
+            a>* {
+                border-radius: $radius + .125rem;
+                background-color: $blue-100;
+            }
+
+            span {
+                @include flex;
+
+                &:first-of-type {
+                    @include font($f: lufga, $s: xlg, $w: med);
+                    height: var(--height);
+                    width: 12rem;
+                    color: $white-100;
+                }
+
+                &:last-of-type {
+                    height: var(--height);
+                    width: calc(var(--height) + .25rem);
+                }
+            }
+
+            i {
+                @include equal(.75rem);
+            }
+        }
+
+        article {
+            @include flex($d: column, $a: flex-start);
+            gap: 1rem;
+            margin-top: 6.75rem;
+
+            span {
+                $size: map-get($map: $fz, $key: xlg) + .625rem;
+                @include font($f: clash, $s: $size, $w: med);
+
+
+                &:first-of-type {
+                    background: linear-gradient(to right, #FFFFFF 0%, #B7949A 100%);
+                    -webkit-background-clip: text;
+                    -webkit-text-fill-color: transparent;
+                    background-clip: text;
+                }
+
+                &:last-of-type {
+                    padding-left: 7rem;
+                    background: linear-gradient(to right, #D7D7D7 0%, #FFFFFF 100%);
+                    -webkit-background-clip: text;
+                    -webkit-text-fill-color: transparent;
+                    background-clip: text;
+                }
+            }
+        }
+    }
+
+    &__right {
+        width: 28rem;
+        height: 38rem;
+
+        svg {
+            scale: 1.5;
+            pointer-events: none;
+        }
+    }
+}

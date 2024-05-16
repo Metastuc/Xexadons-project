@@ -1,0 +1,13 @@
+@function random-dark-color() {
+    $hue: random(360);
+    $saturation: percentage(calc(random(100) / 100));
+    $lightness: percentage(calc(random(50) / 100));
+    @return hsl($hue, $saturation, $lightness);
+}
+
+@function random-light-color() {
+    $min-lightness: 50%;
+    $hue: random(360);
+    $saturation: random(50)+50%;
+    @return hsl($hue, $saturation, $min-lightness);
+}

@@ -1,0 +1,114 @@
+@use "../../styles/"as *;
+
+.header-navbar {
+
+    --height: 3.25rem;
+    --radius: 1.75rem;
+
+    %header-right-contents {
+        @include flex;
+        color: $blue-100;
+        border: .0625rem solid $blue-100;
+        border-radius: var(--radius);
+        height: var(--height);
+    }
+
+    position: sticky;
+    top: 0;
+    width: 100%;
+    z-index: 5;
+    backdrop-filter: blur(1rem);
+    transition: 150ms;
+
+    &__wrapper {
+        @include flex($j: space-between);
+        padding: 2rem 4rem;
+    }
+
+    &__left {
+        ul {
+            @include flex;
+            gap: 5.25rem;
+        }
+
+        li {
+            @include font($f: lufga, $s: lrg, $w: reg);
+        }
+
+        a {
+            text-transform: capitalize;
+            color: $white-100;
+        }
+    }
+
+    &__right {
+        @include flex;
+        gap: 2.5rem;
+
+        >div:not(:nth-of-type(2)) {
+            @extend %header-right-contents;
+            width: 14.5rem;
+            gap: .625rem;
+
+            i {
+                @include equal(1.25rem);
+            }
+
+            input {
+                @include font($f: lufga, $s: lrg, $w: reg);
+                height: 1.5rem;
+                width: 10rem;
+                color: $blue-100;
+
+                &::placeholder {
+                    color: $blue-100;
+                    opacity: .5;
+                }
+            }
+        }
+
+        >span {
+            >button {
+                width: 12.25rem;
+                gap: .75rem;
+            }
+
+            span {
+                &:nth-of-type(1) {
+                    @include flex;
+                    @include equal(1.25rem);
+
+                    img {
+                        mix-blend-mode: luminosity;
+                    }
+                }
+
+                &:nth-of-type(2) {
+                    @include font($f: lufga, $s: lrg, $w: reg);
+                }
+            }
+
+            i {
+                @include equal(1rem);
+            }
+        }
+
+        &-button {
+            @extend %header-right-contents;
+            @include font($f: lufga, $s: lrg, $w: reg);
+            cursor: pointer;
+
+            i {
+                @include equal(1.5rem);
+            }
+
+            &:nth-of-type(1) {
+                width: 7.75rem;
+            }
+
+            &:nth-of-type(2) {
+                width: 4rem;
+            }
+        }
+    }
+}

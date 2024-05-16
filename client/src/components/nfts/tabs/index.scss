@@ -1,0 +1,77 @@
+@use "@/styles/"as *;
+
+.nft_tabs {
+    --height: 2.25rem;
+    --width: 7.25rem;
+
+    @include flex($j: flex-end);
+
+    &__wrapper {
+        @include flex;
+        border-radius: $radius - .25rem;
+        padding: .25rem;
+        position: relative;
+        border: .0625rem solid transparent;
+        background: linear-gradient(rgba(#2b212d, 100%), rgba(#2b212d, 100%)) padding-box,
+            linear-gradient(170deg, rgba(#15BFFD, 50%) 0%, rgba(#B2FDB6, 50%) 100%) border-box,
+    }
+
+    &__button {
+        height: var(--height);
+        width: var(--width);
+
+        span {
+            @include font($f: clash, $s: xlg, $w: reg);
+            text-transform: capitalize;
+            color: $white-100;
+            z-index: 5;
+            position: relative;
+        }
+    }
+
+    &__indicator {
+        --button-width: calc(var(--width) + .25rem);
+
+        position: absolute;
+        height: var(--height);
+        width: var(--width);
+        border-radius: inherit;
+        transition: 200ms;
+        left: calc(100% - var(--button-width));
+        background: linear-gradient(rgba(#15BFFD, 1%), rgba(#15BFFD, 1%)) padding-box,
+            linear-gradient(170deg, rgba(#15BFFD, 25%) 0%, rgba(#B2FDB6, 25%) 100%) border-box;
+
+        &.buy {
+            left: calc(0% + .25rem);
+        }
+
+        &.sell {
+            left: calc(50% - calc(var(--button-width) - .25rem) / 2);
+        }
+    }
+
+    &__dropdown {
+        @include debug-dark;
+        position: absolute;
+        right: 0;
+        top: 50%;
+        width: var(--width);
+        border-radius: $radius / 7;
+
+        ul {
+            @include flex($d: column, $a: flex-start);
+            gap: .5rem;
+            padding: .5rem;
+        }
+
+        li {
+            cursor: pointer;
+            width: 100%;
+
+            &:hover {
+                @include debug-dark;
+                border-radius: $radius - .25rem;
+            }
+        }
+    }
+}
