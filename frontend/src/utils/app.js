@@ -426,6 +426,28 @@ export const buyNFT = async(nfts, chainId, signer) => {
         const buyTx = await routerContract.swapETHforNFT(result[i].ids, result[i].poolAddress, userAddress, {value: price});
         await buyTx.wait();
         console.log("bought");
+
+        // const poolAddress = result[i].poolAddress
+        // const reqBody = {
+        //   event:
+        //   item:
+        //   price:
+        //   from: userAddress,
+        //   to: poolAddress,
+        //   hash: 
+        // }
+
+        // const response = await fetch(`${baseAPIURL}recordActivity/${poolAddress}`, {
+        //   method: "POST",
+        //   headers: {
+        //     "Content-Type": "application/json",
+        //   },
+        //   body: JSON.stringify(reqBody),
+        // });
+    
+        // if (!response.ok) {
+        //   throw new Error("Server Error");
+        // }
     }
 }
 

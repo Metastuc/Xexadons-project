@@ -544,7 +544,7 @@ app.post("recordActivity/:poolId", async(req, res) => {
       },
       price: req.body.price,
       from: req.body.from,
-      from: req.body.to,
+      to: req.body.to,
       time: new Date().toISOString(),
       hash: req.body.hash
     }
@@ -577,18 +577,80 @@ app.get("/getPoolActivity", async(req, res) => {
   }
 });
 
-app.get("/getUser", async(req, res) => {
+app.get("/getUserPools", async(req, res) => {
+  const chainId = req.query.chainId;
   const userAddress = req.query.userAddress;
-  const chain = req.query.chain;
 
   try {
-    const userPools = await getUserPools(userAddress, chain);
-    const userNFTs = await getUserNFTs(userAddress);
-    const userBalnce = await getUserBalance(userAddress, chain);
+    const userPools = await getUserPools(userAddress, chainId);
+    res.status(200).json(userPools);
+  } catch (error) {
+    console.log(error);
+    res.status(500);
+    res.json(error);
+  }
+})
+
+async function getUserPools(address, chain) {
+  try {
+    const provider = new ethers.JsonRpcProvider(rpcUrls[chain]);
+
+    const factoryContract = new ethers.Contract(deploymentAddresses.factory[chain], ABIs.factoryABI, provider);
+  
+    const userPools = await factoryContract.getUserPairs(address);
+    console.log(userPools);
+
+    var pools = [];
+
+    for (let i = 0; i < userPools.length; i++) {
+      const pairContract = new ethers.Contract(userPools[i], ABIs.pairABI, provider);
+
+      const poolOwner = await pairContract.owner();
+      const reserve0 = await pairContract.reserve0();
+      const _reserve0 = Number(reserve0);
+      const reserve1 = await pairContract.reserve1();
+      const _reserve1 = Number(ethers.parseEther(reserve1.toString()));
+
+      const curveContract = new ethers.Contract(deploymentAddresses.curve[chain], ABIs.curveABI, provider);
+
+      // use function that returns only one uint
+      const buyPrice = await curveContract.getBuyPriceSingle(1, reserve0, reserve1, userPools[i]);
+      const _buyPrice = Number(ethers.parseEther(buyPrice.toString()));
+      const sellPrice = await curveContract.getSellAmountSingle(1, reserve0, reserve1, userPools[i]);
+      const _sellPrice = Number(ethers.parseEther(sellPrice.toString()));
+
+      const pool = {
+        poolAddress: userPools[i],
+        owner: poolOwner,
+        buyPrice: _buyPrice,
+        sellPrice: _sellPrice,
+        nftAmount: _reserve0,
+        tokenAmount: _reserve1
+      }
+
+      pools.push(pool);
+    }
+
+    console.log(pools);
+    return pools;
+
+  } catch (error) {
+    console.log(error);
+    return error;
+  }
+}
+
+app.get("/getUser", async(req, res) => {
+  const userAddress = req.query.userAddress;
+  const chainId = req.query.chainId;
+
+  try {
+    const userCollections = await getUserCollections(userAddress, chainId);
+    const userBalance = await getUserBalance(userAddress, chainId);
 
     const userObject = {
-      userPools: userPools,
-      userNFTs: userNFTs
+      userCollections: userCollections,
+      userBalance: userBalance
     }
 
     res.status(200).json(userObject);
@@ -597,100 +659,82 @@ app.get("/getUser", async(req, res) => {
   }
 })
 
-async function getUserBalance(address, chain) {
+async function getUserBalance(userAddress, chainId) {
   try {
-    const provider = new ethers.JsonRpcProvider(rpcUrls.testnets[chain]);
-
-    const balanceWei = await provider.getBalance(address);
-
-    const balanceEth = ethers.parseEther(balanceWei.toString());
-
-
-    const options = {
-      method: 'GET',
-      url: 'https://api.rarible.org/v0.1/currencies/ETHEREUM%3A0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2/rates/usd?at=2022-01-01T12%3A00%3A00Z',
-      headers: {
-        accept: 'application/json',
-        'X-API-KEY': '5038109f-4d25-4d86-9e77-df64196caac4'
-      }
-    };
-
-    const response = await axios(options);
-
-  } catch (error) {
+    const provider = new ethers.JsonRpcProvider(rpcUrls[chainId]);
+    const address = tokenAddresses[chainId];
     
-  }
+    const balanceWei = await provider.getBalance(userAddress);
+    const _balanceEth = ethers.parseEther(balanceWei.toString());
+    const balanceEth = Number(_balanceEth);
 
-  const balance = await provider.getBalance(address);
+    const response = await Moralis.EvmApi.token.getTokenPrice({
+      "chain": EvmChain.ETHEREUM,
+      "address": address
+    });
+  
+    const price = response.raw.usdPrice;
+    const dollarWorth = balanceEth * price;
 
-  // Convert the balance to Ether
-  const etherBalance = ethers.utils.formatEther(balance);
-}
+    const nativeBalance = Math.floor(balanceEth);
+    const dollarBalance = Math.floor(dollarWorth);
 
-async function getUserPools(address, chain) {
-  try {
-    const provider = new ethers.JsonRpcProvider(rpcUrls.testnets[chain]);
-
-    const factoryContract = new ethers.Contract(factoryAddress, ABIs.factoryABI, provider);
-    const userPools = await factoryContract.getUserPairss(address);
-    
-    var pools = [];
-
-    for (let i = 0; i < userPools.length; i++) {
-      const pairContract = new ethers.Contract(userPools[i], ABIs.pairABI, provider);
-      const poolOwner = await pairContract.owner();
-      const reserve0 = await pairContract.reserve0();
-      const reserve1 = await pairContract.reserve1();
-
-      const curveContract = new ethers.Contract(deploymentAddresses.curve.testnets[chain], ABIs.curveABI, provider);
-      // use function that returns only one uint
-      const buyPrice = await curveContract.getBuyPrice(1, reserve0, reserve1, userPools[i]);
-      const sellPrice = await curveContract.getSellAmount(1, reserve0, reserve1, userPools[i]);
-
-      const pool = {
-        poolAddress: poolAddresses[i],
-        owner: poolOwner,
-        buyPrice: buyPrice[0],
-        sellPrice: sellPrice[0],
-        nftAmount: reserve0,
-        tokenAmount: reserve1
-      }
-
-      pools.push(pool);
+    const balance = {
+      nativeBalance: nativeBalance,
+      dollarBalance: dollarBalance
     }
 
-    return pools;
+    console.log(balance);
+    return balance;
 
   } catch (error) {
+    console.log(error);
     return error;
   }
 }
 
-async function getUserNFTs(address) {
-  const userNFTs = [];
+async function getUserCollections(address, chainId) {
+  let userCollections;
+  let userNFTs = []
+  const provider = new ethers.JsonRpcProvider(rpcUrls[chainId]);
+  const options = {
+    method: 'GET',
+    url: `https://testnet-api.rarible.org/v0.1/items/byOwnerWithOwnership?owner=ETHEREUM%3A${address}`,
+    headers: {
+      accept: 'application/json',
+      'X-API-KEY': raribleApiKey
+    }
+  };
   try {
-    const options = {
-      method: 'GET',
-      url: `https://testnet-api.rarible.org/v0.1/items/byOwnerWithOwnership?owner=ETHEREUM%3A${address}`,
-      headers: {
-        accept: 'application/json',
-        'X-API-KEY': raribleApiKey
-      }
-    };
-
     const response = await axios(options);
     const items = response.data.items;
 
-    for (let j = 0; j < items.length; j++) {
+    for (let i = 0; i < items.length; i++) {
+      const collectionAddress = items[i].item.collection
+      const nftAddress = collectionAddress.slice(8);
+      const nftContract = new ethers.Contract(nftAddress, ABIs.nftABI, provider);
+      const name = items[i].item.itemCollection.name;
+      const image = await nftContract.tokenURI(0);
       const nft = {
-        id: items[j].tokenId,
-        name: collectionName + " " + "#" + items[j].tokenId,
-        poolAddresses: poolAddresses[i],
-        image: items[j].meta.content[0].url
-      };
-
+        name: name,
+        image: image
+      }
       userNFTs.push(nft);
     }
+    const uniqueNFTMap = new Map();
+
+    userNFTs.forEach(nft => {
+      const key = `${nft.name}-${nft.image}`;
+      if (!uniqueNFTMap.has(key)) {
+        uniqueNFTMap.set(key, nft);
+      }
+    });
+    
+    userCollections = Array.from(uniqueNFTMap.values());
+
+    console.log(userCollections);
+    return userCollections;
+
   } catch (error) {
     return error;
   }
