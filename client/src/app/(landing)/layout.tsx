@@ -40,7 +40,7 @@ function AppNavigation() {
 				className="header-navbar"
 				data-group="parent"
 			>
-				<NavigationBar group={"header-navbar"} />
+				{/* <NavigationBar group={"header-navbar"} /> */}
 			</header>
 		</>
 	);

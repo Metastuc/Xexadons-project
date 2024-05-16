@@ -49,7 +49,8 @@ export function NavigationBar({ group }: commonProps) {
 			} else {
 				navBarParent?.style.setProperty(
 					"background-color",
-					"rgba(27, 17, 30, 0.95)",
+					// "rgba(27, 17, 30, 0.95)",
+					"transparent",
 				);
 
 				setIsScrolled(true);

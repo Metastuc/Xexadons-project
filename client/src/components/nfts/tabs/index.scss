@@ -1,4 +1,4 @@
-@use "../../../styles/"as *;
+@use "@/styles/"as *;
 
 .nft_tabs {
     --height: 2.25rem;
@@ -7,11 +7,13 @@
     @include flex($j: flex-end);
 
     &__wrapper {
-        @include debug-light;
         @include flex;
         border-radius: $radius - .25rem;
         padding: .25rem;
         position: relative;
+        border: .0625rem solid transparent;
+        background: linear-gradient(rgba(#2b212d, 100%), rgba(#2b212d, 100%)) padding-box,
+            linear-gradient(170deg, rgba(#15BFFD, 50%) 0%, rgba(#B2FDB6, 50%) 100%) border-box,
     }
 
     &__button {
@@ -22,20 +24,22 @@
             @include font($f: clash, $s: xlg, $w: reg);
             text-transform: capitalize;
             color: $white-100;
+            z-index: 5;
+            position: relative;
         }
     }
 
     &__indicator {
         --button-width: calc(var(--width) + .25rem);
 
-        @include debug-light;
         position: absolute;
         height: var(--height);
         width: var(--width);
         border-radius: inherit;
-        z-index: -5;
         transition: 200ms;
         left: calc(100% - var(--button-width));
+        background: linear-gradient(rgba(#15BFFD, 1%), rgba(#15BFFD, 1%)) padding-box,
+            linear-gradient(170deg, rgba(#15BFFD, 25%) 0%, rgba(#B2FDB6, 25%) 100%) border-box;
 
         &.buy {
             left: calc(0% + .25rem);

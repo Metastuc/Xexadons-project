@@ -4,6 +4,8 @@ import { ReactNode } from "react";
 
 import { Liquidity, PurchaseNft, Tabs } from "@/components";
 
+import { GlassyBackground } from "../reusable";
+
 type renderLeftContentProps = {
 	activeTab: string;
 	handleTabClick: Function;
@@ -49,11 +51,13 @@ export function renderLeftContent({
 
 	return (
 		<section className="nfts__content">
-			<Tabs
-				handleTabClick={handleTabClick}
-				activeTab={activeTab}
-			/>
-			<section className="glass background">{content}</section>
+			<GlassyBackground>
+				<Tabs
+					handleTabClick={handleTabClick}
+					activeTab={activeTab}
+				/>
+				<section className="glass background">{content}</section>
+			</GlassyBackground>
 		</section>
 	);
 }
@@ -61,7 +65,11 @@ export function renderLeftContent({
 export function renderRightContent({
 	renderTabContent,
 }: renderRightContentProps) {
-	return <section className="nfts__content">{renderTabContent()}</section>;
+	return (
+		<section className="nfts__content">
+			<GlassyBackground>{renderTabContent()}</GlassyBackground>
+		</section>
+	);
 }
 
 export function contentWrapper({ children }: { children: ReactNode }) {

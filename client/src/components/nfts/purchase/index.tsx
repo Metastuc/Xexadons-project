@@ -1,5 +1,6 @@
 import "./index.scss";
 
+import { ArrowDeg90, Polygon, Xexadons } from "@/assets";
 import { commonProps } from "@/types";
 import { contentWrapper } from "@/views";
 
@@ -8,8 +9,6 @@ type purchaseNftProps = commonProps & {
 };
 
 export function PurchaseNft({ group, activeTab }: purchaseNftProps) {
-	// const styleClass: string = `${activeTab}-content`;
-
 	return (
 		<section className={group}>
 			<>{renderTitle({ group, activeTab })}</>
@@ -74,7 +73,7 @@ function renderTopContent({ group, activeTab }: purchaseNftProps) {
 							<span>$800</span>
 						</div>
 
-						<i>icon</i>
+						<i>{ArrowDeg90()}</i>
 
 						<span>3 xexadons</span>
 					</article>
@@ -84,7 +83,7 @@ function renderTopContent({ group, activeTab }: purchaseNftProps) {
 					<article className={`${group}__price ${activeTab}`}>
 						<span>3 xexadons</span>
 
-						<i>icon</i>
+						<i>{ArrowDeg90()}</i>
 
 						<div>
 							<span>690</span>
@@ -98,12 +97,12 @@ function renderTopContent({ group, activeTab }: purchaseNftProps) {
 				<>
 					<article className={`${group}__currency`}>
 						<span>
-							<i>icon</i>
+							<i>{Polygon()}</i>
 							<span>polygon</span>
 						</span>
 
 						<span>
-							<i>icon</i>
+							<i>{Xexadons()}</i>
 							<span>xexadons</span>
 						</span>
 					</article>
@@ -112,12 +111,12 @@ function renderTopContent({ group, activeTab }: purchaseNftProps) {
 				<>
 					<article className={`${group}__currency`}>
 						<span>
-							<i>icon</i>
+							<i>{Xexadons()}</i>
 							<span>xexadons</span>
 						</span>
 
 						<span>
-							<i>icon</i>
+							<i>{Polygon()}</i>
 							<span>polygon</span>
 						</span>
 					</article>
@@ -188,14 +187,14 @@ function renderBottomContent({ group, activeTab }: purchaseNftProps) {
 				<>
 					<article className={`${group}__swap`}>
 						<span>
-							<i>icon</i>
+							<i>{Polygon()}</i>
 							<span>690 matic</span>
 						</span>
 
-						<i>icon</i>
+						<i>{ArrowDeg90()}</i>
 
 						<span>
-							<i>icon</i>
+							<i>{Xexadons()}</i>
 							<span>3 xexadons</span>
 						</span>
 					</article>
@@ -204,14 +203,14 @@ function renderBottomContent({ group, activeTab }: purchaseNftProps) {
 				<>
 					<article className={`${group}__swap`}>
 						<span>
-							<i>icon</i>
+							<i>{Xexadons()}</i>
 							<span>3 xexadons</span>
 						</span>
 
-						<i>icon</i>
+						<i>{ArrowDeg90()}</i>
 
 						<span>
-							<i>icon</i>
+							<i>{Polygon()}</i>
 							<span>690 matic</span>
 						</span>
 					</article>
@@ -221,7 +220,7 @@ function renderBottomContent({ group, activeTab }: purchaseNftProps) {
 			{group.includes("buy") ? (
 				<>
 					<p className={`${group}__description`}>
-						~swap 690 matic <i></i> for 3 xexadons
+						~swap 690 matic <i>{Polygon()}</i> for 3 xexadons
 					</p>
 				</>
 			) : (
