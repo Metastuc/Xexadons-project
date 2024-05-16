@@ -328,43 +328,18 @@ app.get("/", (req, res) => {
   res.send("Hello Xexadon!");
 });
 
-// app.get("/getUserCollections", async(req, res) => {
-//   const userAddress = req.query.userAddress;
-//   const chain = req.query.chain;
+app.get("/getUserCollections", async(req, res) => {
+  const userAddress = req.query.userAddress;
+  const chain = req.query.chainId;
 
-//   var userCollections = [];
-//   const options = {
-//     method: 'GET',
-//     url: `https://testnet-api.rarible.org/v0.1/collections/byOwner?blockchains=${chain}&owner=ETHEREUM%3A${userAddress}`,
-//     headers: {
-//       accept: 'application/json',
-//       'X-API-KEY': raribleApiKey
-//     }
-//   };
-
-//   try {
-//     const response = await axios(options);
-//     const collections = response.data.collections;
-//     for (let i = 0; i < collections.length; i++) {
-//       // check if type is 721
-//       if (collections[i].type == "ERC721" && collections[i].id.includes(chain)) {
-//         const collection = {
-//           name: collections[i].name,
-//           symbol: collections[i].symbol,
-//           address: collections[i].id.match(/0x[a-fA-F0-9]{40}/)[0],
-//           image: collections[i].meta.content[0].url
-//         }
-//         userCollections.push(collection);
-//       }
-//     }
-//     // Return the userCollections array as the response
-//     res.status(200).json(userCollections);
-//   } catch (error) {
-//     // Handle errors
-//     console.error("Error fetching user collections:", error);
-//     res.status(500).json({ error: "Internal Server Error" });
-//   }
-// });
+  try {
+    const userCollections = await getUserCollections(userAddress, chain)
+    res.status(200).json(userCollections);
+  } catch (error) {
+    console.error("Error fetching user collections:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
 
 app.get("/getUserCollectionNFTs", async(req, res) => {
   // include chain param
@@ -716,6 +691,7 @@ async function getUserCollections(address, chainId) {
       const name = items[i].item.itemCollection.name;
       const image = await nftContract.tokenURI(0);
       const nft = {
+        address: nftAddress,
         name: name,
         image: image
       }
