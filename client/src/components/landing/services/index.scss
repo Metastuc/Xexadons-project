@@ -1,0 +1,87 @@
+@use "@/styles/"as *;
+
+
+.services {
+    width: 100%;
+
+    &__wrapper {
+        padding-inline: 5rem;
+
+        section.glassy-background {
+            @include flex($d: column, $a: center);
+            padding: 3.5rem 0 7.25rem 0
+        }
+    }
+
+    &__content {
+        @include flex;
+        gap: 10.25rem;
+    }
+
+    &__title {
+        $size: map-get($map: $fz, $key: xlg) + 2.25rem;
+        @include flex($d: column);
+        line-height: 5.75rem;
+
+        >span {
+            @include font($f: clash, $s: $size, $w: sbd);
+        }
+
+        div {
+            @include flex;
+            gap: .5rem;
+
+            span {
+                @include font($f: clash, $s: $size, $w: reg);
+
+                &:first-of-type {
+                    text-transform: capitalize;
+                    color: $white-300;
+                }
+
+                &:last-of-type {
+                    color: $white-200;
+                }
+            }
+        }
+    }
+
+    &__left {
+        @include flex($d: column, $a: flex-end);
+        gap: 3.75rem;
+
+        article {
+            @include flex($a:flex-start);
+            letter-spacing: 0.05rem;
+
+            b {
+                @include font($f: clash, $s: lrg, $w: bld);
+                text-transform: capitalize;
+            }
+
+            p {
+                @include font($f: clash, $s: lrg, $w: reg);
+            }
+
+            &:nth-of-type(1) {
+                width: 28.75rem;
+            }
+
+            &:nth-of-type(2) {
+                width: 25rem;
+            }
+
+            &:nth-of-type(3) {
+                width: 22.5rem;
+            }
+        }
+    }
+
+    &__right {
+        span {
+            @include flex;
+            width: 23rem;
+            height: 29.25rem;
+        }
+    }
+}

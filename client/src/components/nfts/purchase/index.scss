@@ -1,0 +1,247 @@
+@use "../../../styles/"as *;
+@use "sass:math";
+
+
+.buy_left,
+.sell_left {
+    @include flex($d: column, $a: flex-start);
+    margin-top: 3.25rem;
+    gap: 5rem;
+
+    &__title {
+        @include flex($d: column, $a: flex-start);
+        gap: .75rem;
+
+        h2 {
+            @include font($f: clash, $s: xlg, $w: reg);
+            text-transform: capitalize;
+        }
+
+        p {
+            @include font($f: clash, $s: xs, $w: reg);
+            padding-left: .25rem;
+        }
+    }
+
+    &__content {
+        @include flex($d: column, $a: flex-start);
+        @include equal(100%);
+        gap: 2.5rem;
+    }
+
+    &__from-to {
+        @include flex($j: space-between);
+        padding: 0 18% 0 2.5%;
+
+        span {
+            @include font($f: clash, $s: sm, $w: reg);
+        }
+    }
+
+    &__price {
+        $size: map-get($map: $fz, $key: xlg)+.5rem;
+
+        @include flex($j: space-between, $a: flex-start);
+        margin-block: 1.5rem;
+
+        div {
+            @include flex($d: column, $a: flex-start);
+            gap: .5rem;
+
+            span {
+                &:first-of-type {
+                    @include font($f: clash, $s: $size, $w: reg);
+                }
+
+                &:last-of-type {
+                    @include font($f: clash, $s: sm, $w: reg);
+                }
+            }
+        }
+
+        >span {
+            @include font($f: clash, $s: $size, $w: reg);
+        }
+
+        >*:not(i) {
+            width: 40%;
+        }
+
+        i {
+            @include equal(1.5rem);
+            border-radius: 50%;
+        }
+
+        &.sell {
+            >span {
+                text-align: left;
+            }
+
+            div {
+                align-items: center;
+            }
+        }
+    }
+
+    &__currency {
+        @include flex($j: space-between);
+
+        >span {
+            @include flex($j: flex-start);
+            gap: .25rem;
+            height: 2.25rem;
+            width: 8.5rem;
+            border-radius: $radius - .25rem;
+            padding-left: .75rem;
+            background-color: #78727a;
+
+            span {
+                @include font($f: lufga, $s: lrg, $w: reg);
+                text-transform: lowercase;
+            }
+        }
+
+        i {
+            @include equal(1.75rem);
+            border-radius: 50%;
+        }
+    }
+
+    &__detail {
+        @include flex;
+        gap: .5rem;
+
+        >div {
+            @include flex($d: column, $a: flex-start);
+            gap: 1.5rem;
+        }
+
+        span {
+            $size: map-get($map: $fz, $key: xs) - .25rem;
+            @include font($f: clash, $s: $size, $w: reg);
+        }
+
+        &-1 {
+            gap: 0 !important;
+            align-items: center !important;
+
+            span {
+                @include equal(1rem);
+                @include flex;
+                position: relative;
+                border-radius: 50%;
+
+                &:first-of-type {
+                    background-color: #98D076;
+                }
+
+                &:last-of-type {
+                    background-color: #B06ECF;
+                }
+
+                &::before {
+                    @include equal(62.5%);
+                    content: "";
+                    position: absolute;
+                    border-radius: inherit;
+                    background-color: white;
+                }
+            }
+
+            i {
+                width: .0625rem;
+                height: 1.25rem;
+                border-right: dashed .0313rem rgba(241, 230, 230, 0.8);
+            }
+        }
+
+        &-3 {
+            gap: 0 !important;
+
+            span {
+                @include equal(.75rem);
+                @include flex;
+                border-radius: 50%;
+
+                &:first-of-type {
+                    background: linear-gradient(to bottom, #E91A1A 0%, #01EF0B 100%);
+                }
+
+                &:last-of-type {
+                    background: linear-gradient(-45deg, #4634BA 0%, #AAC830 100%);
+                }
+            }
+
+            i {
+                height: 1.5rem;
+            }
+
+            &.sell {
+                flex-direction: column-reverse;
+            }
+        }
+    }
+
+    &__swap {
+        @include flex($a: flex-start);
+        gap: .5rem;
+        margin: .75rem 0;
+
+        span {
+            @include flex($d: column);
+            gap: .75rem;
+
+            i {
+                @include equal(2rem);
+                border-radius: 50%;
+            }
+
+            span {
+                @include font($f: clash, $s: nrm, $w: reg);
+                color: $white-200;
+            }
+        }
+
+        >i {
+            @include equal(1rem);
+            margin-top: 2%;
+            border-radius: 50%;
+        }
+
+        >*:not(i) {
+            width: 20%;
+        }
+    }
+
+    &__description {
+        @include flex;
+        @include font($f: clash, $s: sm, $w: reg);
+        gap: .25rem;
+        margin: .75rem 0;
+        color: $white-300;
+
+        i {
+            @include equal(.75rem);
+            border-radius: 50%;
+        }
+    }
+
+    &__confirmation {
+        @include flex;
+        margin-top: 1rem;
+        width: 100%;
+        height: 2.5rem;
+
+        button {
+            @include font($f: clash, $s: sm, $w: reg);
+            background-color: $purple-100;
+            color: $white-100;
+            text-transform: capitalize;
+            height: inherit;
+            width: 8.75rem;
+            border-radius: $radius + .125rem;
+            text-transform: capitalize;
+            cursor: pointer;
+        }
+    }
+}
