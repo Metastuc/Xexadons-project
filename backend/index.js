@@ -508,15 +508,13 @@ app.get("/getCollection", async(req, res) => {
   }
 });
 
-app.post("recordActivity/:poolId", async(req, res) => {
+app.post("/recordActivity/:poolId", async(req, res) => {
   const poolId = req.params.poolId;
+  console.log(`Received request for poolId: ${poolId}`);
   try {
     const activity = {
       event: req.body.event,
-      item: {
-        image: req.body.itemImage,
-        name: req.body.itemName,
-      },
+      item: req.body.item,
       price: req.body.price,
       from: req.body.from,
       to: req.body.to,
