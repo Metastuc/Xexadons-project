@@ -13,10 +13,12 @@
         position: relative;
         border: .0625rem solid transparent;
         background: linear-gradient(rgba(#2b212d, 100%), rgba(#2b212d, 100%)) padding-box,
-            linear-gradient(170deg, rgba(#15BFFD, 50%) 0%, rgba(#B2FDB6, 50%) 100%) border-box,
+            linear-gradient(170deg, rgba(#15BFFD, 50%) 0%, rgba(#B2FDB6, 50%) 100%) border-box;
     }
 
     &__button {
+        @include flex;
+        gap: .25rem;
         height: var(--height);
         width: var(--width);
 
@@ -51,12 +53,15 @@
     }
 
     &__dropdown {
-        @include debug-dark;
         position: absolute;
-        right: 0;
-        top: 50%;
+        right: 5%;
+        top: 100%;
         width: var(--width);
         border-radius: $radius / 7;
+        background: linear-gradient(rgba(#2b212d, 100%), rgba(#2b212d, 100%)) padding-box,
+            linear-gradient(170deg, rgba(#15BFFD, 50%) 0%, rgba(#B2FDB6, 50%) 100%) border-box;
+        z-index: 5;
+        border: .0625rem solid transparent;
 
         ul {
             @include flex($d: column, $a: flex-start);
@@ -67,10 +72,14 @@
         li {
             cursor: pointer;
             width: 100%;
+            background: linear-gradient(rgba(#2b212d, 100%), rgba(#2b212d, 100%)) padding-box,
+                linear-gradient(170deg, rgba(#15BFFD, 25%) 0%, rgba(#B2FDB6, 25%) 100%) border-box;
+            border-radius: $radius - .25rem;
+            border: .0625rem solid transparent;
 
             &:hover {
-                @include debug-dark;
-                border-radius: $radius - .25rem;
+                background: linear-gradient(rgba(#15BFFD, 1%), rgba(#15BFFD, 1%)) padding-box,
+                    linear-gradient(170deg, rgba(#15BFFD, 25%) 0%, rgba(#B2FDB6, 25%) 100%) border-box;
             }
         }
     }

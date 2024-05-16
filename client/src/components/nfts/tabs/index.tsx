@@ -4,6 +4,8 @@ import "./index.scss";
 
 import { useState } from "react";
 
+import { DropDown } from "@/assets";
+
 type TabsProps = {
 	handleTabClick: Function;
 	activeTab: string;
@@ -73,7 +75,7 @@ export function Tabs({ handleTabClick, activeTab }: TabsProps) {
 						});
 					}}
 				>
-					<span>pool</span>
+					<span>pool</span> <i>{DropDown({ color: "white" })}</i>
 					{poolOptions.isDropDownOpen && (
 						<>
 							{poolDropDown({

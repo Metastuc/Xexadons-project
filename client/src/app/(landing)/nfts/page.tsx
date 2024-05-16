@@ -12,7 +12,8 @@ import {
 type activeTabProps = Record<string, ReactNode>;
 
 export default function NFTs() {
-	const { activeTab, handleTabClick, tabIsActive } = useTabSwitcher("buy");
+	const { activeTab, handleTabClick, tabIsActive } =
+		useTabSwitcher("liquidity");
 
 	const activeTabContent: activeTabProps = {
 		buy: <>buy</>,

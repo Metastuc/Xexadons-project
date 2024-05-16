@@ -58,7 +58,11 @@ export const Search = function (): JSX.Element {
 	);
 };
 
-export const DropDown = function (): JSX.Element {
+export const DropDown = function ({
+	color = "#15BFFD",
+}: {
+	color?: string | undefined;
+}): JSX.Element {
 	return (
 		<>
 			<svg
@@ -70,7 +74,7 @@ export const DropDown = function (): JSX.Element {
 			>
 				<path
 					d="M11.875 6.125L7.5 9.875l-4.375-3.75"
-					stroke="#15BFFD"
+					stroke={color}
 					strokeLinecap="round"
 					strokeLinejoin="round"
 				/>
