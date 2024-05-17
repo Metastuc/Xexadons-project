@@ -8,7 +8,7 @@ import { useState, useEffect } from "react";
 import { buyNFT, getChainIcon, sellNFT } from "@/utils/app";
 import { useEthersSigner } from "@/utils/adapter";
 
-export default function Sell({ selectedNFTs, collectionName, nftIcon, sellAmount, collectionAddress }) {
+export default function Sell({ selectedNFTs, collectionName, nftIcon, sellAmount, dollarAmount, collectionAddress }) {
     const { address, isConnected, chain, chainId } = useAccount();
     const signer = useEthersSigner();
     const [userAddress, setUserAddress] = useState(" ");
@@ -53,6 +53,7 @@ export default function Sell({ selectedNFTs, collectionName, nftIcon, sellAmount
                     <p className="text-center">to</p>
                     <div className="my-5 text-center">
                         <p className="text-xl">{sellAmount} {currency}</p>
+                        <p>${dollarAmount}</p>
                     </div>
                     <TokenTag src={chainIcon} />
                 </div>

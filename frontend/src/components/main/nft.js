@@ -105,7 +105,7 @@ export default function Nft({ activeTab, collectionAddress, selectedNfts, setSel
         };
     
         calculateSellAmount();
-    }, [isConnected, selectedSellNfts.length]);
+    }, [isConnected, selectedSellNfts]);
 
     return (
         <div>

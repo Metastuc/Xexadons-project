@@ -5,7 +5,7 @@ export default function NftCard({ details, selectedNfts, setSelectedNfts, select
         const { checked } = event.target;
         if (activeTab === 0) {
             if (checked) {
-                setSelectedNfts([...selectedNfts, { id: details.id, poolAddress: details.poolAddress }]);
+                setSelectedNfts([...selectedNfts, { id: details.id, poolAddress: details.poolAddress, address: details.address }]);
             } else {
                 setSelectedNfts(selectedNfts.filter(nft => nft.id !== details.id));
             }
