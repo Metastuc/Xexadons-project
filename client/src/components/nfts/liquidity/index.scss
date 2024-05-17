@@ -1,4 +1,4 @@
-@use "../../../styles/"as *;
+@use "@/styles/"as *;
 
 
 .liquidity_left {
@@ -64,7 +64,9 @@
             margin-top: 2rem;
             padding-left: .5rem;
         }
+    }
 
+    &__deposit {
         &_top {
             margin: 1.5rem 0 2.75rem 0;
 
@@ -256,6 +258,147 @@
                     @include font($f: clash, $s: sm, $w: reg);
                     text-transform: capitalize;
                     color: $white-100;
+                }
+            }
+        }
+    }
+
+    &__withdraw {
+        &_top {
+            margin: 1.5rem 0 1.25rem 0;
+
+            &-content {
+                @include flex($d: column, $a: flex-start);
+                gap: 2.25rem;
+
+                >span {
+                    @include font($f: clash, $s: lrg, $w: reg);
+                }
+
+                >div {
+                    @include flex($d: column, $a: flex-start);
+                    gap: 2rem;
+                    width: 100%;
+
+                    >span {
+                        @include font($f: clash, $s: sm, $w: reg);
+                    }
+                }
+
+                article {
+                    @include flex($j: space-between);
+                    width: inherit;
+
+                    >span {
+                        $size: map-get($map: $fz, $key: xlg) + .5rem;
+                        @include font($f: clash, $s: $size, $w: reg);
+                    }
+
+                    div {
+                        @include flex;
+                        height: 2.25rem;
+                        width: 8.5rem;
+                        gap: .5rem;
+                        background-color: rgba($color: $white-100, $alpha: 35%);
+                        border-radius: $radius - .25rem;
+
+                        i {
+                            @include equal(1.75rem);
+                        }
+
+                        span {
+                            @include font($f: lufga, $s: lrg, $w: reg);
+                            text-transform: capitalize;
+                        }
+                    }
+                }
+            }
+        }
+
+        &_bottom {
+            &-content {
+                @include flex($d: column, $a: flex-start);
+
+                >span {
+                    @include font($f: clash, $s: sm, $w: reg);
+                    margin-bottom: 1rem;
+                }
+
+                >div {
+                    @include flex($d: column, $a: flex-start);
+                    width: 100%;
+                    gap: 1.5rem;
+
+                    article {
+                        width: inherit;
+
+                        &:first-of-type {
+                            @include flex($j: space-between);
+
+                            >span {
+                                $size: map-get($map: $fz, $key: xlg) + .5rem;
+                                @include font($f: clash, $s: $size, $w: reg);
+                            }
+
+                            div {
+                                @include flex;
+                                height: 2.25rem;
+                                width: 8.5rem;
+                                gap: .5rem;
+                                background-color: rgba($color: $white-100, $alpha: 35%);
+                                border-radius: $radius - .25rem;
+
+                                i {
+                                    @include equal(1.75rem);
+                                }
+
+                                span {
+                                    @include font($f: lufga, $s: lrg, $w: reg);
+                                    text-transform: capitalize;
+                                }
+                            }
+                        }
+
+                        &:last-of-type {
+                            @include flex($j: space-between);
+
+                            >span {
+                                @include font($f: clash, $s: xs, $w: reg);
+                                color: rgba($color: $white-100, $alpha: 80%)
+                            }
+
+                            div {
+                                @include flex;
+                                height: 1.75rem;
+                                width: 7.75rem;
+                                background-color: #39303c;
+                                border: .125rem dashed #5a4e67;
+                                border-radius: .5rem;
+                                color: rgba($color: $white-100, $alpha: 60%);
+
+                                input {
+                                    @include font($f: clash, $s: sm, $w: reg);
+                                    text-align: center;
+                                    width: 80%;
+                                    color: inherit;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                button {
+                    margin: 3.5rem auto 0 auto;
+                    height: 2.75rem;
+                    width: 8.75rem;
+                    border-radius: $radius + .25rem;
+                    background-color: $purple-100;
+
+                    span {
+                        @include font($f: clash, $s: sm, $w: reg);
+                        text-transform: capitalize;
+                        color: $white-100;
+                    }
                 }
             }
         }
