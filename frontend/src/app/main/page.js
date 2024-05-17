@@ -55,7 +55,7 @@ export default function MainPage() {
                         activeTab === 0 
                         ? <Buy selectedNfts={selectedNfts} collectionName={collectionName} buyAmount={buyAmount} dollarAmount={dollarAmount} nftIcon={nftIcon} />
                         : activeTab === 1
-                        ? <Sell selectedNFTs={selectedSellNfts} collectionName={collectionName} nftIcon={nftIcon} sellAmount={sellAmount} collectionAddress={xexadonAddress}/>
+                        ? <Sell selectedNFTs={selectedSellNfts} collectionName={collectionName} nftIcon={nftIcon} sellAmount={sellAmount} dollarAmount={dollarAmount} collectionAddress={xexadonAddress}/>
                         : activeTab === 2
                         ? <Pool setPoolTab={setPoolTab} />
                         : null
