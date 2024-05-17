@@ -1,0 +1,86 @@
+@use "@/styles/"as *;
+
+.create_left {
+    h2 {
+        margin: 2.75rem 0 1rem 0;
+        @include font($f: clash, $s: xlg, $w: reg);
+        text-transform: capitalize;
+    }
+
+    >p {
+        $size: map-get($map: $fz, $key: sm) - .25rem;
+        @include font($f: clash, $s: $size, $w: reg);
+    }
+
+    &__content {
+        h3 {
+            @include font($f: clash, $s: xlg, $w: reg);
+            margin: 2rem 0 .75rem 0;
+        }
+
+        &-top>section {
+            @include flex($j: flex-start);
+            padding: .5rem 1rem;
+            gap: .75rem;
+
+            >span {
+                @include equal(5rem);
+                @include flex;
+                border-radius: 1rem;
+                background-color: #3d3540;
+            }
+
+            p {
+                @include flex;
+                gap: .75rem;
+
+                span {
+                    @include font($f: clash, $s: lrg, $w: reg);
+                }
+
+                i {
+                    @include equal(1.25rem);
+                }
+            }
+        }
+
+        &-bottom>section {
+            margin-block: 1rem;
+            @include flex($d: column, $a: flex-start);
+            gap: .75rem;
+
+            >span {
+                $size: map-get($map: $fz, $key: sm) - .25rem;
+                @include font($f: clash, $s: $size, $w: reg);
+            }
+
+            >div {
+                @include flex($j: space-between);
+                width: 100%;
+
+                >span {
+                    @include font($f: clash, $s: xlg, $w: reg);
+                }
+
+                div {
+                    @include flex;
+                    width: 8.5rem;
+                    height: 2.25rem;
+                    gap: .5rem;
+                    border-radius: $radius - .25rem;
+                    background-color: #777179;
+
+                    i {
+                        @include equal(1.75rem);
+                        border-radius: 50%;
+                    }
+
+                    span {
+                        @include font($f: lufga, $s: lrg, $w: reg);
+                        text-transform: capitalize;
+                    }
+                }
+            }
+        }
+    }
+}
