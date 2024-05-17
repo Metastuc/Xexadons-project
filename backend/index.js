@@ -295,6 +295,11 @@ const tokenAddresses = {
   97: " "
 }
 
+const explorerUrls = {
+  80002: "https://polygonscan.com/tx/",
+  92: "https://polygonscan.com/tx/"
+}
+
 const raribleApiKey = process.env.RARIBLE_APIKEY;
 const moralisApiKey = process.env.MORALIS_API_KEY;
 
@@ -366,6 +371,7 @@ app.get("/getUserCollectionNFTs", async(req, res) => {
   try {
     const response = await axios(options);
     const items = response.data.items;
+    console.log(items);
 
     // check if contract address matches tokenAddress
     for (let i = 0; i < items.length; i++) {
@@ -489,7 +495,8 @@ app.get("/getCollection", async(req, res) => {
           id: items[j].item.tokenId,
           name: items[j].item.itemCollection.name,
           poolAddress: poolAddresses[i],
-          src: meta
+          src: meta,
+          address: collectionAddress
         };
         NFTs.push(nft);
       }
@@ -512,20 +519,26 @@ app.post("/recordActivity/:poolId", async(req, res) => {
   const poolId = req.params.poolId;
   console.log(`Received request for poolId: ${poolId}`);
   try {
+    const link = explorerUrls[req.body.chainId] + req.body.hash;
+    const provider = new ethers.JsonRpcProvider(rpcUrls[req.body.chainId]);
+    const nftContract = new ethers.Contract(req.body.address, ABIs.nftABI, provider);
+    const itemImage = await nftContract.tokenURI(req.body.item);
+
     const activity = {
       event: req.body.event,
-      item: req.body.item,
+      item: itemImage,
       price: req.body.price,
       from: req.body.from,
       to: req.body.to,
       time: new Date().toISOString(),
-      hash: req.body.hash
+      link: link
     }
     const activityRef = db.collection('poolActivity').doc(poolId).collection('activities');
     await activityRef.add(activity);
 
     res.status(200).json({ response: "successful"});
   } catch (error) {
+    console.log(error);
     res.status(500).json({ error: error })
   }
 })
@@ -809,8 +822,10 @@ app.get("/getSellRoute", async(req, res) => {
       
       const tokenLength_ = (amountOut * reserve0) / (reserve1 - amountOut);
       const maxNFTs = Math.floor(tokenLength_);
+      console.log("maxNFTs", maxNFTs);
 
       if (maxNFTs <= 0) {
+        console.log("less than 0");
         continue;
       }
 
@@ -820,10 +835,11 @@ app.get("/getSellRoute", async(req, res) => {
           tokenLength: tokens
         }
         routes.push(route);
+        break;
       } else {
         const route = {
           poolAddress: poolAddresses[i],
-          tokenLength: tokenLength
+          tokenLength: maxNFTs
         }
         routes.push(route);
         tokens = tokens - maxNFTs;

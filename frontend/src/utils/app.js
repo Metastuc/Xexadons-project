@@ -393,6 +393,7 @@ export const createPool = async(ids, ethAmount, nftAddress, fee, chainId, signer
 export const buyNFT = async(nfts, chainId, signer) => {
     console.log(nfts, chainId, signer);
     const userAddress = await signer.getAddress();
+    const collectionAddress = nfts[0].address;
     // sort all nfts to get their pool addresses
     const poolAddressMap = nfts.reduce((acc, obj) => {
         if (!acc[obj.poolAddress]) {
@@ -431,11 +432,13 @@ export const buyNFT = async(nfts, chainId, signer) => {
         const poolAddress = result[i].poolAddress
         const reqBody = {
           event: "Buy",
-          item: ids,
+          chainId: chainId,
+          item: ids[0],
           price: Number(ethers.parseEther(price.toString())),
           from: userAddress,
           to: poolAddress,
-          hash: buyTx.hash
+          hash: buyTx.hash,
+          address: collectionAddress
         }
 
         const response = await fetch(`${baseAPIURL}recordActivity/${poolAddress}`, {
@@ -542,6 +545,7 @@ export const getSellPrice = async(length, collectionAddress, chainId) => {
 }
 
 export const sellNFT = async(tokenIds, nftAddress, chainId, signer) => {
+  console.log("nft address", nftAddress);
   const route = await fetch(`${baseAPIURL}getSellRoute?tokenLength=${tokenIds.length}&nftAddress=${nftAddress}&chainId=${chainId}`);
   const routes = await route.json();
   const userAddress = await signer.getAddress();
@@ -565,8 +569,32 @@ export const sellNFT = async(tokenIds, nftAddress, chainId, signer) => {
       const swapTx = await routerContract.swapNFTforETH(poolIds, routes[i].poolAddress, userAddress);
       await swapTx.wait();
       console.log("swaped");
+      const poolAddress = routes[i].poolAddress;
+      const reqBody = {
+        event: "Sell",
+        chainId: chainId,
+        item: poolIds[0],
+        price: poolIds.length,
+        from: userAddress,
+        to: poolAddress,
+        hash: swapTx.hash,
+        address: nftAddress
+      }
+
+      const response = await fetch(`${baseAPIURL}recordActivity/${poolAddress}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(reqBody),
+      });
+  
+      if (!response.ok) {
+        throw new Error("Server Error");
+      } else{
+        console.log("done");
+      }
     }
-    console.log("completed");
   } catch (error) {
   console.log(error);
   }
