@@ -1,4 +1,8 @@
+"use client";
+
 import "./index.scss";
+
+import { ChangeEvent, useState } from "react";
 
 import { Polygon, Xexadons } from "@/assets";
 import { commonProps } from "@/types";
@@ -15,19 +19,14 @@ type renderTabProps = commonProps & {
 	currentPool: string;
 };
 
-export function Liquidity({
-	group,
-	// activeTab,
-	handleTabClick,
-	currentPool,
-}: poolProps) {
+export function Liquidity({ group, handleTabClick, currentPool }: poolProps) {
 	function renderContent() {
 		switch (currentPool) {
 			case "deposit":
-				return deposit({ group });
+				return <Deposit group={group} />;
 
 			case "withdraw":
-				return withdraw({ group });
+				return <Withdraw group={group} />;
 		}
 	}
 
@@ -88,8 +87,8 @@ function renderTabs({ handleTabClick, currentPool }: renderTabProps) {
 	);
 }
 
-function deposit({ group }: commonProps) {
-	const styleClass = `${group}__content`;
+function Deposit({ group }: commonProps) {
+	const styleClass = `${group}__deposit`;
 
 	return (
 		<>
@@ -176,17 +175,87 @@ function deposit({ group }: commonProps) {
 	);
 }
 
-function withdraw({ group }: commonProps) {
-	function withdrawContent() {
-		return <section>withdraw content</section>;
+function Withdraw({ group }: commonProps) {
+	const styleClass = `${group}__withdraw`;
+	const [amount, setAmount] = useState<number | null>(50);
+
+	function handleAmountInput(event: ChangeEvent<HTMLInputElement>) {
+		const inputValue = event.target.value.replace(/\D/g, "");
+		const parsedValue = inputValue === "" ? 0 : parseInt(inputValue);
+
+		setAmount(
+			parsedValue === null || parsedValue <= 100 ? parsedValue : 100,
+		);
 	}
 
 	return (
-		<section className={`${group}__wrapper`}>
-			create new pool
-			{contentWrapper({
-				children: withdrawContent(),
-			})}
-		</section>
+		<>
+			<h3>Remove liquidity</h3>
+
+			<div className={`${styleClass}_top`}>
+				{contentWrapper({
+					children: (
+						<>
+							<section className={`${styleClass}_top-content`}>
+								<span>Calculated withdrawal amount</span>
+
+								<div>
+									<article>
+										<span>500</span>
+
+										<div>
+											<i>{Polygon()}</i>
+											<span>polygon</span>
+										</div>
+									</article>
+
+									<span>$560</span>
+								</div>
+							</section>
+						</>
+					),
+				})}
+			</div>
+
+			<div className={`${styleClass}_bottom`}>
+				{contentWrapper({
+					children: (
+						<>
+							<section className={`${styleClass}_bottom-content`}>
+								<span>Compounded trading fees</span>
+
+								<div>
+									<article>
+										<span>35matic</span>
+
+										<div>
+											<i>{Polygon()}</i>
+											<span>polygon</span>
+										</div>
+									</article>
+
+									<article>
+										<span>amount to withdraw</span>
+
+										<div>
+											<input
+												type="text"
+												value={amount!}
+												onChange={handleAmountInput}
+											/>
+											<span>%</span>
+										</div>
+									</article>
+								</div>
+
+								<button>
+									<span>proceed</span>
+								</button>
+							</section>
+						</>
+					),
+				})}
+			</div>
+		</>
 	);
 }

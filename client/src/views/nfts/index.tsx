@@ -2,7 +2,7 @@ import "./index.scss";
 
 import { ReactNode } from "react";
 
-import { Liquidity, PurchaseNft, Tabs } from "@/components";
+import { Create, Liquidity, PurchaseNft, Tabs } from "@/components";
 
 import { GlassyBackground } from "../reusable";
 
@@ -45,7 +45,7 @@ export function renderLeftContent({
 			break;
 
 		case "create":
-			content = <>create</>;
+			content = Create({ group: "create_left" });
 			break;
 	}
 

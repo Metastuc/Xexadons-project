@@ -137,7 +137,7 @@ function renderConnectedUI({
 
 				<span>{account.displayName}</span>
 
-				<i>{DropDownIcon()}</i>
+				<i>{DropDownIcon({})}</i>
 			</button>
 		</>
 	);

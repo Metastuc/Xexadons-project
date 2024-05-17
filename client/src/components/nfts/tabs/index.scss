@@ -21,12 +21,12 @@
         gap: .25rem;
         height: var(--height);
         width: var(--width);
+        z-index: 5;
 
         span {
             @include font($f: clash, $s: xlg, $w: reg);
             text-transform: capitalize;
             color: $white-100;
-            z-index: 5;
             position: relative;
         }
     }
