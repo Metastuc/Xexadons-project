@@ -2,14 +2,14 @@
 import { nftData } from "@/data/nftData";
 import NftCard from "./nftCard";
 import { useAccount } from "wagmi";
-import { fetchPrice, getChainIcon, getCoinPrice, getCollection, getSellPrice, getUserCollectionNFTs } from "@/utils/app";
+import { fetchPrice, getChainIcon, getCoinPrice, getCollection, getSellPrice, getAddAmount, getUserCollectionNFTs } from "@/utils/app";
 import { useState, useEffect } from "react";
 import { formatEther } from "viem";
 import { useEthersSigner } from "@/utils/adapter";
 // call get collection function
 // pool number and nfts(user NFTs if it sell, collection nfts if it is buy)
 
-export default function Nft({ activeTab, collectionAddress, selectedNfts, setSelectedNfts, selectedSellNfts, setSelectedSellNfts, setCollectionName, setBuyAmount, setSellAmount, setDollarAmount, setNFTIcon, poolTab }) {
+export default function Nft({ activeTab, collectionAddress, selectedNfts, setSelectedNfts, selectedSellNfts, setSelectedSellNfts, selectedAddNfts, setSelectedAddNfts, setCollectionName, setBuyAmount, setSellAmount, setAddAmount, setDollarAmount, setNFTIcon, poolTab }) {
     const { address, isConnected, chainId } = useAccount();
     const [isLoading, setIsLoading] = useState(true);
     const [poolCount, setpoolCount] = useState(0);
@@ -45,27 +45,35 @@ export default function Nft({ activeTab, collectionAddress, selectedNfts, setSel
                 setNFTIcon(result.icon);
                 setIsLoading(false);
             } else {
-                if (poolTab === 0) {
-                    console.log(poolTab);
-                    const response = await getUserCollectionNFTs(chainId, collectionAddress, address);
-                    const result = await response.json();
-                    setpoolCount(0);
-                    setNFTs(result.nfts);
-                    setCollectionName(result.NFTs[0].name);
-                    // setPools(result.pools);
-                    setNFTIcon(result.icon);
-                    setIsLoading(false);
-                } else {
-                    console.log(poolTab);
-                    const response = await getCollection(chainId, collectionAddress);
-                    const result = await response.json();
-                    setpoolCount(result.pools.length);
-                    setNFTs(result.NFTs);
-                    setCollectionName(result.NFTs[0].name);
-                    setPools(result.pools);
-                    setNFTIcon(result.icon);
-                    setIsLoading(false);
-                }
+                const response = await getUserCollectionNFTs(chainId, collectionAddress, address);
+                const result = await response.json();
+                setpoolCount(0);
+                setNFTs(result.nfts);
+                console.log(result.nfts);
+                // setPools(result.pools);
+                setNFTIcon(result.icon);
+                setIsLoading(false);
+                // if (poolTab === 0) {
+                //     console.log(poolTab);
+                //     const response = await getUserCollectionNFTs(chainId, collectionAddress, address);
+                //     const result = await response.json();
+                //     setpoolCount(0);
+                //     setNFTs(result.nfts);
+                //     setCollectionName(result.NFTs[0].name);
+                //     // setPools(result.pools);
+                //     setNFTIcon(result.icon);
+                //     setIsLoading(false);
+                // } else {
+                //     console.log(poolTab);
+                //     const response = await getCollection(chainId, collectionAddress);
+                //     const result = await response.json();
+                //     setpoolCount(result.pools.length);
+                //     setNFTs(result.NFTs);
+                //     setCollectionName(result.NFTs[0].name);
+                //     setPools(result.pools);
+                //     setNFTIcon(result.icon);
+                //     setIsLoading(false);
+                // }
             }
           })();
         }
@@ -106,6 +114,24 @@ export default function Nft({ activeTab, collectionAddress, selectedNfts, setSel
     
         calculateSellAmount();
     }, [isConnected, selectedSellNfts]);
+
+    useEffect(() => {
+        const calculateAddAmount = async () => {
+            if (isConnected) {
+            let addAmount = 0;
+            if (selectedAddNfts.length > 0) {
+                const amount = await getAddAmount(selectedAddNfts.length, chainId); // should take in the pool address as well
+                addAmount = amount;
+            }
+            const _addAmount = formatEther(addAmount);
+            const dollarAmount = coinPrice * _addAmount;
+            setAddAmount(_addAmount);
+            setDollarAmount(dollarAmount);
+            }
+        };
+    
+        calculateAddAmount();
+    }, [isConnected, selectedAddNfts]);
 
     return (
         <div>
@@ -151,7 +177,7 @@ export default function Nft({ activeTab, collectionAddress, selectedNfts, setSel
                     {
                         nfts.map((nft, id) => {
                             return (
-                                <NftCard details={nft} key={id} selectedNfts={selectedNfts} setSelectedNfts={setSelectedNfts} selectedSellNfts={selectedSellNfts} setSelectedSellNfts={setSelectedSellNfts} activeTab={activeTab}/>
+                                <NftCard details={nft} key={id} selectedNfts={selectedNfts} setSelectedNfts={setSelectedNfts} selectedSellNfts={selectedSellNfts} setSelectedSellNfts={setSelectedSellNfts} selectedAddNfts={selectedAddNfts} setSelectedAddNfts={setSelectedAddNfts} activeTab={activeTab}/>
                             )
                         })
                     }

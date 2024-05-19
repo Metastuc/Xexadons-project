@@ -17,9 +17,11 @@ export default function MainPage() {
     const { isConnected, chainId } = useAccount();
     const [selectedNfts, setSelectedNfts] = useState([]);
     const [selectedSellNfts, setSelectedSellNfts] = useState([]);
+    const [selectedAddNfts, setSelectedAddNfts] = useState([]);
     const [collectionName, setCollectionName] = useState(" ");
     const [buyAmount, setBuyAmount] = useState(" ");
     const [sellAmount, setSellAmount] = useState(" ");
+    const [addAmount, setAddAmount] = useState(" ");
     const [dollarAmount, setDollarAmount] = useState(0);
 
     const [nftIcon, setNFTIcon] = useState("/xexadons.png");
@@ -57,13 +59,13 @@ export default function MainPage() {
                         : activeTab === 1
                         ? <Sell selectedNFTs={selectedSellNfts} collectionName={collectionName} nftIcon={nftIcon} sellAmount={sellAmount} dollarAmount={dollarAmount} collectionAddress={xexadonAddress}/>
                         : activeTab === 2
-                        ? <Pool setPoolTab={setPoolTab} />
+                        ? <Pool setPoolTab={setPoolTab} addAmount={addAmount} dollarAmount={dollarAmount} />
                         : null
                     }
                 </div>
 
                 <div className="w-1/2">
-                    <Nft activeTab={activeTab} collectionAddress={xexadonAddress} selectedNfts={selectedNfts} setSelectedNfts={setSelectedNfts} selectedSellNfts={selectedSellNfts} setSelectedSellNfts={setSelectedSellNfts} setCollectionName={setCollectionName} setBuyAmount={setBuyAmount} setSellAmount={setSellAmount} setDollarAmount={setDollarAmount} setNFTIcon={setNFTIcon} poolTab={poolTab} />
+                    <Nft activeTab={activeTab} collectionAddress={xexadonAddress} selectedNfts={selectedNfts} setSelectedNfts={setSelectedNfts} selectedSellNfts={selectedSellNfts} setSelectedSellNfts={setSelectedSellNfts} selectedAddNfts={selectedAddNfts} setSelectedAddNfts={setSelectedAddNfts} setCollectionName={setCollectionName} setBuyAmount={setBuyAmount} setSellAmount={setSellAmount} setAddAmount={setAddAmount} setDollarAmount={setDollarAmount} setNFTIcon={setNFTIcon} poolTab={poolTab} />
                 </div>
             </div>
         </div>

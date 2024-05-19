@@ -3,7 +3,12 @@ import TokenTag from "../ui/tokenTag";
 import { Icon } from "@iconify/react";
 import Button from "../ui/button";
 
-export default function Deposit() {
+export default function Deposit({ addAmount, dollarAmount }) {
+    const { address, isConnected } = useAccount();
+    // run function to get user balance
+    // get dollar balance
+    // get user balance
+    // get pool address
     return (
         <div>
             <p className="text-[10px] mb-10">
@@ -16,11 +21,11 @@ export default function Deposit() {
             <div className="rounded-xl border border-gray border-dashed p-4 bg-white/5 mb-4">
                 <p className="mb-4">Calculated deposit amount</p>
                 <div className="flex justify-between mb-6">
-                    <p className="text-xl">500</p>
+                    <p className="text-xl">{addAmount}</p>
                     <TokenTag src="/matic.png" text="Polygon" />
                 </div>
                 <div className="flex justify-between text-xs">
-                    <p>$560</p>
+                    <p>${dollarAmount}</p>
                     <p>845 matic available</p>
                 </div>
             </div>

@@ -600,6 +600,23 @@ export const sellNFT = async(tokenIds, nftAddress, chainId, signer) => {
   }
 }
 
+export const getAddAmount = async(length, chainId) => {
+  const provider = new ethers.JsonRpcProvider(rpcUrls[chainId]);
+  // get reserves
+  const pairContract = new ethers.Contract("0x48bDf8aD32FAcE0Bb3887D4c771A184383864260", pairABI, provider);
+  const _reserve0 = await pairContract.reserve0();
+  const _reserve1 = await pairContract.reserve1();
+  console.log(_reserve0, _reserve1);
+  const reserve0 = Number(_reserve0);
+  const reserve1 = Number(_reserve1);
+  // calculate amountIn
+  const amount = (reserve1 * length) / reserve0;
+  console.log(length, amount);
+  return amount;
+}
+
+// get user balance function
+
 export const getCoinPrice = async(chainId) => {
   const res = await fetch(`${baseAPIURL}getCoinPrice?chainId=${chainId}`);
  const data = await res.json();

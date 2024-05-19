@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-export default function NftCard({ details, selectedNfts, setSelectedNfts, selectedSellNfts, setSelectedSellNfts, activeTab }) {
+export default function NftCard({ details, selectedNfts, setSelectedNfts, selectedSellNfts, setSelectedSellNfts, selectedAddNfts, setSelectedAddNfts, activeTab }) {
     const handleCheckboxChange = (event) => {
         const { checked } = event.target;
         if (activeTab === 0) {
@@ -14,6 +14,14 @@ export default function NftCard({ details, selectedNfts, setSelectedNfts, select
                 setSelectedSellNfts([...selectedSellNfts, { id: details.id, poolAddress: details.poolAddress }]);
             } else {
                 setSelectedSellNfts(selectedSellNfts.filter(nft => nft.id !== details.id));
+            }
+        } else {
+            if (checked) {
+                setSelectedAddNfts([...selectedAddNfts, { id: details.id, poolAddress: details.poolAddress }]);
+                console.log(selectedAddNfts);
+            } else {
+                setSelectedAddNfts(selectedAddNfts.filter(nft => nft.id !== details.id));
+                console.log(selectedAddNfts);
             }
         }
     };
