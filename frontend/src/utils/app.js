@@ -616,6 +616,13 @@ export const getAddAmount = async(length, chainId) => {
 }
 
 // get user balance function
+export const getUserBalance = async(chainId, userAddress) => {
+  const provider = new ethers.JsonRpcProvider(rpcUrls[chainId]);
+
+  const userBalance = await provider.getBalance(userAddress);
+
+  return userBalance;
+}
 
 export const getCoinPrice = async(chainId) => {
   const res = await fetch(`${baseAPIURL}getCoinPrice?chainId=${chainId}`);

@@ -1,14 +1,35 @@
 import Image from "next/image";
 import TokenTag from "../ui/tokenTag";
 import { Icon } from "@iconify/react";
+import { useAccount } from "wagmi";
+import { useState, useEffect } from "react";
+import { getChainIcon, getUserBalance } from "@/utils/app";
+import { useEthersSigner } from "@/utils/adapter";
 import Button from "../ui/button";
+import { formatEther } from "viem";
 
 export default function Deposit({ addAmount, dollarAmount }) {
-    const { address, isConnected } = useAccount();
-    // run function to get user balance
-    // get dollar balance
-    // get user balance
-    // get pool address
+    const { address, isConnected, chain, chainId } = useAccount();
+    const signer = useEthersSigner();
+    const [userAddress, setUserAddress] = useState(" ");
+    const [currency, setCurrency] = useState(" ");
+    const [chainIcon, setChainIcon] = useState("/matic.png");
+    const [userBalance, setUserBalance] = useState("0");
+
+    useEffect(() => {
+        if (isConnected) {
+          (async () => {
+            const add = address.slice(0, 6) + "..." + address.slice(-3);
+            const icon = await getChainIcon(chainId);
+            setCurrency(chain.nativeCurrency.name);
+            setUserAddress(add);
+            setChainIcon(icon);
+            const balance = await getUserBalance(chainId, address);
+            const userBalance = formatEther(balance);
+            setUserBalance(userBalance);
+          })();
+        }
+    }, [isConnected]);
     return (
         <div>
             <p className="text-[10px] mb-10">
@@ -26,7 +47,7 @@ export default function Deposit({ addAmount, dollarAmount }) {
                 </div>
                 <div className="flex justify-between text-xs">
                     <p>${dollarAmount}</p>
-                    <p>845 matic available</p>
+                    <p>{userBalance} {currency} available</p>
                 </div>
             </div>
 
@@ -41,10 +62,10 @@ export default function Deposit({ addAmount, dollarAmount }) {
 
                         <div>
                             <div className="flex space-x-3 text-xs items-center mb-5">
-                                <p>Nft Pool</p>
+                                <p>user</p>
                                 <div className="w-6 h-6 rounded-full bg-gradient-to-r from-fuchsia-500 to-cyan-500"></div>
                                 {/* Replace with wallet addresss */}
-                                <p>0x0390535</p>
+                                <p>{userAddress}</p>
                             </div>
 
                             <div className="flex space-x-3 text-xs items-center">
