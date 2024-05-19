@@ -13,7 +13,7 @@ export default function RootLayout({
 			className="nfts"
 			data-group="parent"
 			style={{
-				marginTop: "8rem",
+				marginTop: "4.5rem",
 			}}
 		>
 			{children}
