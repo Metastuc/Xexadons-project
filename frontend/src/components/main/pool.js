@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import Tabs from "../ui/tabs";
 import Deposit from "./deposit";
 
-export default function Pool({ setPoolTab, addAmount, dollarAmount }) {
+export default function Pool({ setPoolTab, addAmount, dollarAmount, selectedAddNfts, collectionAddress}) {
 
     const [activeTab, setActiveTab] = useState(0);
     const [pool, setPool] = useState(0);
@@ -26,7 +26,7 @@ export default function Pool({ setPoolTab, addAmount, dollarAmount }) {
                 />
             </div>
             
-            {activeTab === 0 ? <Deposit addAmount={addAmount} dollarAmount={dollarAmount} /> : <p>withdraw</p>}
+            {activeTab === 0 ? <Deposit addAmount={addAmount} dollarAmount={dollarAmount} selectedAddNfts={selectedAddNfts} collectionAddress={collectionAddress}/> : <p>withdraw</p>}
         </div>
     );
 }

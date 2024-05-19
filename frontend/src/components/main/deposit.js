@@ -3,12 +3,12 @@ import TokenTag from "../ui/tokenTag";
 import { Icon } from "@iconify/react";
 import { useAccount } from "wagmi";
 import { useState, useEffect } from "react";
-import { getChainIcon, getUserBalance } from "@/utils/app";
+import { addLiquidity, getChainIcon, getUserBalance } from "@/utils/app";
 import { useEthersSigner } from "@/utils/adapter";
 import Button from "../ui/button";
 import { formatEther } from "viem";
 
-export default function Deposit({ addAmount, dollarAmount }) {
+export default function Deposit({ addAmount, dollarAmount, selectedAddNfts, collectionAddress }) {
     const { address, isConnected, chain, chainId } = useAccount();
     const signer = useEthersSigner();
     const [userAddress, setUserAddress] = useState(" ");
@@ -30,6 +30,11 @@ export default function Deposit({ addAmount, dollarAmount }) {
           })();
         }
     }, [isConnected]);
+
+    const addPoolLiquidity = async() => {
+        await addLiquidity(selectedAddNfts, chainId, collectionAddress, signer);
+        console.log("Liquidity Added");
+    }
     return (
         <div>
             <p className="text-[10px] mb-10">
@@ -112,7 +117,7 @@ export default function Deposit({ addAmount, dollarAmount }) {
 
                     <p className="mb-5">~deposit 690matic for 3 xexadons</p>
                     <div className="w-fit mx-auto">
-                        <Button text="Proceed" />
+                        <Button text="Proceed" clickHandler={addPoolLiquidity} />
                     </div>
                 </div>
             </div>

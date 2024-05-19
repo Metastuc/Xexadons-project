@@ -59,7 +59,7 @@ export default function MainPage() {
                         : activeTab === 1
                         ? <Sell selectedNFTs={selectedSellNfts} collectionName={collectionName} nftIcon={nftIcon} sellAmount={sellAmount} dollarAmount={dollarAmount} collectionAddress={xexadonAddress}/>
                         : activeTab === 2
-                        ? <Pool setPoolTab={setPoolTab} addAmount={addAmount} dollarAmount={dollarAmount} />
+                        ? <Pool setPoolTab={setPoolTab} addAmount={addAmount} dollarAmount={dollarAmount} selectedAddNfts={selectedAddNfts} collectionAddress={xexadonAddress}/>
                         : null
                     }
                 </div>

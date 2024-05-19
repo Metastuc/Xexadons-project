@@ -600,7 +600,7 @@ export const sellNFT = async(tokenIds, nftAddress, chainId, signer) => {
   }
 }
 
-export const getAddAmount = async(length, chainId) => {
+export const getAddAmount = async(length, chainId) => { // take in the pool address value
   const provider = new ethers.JsonRpcProvider(rpcUrls[chainId]);
   // get reserves
   const pairContract = new ethers.Contract("0x48bDf8aD32FAcE0Bb3887D4c771A184383864260", pairABI, provider);
@@ -622,6 +622,28 @@ export const getUserBalance = async(chainId, userAddress) => {
   const userBalance = await provider.getBalance(userAddress);
 
   return userBalance;
+}
+
+export const addLiquidity = async(nfts, chainId, nftAddress, signer) => { // take in poolAddress param
+  const ids = nfts.map(nft => nft.id);
+  const userAddress = await signer.getAddress();
+  // get the eth value
+  const amount = await getAddAmount(nfts.length, chainId);
+  const liqAmount = BigInt(amount);
+  // get the pool address
+  const poolAddress = "0x48bDf8aD32FAcE0Bb3887D4c771A184383864260";
+  // call function to perform transaction
+  const nftContract = new ethers.Contract(nftAddress, nftABI, signer);
+
+  const approveTx = await nftContract.setApprovalForAll(poolAddress, true);
+  await approveTx.wait();
+  console.log("contract approved");
+
+  const pairContract = new ethers.Contract(poolAddress, pairABI, signer);
+  const addLiqTx = await pairContract.addLiquidity(ids, userAddress, {value: liqAmount});
+
+  await addLiqTx.wait();
+  console.log("liquidity added");
 }
 
 export const getCoinPrice = async(chainId) => {
