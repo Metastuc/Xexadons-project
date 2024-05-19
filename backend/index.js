@@ -438,7 +438,7 @@ app.get("/getProtocolCollections", async (req, res) => {
 
     res.status(200).json(collections);
   } catch (error) {
-    console.error('Error in /getPoolNFTs:', error);
+    console.error('Error in /getProtocolCollections', error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
