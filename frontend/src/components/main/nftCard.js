@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-export default function NftCard({ details, selectedNfts, setSelectedNfts, selectedSellNfts, setSelectedSellNfts, selectedAddNfts, setSelectedAddNfts, activeTab }) {
+export default function NftCard({ details, selectedNfts, setSelectedNfts, selectedSellNfts, setSelectedSellNfts, selectedAddNfts, setSelectedAddNfts, buyPrices, activeTab }) {
     const handleCheckboxChange = (event) => {
         const { checked } = event.target;
         if (activeTab === 0) {
@@ -31,6 +31,8 @@ export default function NftCard({ details, selectedNfts, setSelectedNfts, select
             <p>#{details.id}</p>
             <p className="font-medium my-2">{details.name}</p>
             <div className="flex justify-between">
+                {/* <p>{buyPrices[details.poolAddress]}</p> */}
+                <p>{details.poolAddress}</p>
                 <input type="checkbox" onChange={handleCheckboxChange}/>
             </div>
         </div>
