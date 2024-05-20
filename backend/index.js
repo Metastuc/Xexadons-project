@@ -305,8 +305,14 @@ const currencies = {
   92: "bnb"
 }
 
+const chainNames = {
+  80002: "polygon-amoy",
+  97: "bsc-testnet"
+}
+
 const raribleApiKey = process.env.RARIBLE_APIKEY;
 const moralisApiKey = process.env.MORALIS_API_KEY;
+const simpleHashKey = process.env.SIMPLEHASH_API_KEY;
 
 initializeApp({
   credential: cert(serviceAccount),
@@ -471,15 +477,15 @@ app.get("/getCollection", async(req, res) => {
     for (let i = 0; i < poolAddresses.length; i++) {
       const options = {
         method: 'GET',
-        url: `https://testnet-api.rarible.org/v0.1/items/byOwnerWithOwnership?owner=ETHEREUM%3A${poolAddresses[i]}`,
+        url: `https://api.simplehash.com/api/v0/nfts/owners?chains=${chainNames[chainId]}&wallet_addresses=${poolAddresses[i]}&contract_addresses=${collectionAddress}`,
         headers: {
           accept: 'application/json',
-          'X-API-KEY': raribleApiKey
+          'X-API-KEY': simpleHashKey
         }
       };
 
       const response = await axios(options);
-      const items = response.data.items;
+      const items = response.data.nfts;
 
       const pairContract = new ethers.Contract(poolAddresses[i], ABIs.pairABI, provider);
       const reserve0 = await pairContract.reserve0();
@@ -494,8 +500,7 @@ app.get("/getCollection", async(req, res) => {
       pools.push(pool);
 
       for (let j = 0; j < items.length; j++) {
-        const meta = await nftContract.tokenURI(items[j].item.tokenId);
-        console.log(nftContract, items[j]);
+        const imageUrl = items[j].image_url;
         const pairContract = new ethers.Contract(poolAddresses[i], ABIs.pairABI, provider);
 
         const reserve0 = await pairContract.reserve0();
@@ -507,16 +512,17 @@ app.get("/getCollection", async(req, res) => {
         const buyPrice = await curveContract.getBuyPriceSingle(1, reserve0, reserve1, poolAddresses[i]);
         const _buyPrice = roundDownToTwoDecimals(Number(ethers.formatEther(buyPrice))) + currencies[chainId];
         const nft = {
-          id: items[j].item.tokenId,
-          name: items[j].item.itemCollection.name,
+          id: items[j].token_id,
+          name: items[j].collection.name,
           poolAddress: poolAddresses[i],
-          src: meta,
+          src: imageUrl,
           address: collectionAddress,
           price: _buyPrice
         };
         NFTs.push(nft);
       }
     }
+
     const collection = {
       icon: icon,
       pools: pools,
