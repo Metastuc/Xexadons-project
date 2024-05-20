@@ -372,37 +372,33 @@ app.get("/getUserCollectionNFTs", async(req, res) => {
   var userCollectionNFTs = [];
   const options = {
     method: 'GET',
-    url: `https://testnet-api.rarible.org/v0.1/items/byOwnerWithOwnership?owner=ETHEREUM%3A${userAddress}`,
+    url: `https://api.simplehash.com/api/v0/nfts/owners?chains=${chainNames[chainId]}&wallet_addresses=${userAddress}&contract_addresses=${nftAddress}`,
     headers: {
       accept: 'application/json',
-      'X-API-KEY': raribleApiKey
+      'X-API-KEY': simpleHashKey
     }
   };
 
   try {
     const response = await axios(options);
-    const items = response.data.items;
+    const items = response.data.nfts;
     console.log(items);
 
     // check if contract address matches tokenAddress
     for (let i = 0; i < items.length; i++) {
-      const name = items[i].item.itemCollection.name;
-      // console.log(name);
-      const meta = await nftContract.tokenURI(items[i].item.tokenId);
-      if (nftName === name) {
-        const nft = {
-          id: items[i].item.tokenId,
-          name: nftName,
-          src: meta
-        }
-        userCollectionNFTs.push(nft);
+      const imageUrl = items[i].image_url;
+      const nft = {
+        id: items[i].item.token_id,
+        name: nftName,
+        src: imageUrl
       }
+      userCollectionNFTs.push(nft);
     }
     const collection = {
       icon: icon,
       nfts: userCollectionNFTs
     }
-    // Return the userCollections array as the response
+
     res.status(200).json(collection);
   } catch (error) {
     // Handle errors
@@ -702,12 +698,11 @@ async function getUserBalance(userAddress, chainId) {
 }
 
 async function getUserCollections(address, chainId) {
-  let userCollections;
   let userNFTs = []
   const provider = new ethers.JsonRpcProvider(rpcUrls[chainId]);
   const options = {
     method: 'GET',
-    url: `https://testnet-api.rarible.org/v0.1/items/byOwnerWithOwnership?owner=ETHEREUM%3A${address}`,
+    url: `https://api.simplehash.com/api/v0/nfts/collections_by_wallets_v2?chains=${chainNames[chainId]}&wallet_addresses=${address}`,
     headers: {
       accept: 'application/json',
       'X-API-KEY': raribleApiKey
@@ -715,34 +710,24 @@ async function getUserCollections(address, chainId) {
   };
   try {
     const response = await axios(options);
-    const items = response.data.items;
+    const items = response.data.collections;
 
     for (let i = 0; i < items.length; i++) {
-      const collectionAddress = items[i].item.collection
-      const nftAddress = collectionAddress.slice(8);
-      const nftContract = new ethers.Contract(nftAddress, ABIs.nftABI, provider);
-      const name = items[i].item.itemCollection.name;
+      const _collectionAddress = items[i].top_contracts[0];
+      const parts = _collectionAddress.split('.');
+      const collectionAddress = parts[1];
+      const nftContract = new ethers.Contract(collectionAddress, ABIs.nftABI, provider);
+      const name = items[i].collection_details.name;
       const image = await nftContract.tokenURI(0);
       const nft = {
-        address: nftAddress,
+        address: collectionAddress,
         name: name,
         image: image
       }
       userNFTs.push(nft);
     }
-    const uniqueNFTMap = new Map();
 
-    userNFTs.forEach(nft => {
-      const key = `${nft.name}-${nft.image}`;
-      if (!uniqueNFTMap.has(key)) {
-        uniqueNFTMap.set(key, nft);
-      }
-    });
-    
-    userCollections = Array.from(uniqueNFTMap.values());
-
-    console.log(userCollections);
-    return userCollections;
+    return userNFTs;
 
   } catch (error) {
     return error;
