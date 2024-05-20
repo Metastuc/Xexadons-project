@@ -491,12 +491,23 @@ app.get("/getCollection", async(req, res) => {
       for (let j = 0; j < items.length; j++) {
         const meta = await nftContract.tokenURI(items[j].item.tokenId);
         console.log(nftContract, items[j]);
+        const pairContract = new ethers.Contract(poolAddresses[i], ABIs.pairABI, provider);
+
+        const reserve0 = await pairContract.reserve0();
+        const reserve1 = await pairContract.reserve1();
+  
+        const curveContract = new ethers.Contract(deploymentAddresses.curve[chainId], ABIs.curveABI, provider);
+  
+        // use function that returns only one uint
+        const buyPrice = await curveContract.getBuyPriceSingle(1, reserve0, reserve1, poolAddresses[i]);
+        const _buyPrice = roundDownToTwoDecimals(Number(ethers.formatEther(buyPrice)));
         const nft = {
           id: items[j].item.tokenId,
           name: items[j].item.itemCollection.name,
           poolAddress: poolAddresses[i],
           src: meta,
-          address: collectionAddress
+          address: collectionAddress,
+          price: _buyPrice
         };
         NFTs.push(nft);
       }
@@ -872,5 +883,11 @@ app.get("/getCoinPrice", async(req, res) => {
   }
 
 })
+
+function roundDownToTwoDecimals(number) {
+  const shiftedNumber = Math.floor(number * 100);
+  const roundedNumber = shiftedNumber / 100;
+  return roundedNumber.toFixed(2);
+}
 
 startServer();
