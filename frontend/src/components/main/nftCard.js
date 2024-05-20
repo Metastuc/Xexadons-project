@@ -31,8 +31,7 @@ export default function NftCard({ details, selectedNfts, setSelectedNfts, select
             <p>#{details.id}</p>
             <p className="font-medium my-2">{details.name}</p>
             <div className="flex justify-between">
-                {/* <p>{buyPrices[details.poolAddress]}</p> */}
-                <p>{details.poolAddress}</p>
+                <p>{buyPrices[details.poolAddress]}</p>
                 <input type="checkbox" onChange={handleCheckboxChange}/>
             </div>
         </div>

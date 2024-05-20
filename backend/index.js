@@ -300,6 +300,11 @@ const explorerUrls = {
   92: "https://polygonscan.com/tx/"
 }
 
+const currencies = {
+  80002: "matic",
+  92: "bnb"
+}
+
 const raribleApiKey = process.env.RARIBLE_APIKEY;
 const moralisApiKey = process.env.MORALIS_API_KEY;
 
@@ -500,7 +505,7 @@ app.get("/getCollection", async(req, res) => {
   
         // use function that returns only one uint
         const buyPrice = await curveContract.getBuyPriceSingle(1, reserve0, reserve1, poolAddresses[i]);
-        const _buyPrice = roundDownToTwoDecimals(Number(ethers.formatEther(buyPrice)));
+        const _buyPrice = roundDownToTwoDecimals(Number(ethers.formatEther(buyPrice))) + currencies[chainId];
         const nft = {
           id: items[j].item.tokenId,
           name: items[j].item.itemCollection.name,
