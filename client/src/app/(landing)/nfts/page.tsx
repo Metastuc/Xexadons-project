@@ -13,7 +13,7 @@ import {
 type activeTabProps = Record<string, ReactNode>;
 
 export default function NFTs() {
-	const { activeTab, handleTabClick, tabIsActive } = useTabSwitcher("buy");
+	const { activeTab, handleTabClick, tabIsActive } = useTabSwitcher("withdraw");
 
 	const activeTabContent: activeTabProps = {
 		buy: (
@@ -34,7 +34,12 @@ export default function NFTs() {
 				activeTab={activeTab}
 			/>
 		),
-		withdraw: <>withdraw</>,
+		withdraw: (
+			<PurchaseNFTRight
+				group="withdraw_right"
+				activeTab={activeTab}
+			/>
+		),
 		create: <>create</>,
 	};
 

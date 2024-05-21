@@ -66,6 +66,10 @@ type PurchaseNFTRightProps = commonProps & {
 };
 
 export function PurchaseNFTRight({ group, activeTab }: PurchaseNFTRightProps) {
+	const {
+		nftContext: { selectedNFTs, setSelectedNFTs },
+	} = ContextWrapper();
+
 	let content: JSX.Element | null = null;
 
 	switch (activeTab) {
@@ -97,11 +101,34 @@ export function PurchaseNFTRight({ group, activeTab }: PurchaseNFTRightProps) {
 				</>
 			);
 			break;
-	}
 
-	const {
-		nftContext: { selectedNFTs, setSelectedNFTs },
-	} = ContextWrapper();
+		case "withdraw":
+			content = (
+				<>
+					<h2>select nfts to withdraw</h2>
+
+					<div>
+						<button
+							onClick={() =>
+								setSelectedNFTs(
+									Array.from(
+										{ length: group.length },
+										// eslint-disable-next-line no-unused-vars
+										(_, i) => i,
+									),
+								)
+							}
+						>
+							<span>select all</span>
+						</button>
+						<button onClick={() => setSelectedNFTs([])}>
+							<span>deselect all</span>
+						</button>
+					</div>
+				</>
+			);
+			break;
+	}
 
 	function handleSelect(index: number) {
 		setSelectedNFTs(function (previous) {
@@ -132,7 +159,9 @@ export function PurchaseNFTRight({ group, activeTab }: PurchaseNFTRightProps) {
 					{activeTab === "liquidity" && (
 						<div className={`${group}__liquidity`}>
 							<span>{selectedNFTs.length}</span>
-							<span>nft{selectedNFTs.length > 1 ? "s" : ""} selected</span>
+							<span>
+								nft{selectedNFTs.length > 1 ? "s" : ""} selected
+							</span>
 						</div>
 					)}
 				</section>

@@ -31,6 +31,7 @@
                 width: var(--width);
                 height: var(--height);
                 border-radius: inherit;
+                cursor: pointer;
 
                 span {
                     @include font($f: clash, $s: sm, $w: reg);
