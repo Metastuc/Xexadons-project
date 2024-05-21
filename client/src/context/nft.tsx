@@ -21,6 +21,9 @@ type NFTCollection = {
 
 	collectionName: string;
 	setCollectionName: Dispatch<SetStateAction<string>>;
+
+	selectedNFTs: number[];
+	setSelectedNFTs: Dispatch<SetStateAction<number[]>>;
 };
 
 type NFTProviderProps = NFTContextType & NFTCollection;
@@ -35,6 +38,7 @@ export function NFTContextProvider({ children }: { children: ReactNode }) {
 	const [nftAddress, setNftAddress] = useState<string>(address);
 	const [collection, setCollection] = useState<any | null>(null);
 	const [collectionName, setCollectionName] = useState<string>("");
+	const [selectedNFTs, setSelectedNFTs] = useState<number[]>([]);
 
 	return (
 		<NFTContext.Provider
@@ -45,6 +49,8 @@ export function NFTContextProvider({ children }: { children: ReactNode }) {
 				setCollection,
 				collectionName,
 				setCollectionName,
+				selectedNFTs,
+				setSelectedNFTs,
 			}}
 		>
 			{children}

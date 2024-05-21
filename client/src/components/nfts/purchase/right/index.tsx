@@ -1,10 +1,9 @@
-"use client";
 import "./index.scss";
 
-import { JSX, useState } from "react";
+import { JSX } from "react";
 
 import { NFT } from "@/components/reusable";
-// import { ContextWrapper } from "@/hooks";
+import { ContextWrapper } from "@/hooks";
 import { commonProps } from "@/types";
 
 // export function PurchaseNFTRight({ group }: commonProps) {
@@ -100,7 +99,9 @@ export function PurchaseNFTRight({ group, activeTab }: PurchaseNFTRightProps) {
 			break;
 	}
 
-	const [selectedNFTs, setSelectedNFTs] = useState<number[]>([]);
+	const {
+		nftContext: { selectedNFTs, setSelectedNFTs },
+	} = ContextWrapper();
 
 	function handleSelect(index: number) {
 		setSelectedNFTs(function (previous) {
@@ -131,7 +132,7 @@ export function PurchaseNFTRight({ group, activeTab }: PurchaseNFTRightProps) {
 					{activeTab === "liquidity" && (
 						<div className={`${group}__liquidity`}>
 							<span>{selectedNFTs.length}</span>
-							<span>nfts selected</span>
+							<span>nft{selectedNFTs.length > 1 ? "s" : ""} selected</span>
 						</div>
 					)}
 				</section>

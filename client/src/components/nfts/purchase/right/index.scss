@@ -51,7 +51,7 @@
         overflow-y: scroll;
         height: 40rem;
 
-        >div {
+        >div:first-of-type {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             grid-template-rows: auto;
@@ -126,6 +126,18 @@
                     }
                 }
             }
+        }
+    }
+
+    &__liquidity {
+        @include flex($j: flex-start);
+        gap: .25rem;
+        margin-top: .75rem;
+
+        span {
+            @include font($f: clash, $s: nrm, $w: reg);
+            text-transform: capitalize;
+            color: rgba($color: $white-100, $alpha: 80%);
         }
     }
 }
