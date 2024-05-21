@@ -14,6 +14,7 @@ export default function Nft({ activeTab, collectionAddress, selectedNfts, setSel
     const [isLoading, setIsLoading] = useState(true);
     const [poolCount, setpoolCount] = useState(0);
     const [pools, setPools] = useState([]);
+    const [buyPrices, setBuyPrices] = useState({});
     const [nfts, setNFTs] = useState([]);
     const [coinPrice, setCoinPrice] = useState(0);
     const signer = useEthersSigner();
@@ -27,9 +28,18 @@ export default function Nft({ activeTab, collectionAddress, selectedNfts, setSel
             if (activeTab === 0) {
                 const response = await getCollection(chainId, collectionAddress);
                 const result = await response.json();
+                const nfts = result.NFTs;
                 console.log(result);
                 setpoolCount(result.pools.length);
                 setNFTs(result.NFTs);
+                const buyPrices = nfts.reduce((acc, nft) => {
+                    const key = nft.poolAddress;
+                    const price = parseFloat(nft.price);
+                    acc[key] = price;
+                    return acc;
+                }, {});
+                console.log(buyPrices);
+                setBuyPrices(buyPrices);
                 setCollectionName(result.NFTs[0].name);
                 setPools(result.pools);
                 setNFTIcon(result.icon);
@@ -87,10 +97,19 @@ export default function Nft({ activeTab, collectionAddress, selectedNfts, setSel
                 const C = selectedNfts.filter(nft => nft.poolAddress === pool.poolAddress);
                 return sum + ((pool.reserve1 * C.length) / (pool.reserve0 - C.length));
             }, 0);
+            const poolPrices = pools.reduce((acc, pool) => {
+                const C = selectedNfts.filter(nft => nft.poolAddress === pool.poolAddress);
+                const _next_price = (pool.reserve1 * C.length) / (pool.reserve0 - C.length);
+                const next_price = formatEther(_next_price);
+                acc[pool.poolAddress] = next_price;
+                return acc;
+            }, {});
+            console.log(poolPrices);
             const newTotalAmountIn = formatEther(_newTotalAmountIn);
             const dollarAmount = coinPrice * newTotalAmountIn;
             setBuyAmount(newTotalAmountIn);
             setDollarAmount(dollarAmount);
+            setBuyPrices(poolPrices);
             }
         };
     
@@ -177,7 +196,7 @@ export default function Nft({ activeTab, collectionAddress, selectedNfts, setSel
                     {
                         nfts.map((nft, id) => {
                             return (
-                                <NftCard details={nft} key={id} selectedNfts={selectedNfts} setSelectedNfts={setSelectedNfts} selectedSellNfts={selectedSellNfts} setSelectedSellNfts={setSelectedSellNfts} selectedAddNfts={selectedAddNfts} setSelectedAddNfts={setSelectedAddNfts} activeTab={activeTab}/>
+                                <NftCard details={nft} key={id} selectedNfts={selectedNfts} setSelectedNfts={setSelectedNfts} selectedSellNfts={selectedSellNfts} setSelectedSellNfts={setSelectedSellNfts} selectedAddNfts={selectedAddNfts} setSelectedAddNfts={setSelectedAddNfts} buyPrices={buyPrices} activeTab={activeTab}/>
                             )
                         })
                     }
