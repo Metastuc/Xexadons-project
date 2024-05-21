@@ -1,6 +1,8 @@
 "use client";
 import "./index.scss";
 
+import { JSX, useState } from "react";
+
 import { NFT } from "@/components/reusable";
 // import { ContextWrapper } from "@/hooks";
 import { commonProps } from "@/types";
@@ -65,33 +67,73 @@ type PurchaseNFTRightProps = commonProps & {
 };
 
 export function PurchaseNFTRight({ group, activeTab }: PurchaseNFTRightProps) {
+	let content: JSX.Element | null = null;
+
+	switch (activeTab) {
+		case "buy":
+			content = (
+				<>
+					<h2>select nfts</h2>
+
+					<div>
+						<span>pools</span>
+						<i>2</i>
+					</div>
+				</>
+			);
+			break;
+
+		case "sell":
+			content = (
+				<>
+					<h2>my nfts</h2>
+				</>
+			);
+			break;
+
+		case "liquidity":
+			content = (
+				<>
+					<h2>select nfts to deposit</h2>
+				</>
+			);
+			break;
+	}
+
+	const [selectedNFTs, setSelectedNFTs] = useState<number[]>([]);
+
+	function handleSelect(index: number) {
+		setSelectedNFTs(function (previous) {
+			return previous.includes(index)
+				? previous.filter((i) => i !== index)
+				: [...previous, index];
+		});
+	}
+
 	return (
 		<section className={`${group}`}>
 			<div className={`${group}__wrapper`}>
-				<div className={`${group}__top`}>
-					{activeTab === "buy" ? (
-						<>
-							<h2>select nfts</h2>
-
-							<div>
-								<span>pools</span>
-								<i>2</i>
-							</div>
-						</>
-					) : (
-						<>
-							<h2>my nfts</h2>
-						</>
-					)}
-				</div>
+				<div className={`${group}__top`}>{content}</div>
 
 				<section className={`${group}__bottom`}>
 					<div>
 						{/* eslint-disable-next-line no-unused-vars */}
-						{[...Array(40)].map((value, index) => (
-							<NFT key={index} />
+						{[...Array(7)].map((value, index) => (
+							<NFT
+								key={index}
+								id={index}
+								isSelected={selectedNFTs.includes(index)}
+								onSelect={handleSelect}
+							/>
 						))}
 					</div>
+
+					{activeTab === "liquidity" && (
+						<div className={`${group}__liquidity`}>
+							<span>{selectedNFTs.length}</span>
+							<span>nfts selected</span>
+						</div>
+					)}
 				</section>
 			</div>
 		</section>

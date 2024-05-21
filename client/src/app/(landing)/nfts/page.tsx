@@ -28,7 +28,12 @@ export default function NFTs() {
 				activeTab={activeTab}
 			/>
 		),
-		liquidity: <>deposit</>,
+		liquidity: (
+			<PurchaseNFTRight
+				group="deposit_right"
+				activeTab={activeTab}
+			/>
+		),
 		withdraw: <>withdraw</>,
 		create: <>create</>,
 	};

@@ -1,14 +1,9 @@
-"use client";
-
 // import { NFTprops } from "@/types";
-import { useState } from "react";
 
 import { NFTChecked, NFTNotChecked, Polygon } from "@/assets";
 
 // export function NFT({ address, id, name, poolAddress, src }: NFTprops) {
-export function NFT() {
-	const [isChecked, setIsChecked] = useState<boolean>(false);
-
+export function NFT({ id, isSelected, onSelect }: any) {
 	return (
 		<article>
 			<span>image</span>
@@ -29,8 +24,8 @@ export function NFT() {
 						<span>price</span>
 					</div>
 
-					<div onClick={() => setIsChecked(!isChecked)}>
-						{isChecked ? (
+					<div onClick={() => onSelect(id)}>
+						{isSelected ? (
 							<>
 								<i>
 									<NFTChecked />

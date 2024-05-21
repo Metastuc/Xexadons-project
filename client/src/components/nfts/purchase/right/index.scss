@@ -1,7 +1,8 @@
 @use "@/styles/"as *;
 
 .buy_right,
-.sell_right {
+.sell_right,
+.deposit_right {
 
     &__wrapper {
         @include flex($d: column, $a: flex-start);
