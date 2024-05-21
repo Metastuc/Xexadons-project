@@ -1,20 +1,28 @@
 import { ReactNode, useContext } from "react";
 
-import { NavContext, NavContextProvider } from "@/context";
+import {
+	NavContext,
+	NavContextProvider,
+	NFTContext,
+	NFTContextProvider,
+} from "@/context";
 import { Web3Provider } from "@/lib";
 
 export function ContextWrapper() {
 	const navContext = useContext(NavContext);
+	const nftContext = useContext(NFTContext);
 
-	return { navContext };
+	return { navContext, nftContext };
 }
 
 export function ContextProvider({ children }: { children: ReactNode }) {
 	return (
 		<Web3Provider>
-			<NavContextProvider>
-				<>{children}</>
-			</NavContextProvider>
+			<NFTContextProvider>
+				<NavContextProvider>
+					<>{children}</>
+				</NavContextProvider>
+			</NFTContextProvider>
 		</Web3Provider>
 	);
 }
