@@ -1,8 +1,9 @@
 "use client";
 
-import { ReactNode } from "react";
+import { ReactNode, useEffect } from "react";
 
-import { useTabSwitcher } from "@/hooks";
+import { PurchaseNFTRight } from "@/components/nfts/purchase/right";
+import { ContextWrapper, useTabSwitcher } from "@/hooks";
 import {
 	GlassyBackground,
 	renderLeftContent,
@@ -12,12 +13,27 @@ import {
 type activeTabProps = Record<string, ReactNode>;
 
 export default function NFTs() {
-	const { activeTab, handleTabClick, tabIsActive } = useTabSwitcher("create");
+	const { activeTab, handleTabClick, tabIsActive } = useTabSwitcher("buy");
 
 	const activeTabContent: activeTabProps = {
-		buy: <>buy</>,
-		sell: <>sell</>,
-		liquidity: <>deposit</>,
+		buy: (
+			<PurchaseNFTRight
+				group="buy_right"
+				activeTab={activeTab}
+			/>
+		),
+		sell: (
+			<PurchaseNFTRight
+				group="sell_right"
+				activeTab={activeTab}
+			/>
+		),
+		liquidity: (
+			<PurchaseNFTRight
+				group="deposit_right"
+				activeTab={activeTab}
+			/>
+		),
 		withdraw: <>withdraw</>,
 		create: <>create</>,
 	};
@@ -25,6 +41,14 @@ export default function NFTs() {
 	function renderTabContent(): ReactNode {
 		return activeTabContent[activeTab] || null;
 	}
+
+	const {
+		nftContext: { setSelectedNFTs },
+	} = ContextWrapper();
+
+	useEffect(() => {
+		setSelectedNFTs([]);
+	}, [activeTab, setSelectedNFTs]);
 
 	return (
 		<>
