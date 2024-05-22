@@ -434,7 +434,7 @@ export const buyNFT = async(nfts, chainId, signer) => {
           event: "Buy",
           chainId: chainId,
           item: ids[0],
-          price: Number(ethers.parseEther(price.toString())),
+          price: Number(ethers.formatEther(price)),
           from: userAddress,
           to: poolAddress,
           hash: buyTx.hash,
