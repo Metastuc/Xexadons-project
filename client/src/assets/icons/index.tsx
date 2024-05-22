@@ -500,7 +500,6 @@ export const NFTChecked = function (): JSX.Element {
 export const NFTNotChecked = function (): JSX.Element {
 	return (
 		<>
-			{" "}
 			<svg
 				width={15}
 				height={15}
@@ -523,6 +522,24 @@ export const NFTNotChecked = function (): JSX.Element {
 						/>
 					</clipPath>
 				</defs>
+			</svg>
+		</>
+	);
+};
+
+export const Close = function (): JSX.Element {
+	return (
+		<>
+			<svg
+				xmlns="http://www.w3.org/2000/svg"
+				width={32}
+				height={32}
+				viewBox="0 0 24 24"
+			>
+				<path
+					fill="white"
+					d="M6.4 19L5 17.6l5.6-5.6L5 6.4 6.4 5l5.6 5.6L17.6 5 19 6.4 13.4 12l5.6 5.6-1.4 1.4-5.6-5.6z"
+				/>
 			</svg>
 		</>
 	);
