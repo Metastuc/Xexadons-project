@@ -388,7 +388,7 @@ app.get("/getUserCollectionNFTs", async(req, res) => {
     for (let i = 0; i < items.length; i++) {
       const imageUrl = items[i].image_url;
       const nft = {
-        id: items[i].item.token_id,
+        id: items[i].token_id,
         name: nftName,
         src: imageUrl
       }
