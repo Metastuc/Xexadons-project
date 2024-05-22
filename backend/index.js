@@ -613,15 +613,15 @@ async function getUserPools(address, chain) {
       const reserve0 = await pairContract.reserve0();
       const _reserve0 = Number(reserve0);
       const reserve1 = await pairContract.reserve1();
-      const _reserve1 = Number(ethers.parseEther(reserve1.toString()));
+      const _reserve1 = Number(ethers.formatEther(reserve1));
 
       const curveContract = new ethers.Contract(deploymentAddresses.curve[chain], ABIs.curveABI, provider);
 
       // use function that returns only one uint
       const buyPrice = await curveContract.getBuyPriceSingle(1, reserve0, reserve1, userPools[i]);
-      const _buyPrice = Number(ethers.parseEther(buyPrice.toString()));
+      const _buyPrice = Number(ethers.formatEther(buyPrice));
       const sellPrice = await curveContract.getSellAmountSingle(1, reserve0, reserve1, userPools[i]);
-      const _sellPrice = Number(ethers.parseEther(sellPrice.toString()));
+      const _sellPrice = Number(ethers.formatEther(sellPrice));
 
       const pool = {
         poolAddress: userPools[i],
@@ -669,7 +669,7 @@ async function getUserBalance(userAddress, chainId) {
     const address = tokenAddresses[chainId];
     
     const balanceWei = await provider.getBalance(userAddress);
-    const _balanceEth = ethers.parseEther(balanceWei.toString());
+    const _balanceEth = ethers.formatEther(balanceWei);
     const balanceEth = Number(_balanceEth);
 
     const response = await Moralis.EvmApi.token.getTokenPrice({
@@ -705,7 +705,7 @@ async function getUserCollections(address, chainId) {
     url: `https://api.simplehash.com/api/v0/nfts/collections_by_wallets_v2?chains=${chainNames[chainId]}&wallet_addresses=${address}`,
     headers: {
       accept: 'application/json',
-      'X-API-KEY': raribleApiKey
+      'X-API-KEY': simpleHashKey
     }
   };
   try {
