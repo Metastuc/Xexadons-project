@@ -508,7 +508,7 @@ app.get("/getCollection", async(req, res) => {
         const buyPrice = await curveContract.getBuyPriceSingle(1, reserve0, reserve1, poolAddresses[i]);
         const _buyPrice = roundDownToTwoDecimals(Number(ethers.formatEther(buyPrice))) + currencies[chainId];
         const nft = {
-          id: items[j].token_id,
+          id: Number(items[j].token_id),
           name: items[j].collection.name,
           poolAddress: poolAddresses[i],
           src: imageUrl,
