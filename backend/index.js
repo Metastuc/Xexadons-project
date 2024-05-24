@@ -395,7 +395,8 @@ app.get("/getUserCollectionNFTs", async(req, res) => {
     }
     const collection = {
       icon: icon,
-      nfts: userCollectionNFTs
+      pools: [],
+      NFTs: userCollectionNFTs
     }
 
     res.status(200).json(collection);

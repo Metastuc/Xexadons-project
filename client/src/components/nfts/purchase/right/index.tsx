@@ -116,7 +116,6 @@ export function PurchaseNFTRight({ group, activeTab }: PurchaseNFTRightProps) {
 		
 						<section className={`${group}__bottom`}>
 							<div>
-								{/* eslint-disable-next-line no-unused-vars */}
 								{[...NFTs].map((nft, index) => (
 									<NFT
 										key={index}

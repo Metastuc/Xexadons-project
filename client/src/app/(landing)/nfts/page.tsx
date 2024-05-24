@@ -15,6 +15,10 @@ type activeTabProps = Record<string, ReactNode>;
 export default function NFTs() {
 	const { activeTab, handleTabClick, tabIsActive } = useTabSwitcher("buy");
 
+	const {
+		nftContext: { setSelectedNFTs },
+	} = ContextWrapper();
+
 	const activeTabContent: activeTabProps = {
 		buy: (
 			<PurchaseNFTRight
@@ -41,10 +45,6 @@ export default function NFTs() {
 	function renderTabContent(): ReactNode {
 		return activeTabContent[activeTab] || null;
 	}
-
-	const {
-		nftContext: { setSelectedNFTs },
-	} = ContextWrapper();
 
 	useEffect(() => {
 		setSelectedNFTs([]);

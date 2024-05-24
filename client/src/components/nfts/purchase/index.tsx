@@ -111,7 +111,6 @@ function renderTopContent({ group, activeTab }: purchaseNftProps) {
 	
     useEffect(() => {
         const calculateSellAmount = async () => {
-            if (activeTab === "sell") {
             let sellAmount = 0;
             if (selectedNFTs.length > 0) {
                 const price = await getSellPrice(selectedNFTs.length, selectedNFTs[0].address, chainId)
@@ -125,7 +124,6 @@ function renderTopContent({ group, activeTab }: purchaseNftProps) {
             setSellAmount(amountOut);
 			const dollarAmount = Math.floor(_dollarAmount * 100) / 100;
             setDollarAmount(dollarAmount);
-            }
         };
     
         calculateSellAmount();
@@ -200,13 +198,11 @@ function renderTopContent({ group, activeTab }: purchaseNftProps) {
 }
 
 function renderBottomContent({ group, activeTab }: purchaseNftProps) {
-	const { address } = useAccount();
-	const add = address?.slice(0, 6) + "..." + address?.slice(-3) || 'account';
-
 	const [buyAmount, setBuyAmount] = useState(0);
 	const [sellAmount, setSellAmount] = useState(0);
 
-	const { chainId, status } = useAccount();
+	const { address, chainId, status } = useAccount();
+	const add = address?.slice(0, 6) + "..." + address?.slice(-3) || 'account';
 	const _chainId = status === "connected" ? chainId : 80002;
 
 	const {
@@ -236,7 +232,6 @@ function renderBottomContent({ group, activeTab }: purchaseNftProps) {
 	
 	useEffect(() => {
         const calculateSellAmount = async () => {
-            if (activeTab === "sell") {
             let sellAmount = 0;
             if (selectedNFTs.length > 0) {
                 const price = await getSellPrice(selectedNFTs.length, selectedNFTs[0].address, chainId)
@@ -245,7 +240,6 @@ function renderBottomContent({ group, activeTab }: purchaseNftProps) {
             const _sellAmount = formatEther(BigInt(sellAmount));
 			const amountOut = Math.floor(Number(_sellAmount) * 100) / 100;
             setSellAmount(amountOut);
-            }
         };
     
         calculateSellAmount();
