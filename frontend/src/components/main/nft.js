@@ -115,7 +115,7 @@ export default function Nft({ activeTab, collectionAddress, selectedNfts, setSel
     
         calculateBuyAmount();
     }, [isConnected, pools, selectedNfts]);
-
+// test
     useEffect(() => {
         const calculateSellAmount = async () => {
             if (isConnected) {
