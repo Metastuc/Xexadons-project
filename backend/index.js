@@ -14,8 +14,7 @@ const admin = require('firebase-admin');
 const { initializeApp, applicationDefault, cert } = require('firebase-admin/app');
 const { getFirestore, Timestamp, FieldValue, Filter } = require('firebase-admin/firestore');
 
-const credentialPath = process.env.CREDPATH;
-const serviceAccount = require(credentialPath);
+const serviceAccount = JSON.parse(process.env.FIREBASE_CRED);
 
 const ABIs = {
   factoryABI: [
