@@ -3,17 +3,17 @@
 import { NFTChecked, NFTNotChecked, Polygon } from "@/assets";
 
 // export function NFT({ address, id, name, poolAddress, src }: NFTprops) {
-export function NFT({ id, isSelected, onSelect }: any) {
+export function NFT({ id, isSelected, onSelect, imageUrl, nftId, name, price }: any) {
 	return (
 		<article>
-			<span>image</span>
+			<img src={imageUrl} alt="" />
 
 			<section>
-				<span>id</span>
+				<span>#{nftId}</span>
 
 				<div>
-					<span>name</span>
-					<span>id</span>
+					<span>{name}</span>
+					<span>{nftId}</span>
 				</div>
 
 				<div>
@@ -21,7 +21,7 @@ export function NFT({ id, isSelected, onSelect }: any) {
 						<i>
 							<Polygon />
 						</i>
-						<span>price</span>
+						<span>{price}</span>
 					</div>
 
 					<div onClick={() => onSelect(id)}>

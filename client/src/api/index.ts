@@ -15,3 +15,18 @@ export async function getNFTCollections(chain: number, address: string): Promise
 		throw error;
 	}
 }
+
+export async function getUserCollectionNFTs(chain: number, address: string, userAddress: `0x${string}`): Promise<any> {
+	let URL: string, RESPONSE: any;
+
+	URL = `${API_URL}getUserCollectionNFTs?chainId=${chain}&nftAddress=${address}&userAddress=${userAddress}`;
+
+	try {
+		RESPONSE = await axios.get(URL);
+		console.log(RESPONSE.data);
+		return RESPONSE.data;
+	} catch (error) {
+		console.error(`error trying to fetch user collection NFTs: ${error}`);
+		throw error;
+	}
+}

@@ -10,6 +10,18 @@ import {
 
 import { DEPLOYMENT_ADDRESSES } from "@/lib";
 
+type NFT = {
+	address: string;
+	id: number;
+	poolAddress: string;
+};
+
+type Pool = {
+	poolAddress: string;
+	reserve0: number;
+	reserve1: number;
+}
+
 type NFTContextType = {
 	nftAddress: string;
 	setNftAddress: Dispatch<SetStateAction<string>>;
@@ -22,8 +34,11 @@ type NFTCollection = {
 	collectionName: string;
 	setCollectionName: Dispatch<SetStateAction<string>>;
 
-	selectedNFTs: number[];
-	setSelectedNFTs: Dispatch<SetStateAction<number[]>>;
+	selectedNFTs: NFT[];
+	setSelectedNFTs: Dispatch<SetStateAction<NFT[]>>;
+
+	pools: Pool[];
+	setPools: Dispatch<SetStateAction<Pool[]>>;
 };
 
 type NFTProviderProps = NFTContextType & NFTCollection;
@@ -38,7 +53,8 @@ export function NFTContextProvider({ children }: { children: ReactNode }) {
 	const [nftAddress, setNftAddress] = useState<string>(address);
 	const [collection, setCollection] = useState<any | null>(null);
 	const [collectionName, setCollectionName] = useState<string>("");
-	const [selectedNFTs, setSelectedNFTs] = useState<number[]>([]);
+	const [selectedNFTs, setSelectedNFTs] = useState<NFT[]>([]);
+	const [pools, setPools] = useState<Pool[]>([]);
 
 	return (
 		<NFTContext.Provider
@@ -51,6 +67,8 @@ export function NFTContextProvider({ children }: { children: ReactNode }) {
 				setCollectionName,
 				selectedNFTs,
 				setSelectedNFTs,
+				pools,
+				setPools
 			}}
 		>
 			{children}
