@@ -6,6 +6,9 @@ import { Create, Liquidity, PurchaseNft, Tabs } from "@/components";
 
 import { GlassyBackground } from "../reusable";
 
+import { useEthersSigner } from "@/utils/adapter";
+import { useAccount } from "wagmi";
+
 type renderLeftContentProps = {
 	activeTab: string;
 	handleTabClick: Function;
@@ -23,14 +26,18 @@ export function renderLeftContent({
 }: renderLeftContentProps) {
 	let content: ReactNode;
 	let currentPool = activeTab == "liquidity" ? "deposit" : "withdraw";
-
+	
+	const signer = useEthersSigner();
+	const { address, chainId, status } = useAccount();
+	const userAddress = address?.slice(0, 6) + "..." + address?.slice(-3) || 'account';
+	const _chainId = status === "connected" ? chainId : 80002;
 	switch (activeTab) {
 		case "buy":
-			content = PurchaseNft({ group: "buy_left", activeTab: "buy" });
+			content = PurchaseNft({ group: "buy_left", activeTab: "buy", signer: signer, userAddress: userAddress, _chainId: _chainId });
 			break;
 
 		case "sell":
-			content = PurchaseNft({ group: "sell_left", activeTab: "sell" });
+			content = PurchaseNft({ group: "sell_left", activeTab: "sell", signer: signer, userAddress: userAddress, _chainId: _chainId });
 			break;
 
 		case "liquidity":
@@ -41,6 +48,9 @@ export function renderLeftContent({
 				activeTab: "liquidity",
 				handleTabClick,
 				currentPool,
+				signer,
+				userAddress,
+				_chainId
 			});
 			break;
 

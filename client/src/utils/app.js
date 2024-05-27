@@ -600,7 +600,7 @@ export const sellNFT = async(tokenIds, nftAddress, chainId, signer) => {
   }
 }
 
-export const getAddAmount = async(length, chainId) => { // take in the pool address value
+export const getDepositAmount = async(length, chainId) => { // take in the pool address value
   const provider = new ethers.JsonRpcProvider(rpcUrls[chainId]);
   // get reserves
   const pairContract = new ethers.Contract("0x48bDf8aD32FAcE0Bb3887D4c771A184383864260", pairABI, provider);
@@ -624,11 +624,12 @@ export const getUserBalance = async(chainId, userAddress) => {
   return userBalance;
 }
 
-export const addLiquidity = async(nfts, chainId, nftAddress, signer) => { // take in poolAddress param
+export const addLiquidity = async(nfts, chainId, signer) => { // take in poolAddress param
+  const nftAddress = nfts[0].address;
   const ids = nfts.map(nft => nft.id);
   const userAddress = await signer.getAddress();
   // get the eth value
-  const amount = await getAddAmount(nfts.length, chainId);
+  const amount = await getDepositAmount(nfts.length, chainId);
   const liqAmount = BigInt(amount);
   // get the pool address
   const poolAddress = "0x48bDf8aD32FAcE0Bb3887D4c771A184383864260";

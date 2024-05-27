@@ -4,26 +4,38 @@ import "./index.scss";
 
 import { ChangeEvent, useState } from "react";
 
+import { ContextWrapper } from "@/hooks";
 import { Polygon, Xexadons } from "@/assets";
 import { commonProps } from "@/types";
 import { contentWrapper } from "@/views";
+import { JsonRpcSigner } from 'ethers';
+import { addLiquidity } from "@/utils/app";
 
 type poolProps = commonProps & {
 	activeTab: string;
 	currentPool: string;
 	handleTabClick: Function;
+	signer: JsonRpcSigner | undefined;
+	userAddress: string;
+	_chainId: number;
 };
+
+type depositProps = commonProps & {
+	signer: JsonRpcSigner | undefined;
+	userAddress: string;
+	_chainId: number;
+}
 
 type renderTabProps = commonProps & {
 	handleTabClick: Function;
 	currentPool: string;
 };
 
-export function Liquidity({ group, handleTabClick, currentPool }: poolProps) {
+export function Liquidity({ group, handleTabClick, currentPool, signer, userAddress, _chainId }: poolProps) {
 	function renderContent() {
 		switch (currentPool) {
 			case "deposit":
-				return <Deposit group={group} />;
+				return <Deposit group={group} signer={signer} userAddress={userAddress} _chainId={_chainId}/>;
 
 			case "withdraw":
 				return <Withdraw group={group} />;
@@ -87,8 +99,17 @@ function renderTabs({ handleTabClick, currentPool }: renderTabProps) {
 	);
 }
 
-function Deposit({ group }: commonProps) {
+function Deposit({ group, signer, userAddress, _chainId }: depositProps) {
 	const styleClass = `${group}__deposit`;
+
+	const depositLiquidity = async() => {
+        await addLiquidity(selectedNFTs, _chainId, signer);
+        console.log("successfully");
+    }
+
+	const {
+		nftContext: { depositAmount, dollarAmount, selectedNFTs,  },
+	} = ContextWrapper();
 
 	return (
 		<>
@@ -103,8 +124,8 @@ function Deposit({ group }: commonProps) {
 
 								<div>
 									<aside>
-										<span>500</span>
-										<span>$560</span>
+										<span>{depositAmount}</span>
+										<span>${dollarAmount}</span>
 									</aside>
 
 									<aside>
@@ -134,8 +155,8 @@ function Deposit({ group }: commonProps) {
 									</div>
 
 									<div className={`${styleClass}_detail-2`}>
-										<span>from</span>
-										<span>nft pool</span>
+										<span>{userAddress}</span>
+										<span>0xe9c...26Ca</span>
 									</div>
 
 									<div className={`${styleClass}_detail-3`}>
@@ -145,8 +166,8 @@ function Deposit({ group }: commonProps) {
 									</div>
 
 									<div className={`${styleClass}_detail-4`}>
-										<span>account</span>
-										<span>account</span>
+										<span>from</span>
+										<span>nft pool</span>
 									</div>
 								</article>
 
@@ -156,13 +177,13 @@ function Deposit({ group }: commonProps) {
 										<i>{Polygon()}</i>
 									</div>
 
-									<span>3 xexadons & 500matic</span>
+									<span>{selectedNFTs.length} xexadons & {depositAmount}matic</span>
 
-									<p>~deposit 3 xexadons and 500matic </p>
+									<p>~deposit {selectedNFTs.length} xexadons and {depositAmount}matic </p>
 								</article>
 
 								<div className={`${styleClass}_confirm`}>
-									<button>
+									<button onClick={depositLiquidity}>
 										<span>proceed</span>
 									</button>
 								</div>

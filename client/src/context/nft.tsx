@@ -39,6 +39,18 @@ type NFTCollection = {
 
 	pools: Pool[];
 	setPools: Dispatch<SetStateAction<Pool[]>>;
+
+	buyAmount: number;
+	setBuyAmount: Dispatch<SetStateAction<number>>;
+
+	sellAmount: number;
+	setSellAmount: Dispatch<SetStateAction<number>>;
+
+	depositAmount: number;
+	setDepositAmount: Dispatch<SetStateAction<number>>;
+
+	dollarAmount: number;
+	setDollarAmount: Dispatch<SetStateAction<number>>;
 };
 
 type NFTProviderProps = NFTContextType & NFTCollection;
@@ -55,6 +67,10 @@ export function NFTContextProvider({ children }: { children: ReactNode }) {
 	const [collectionName, setCollectionName] = useState<string>("");
 	const [selectedNFTs, setSelectedNFTs] = useState<NFT[]>([]);
 	const [pools, setPools] = useState<Pool[]>([]);
+	const [buyAmount, setBuyAmount] = useState<number>(0);
+	const [sellAmount, setSellAmount] = useState<number>(0);
+	const [depositAmount, setDepositAmount] = useState<number>(0);
+	const [dollarAmount, setDollarAmount] = useState<number>(0);
 
 	return (
 		<NFTContext.Provider
@@ -68,7 +84,15 @@ export function NFTContextProvider({ children }: { children: ReactNode }) {
 				selectedNFTs,
 				setSelectedNFTs,
 				pools,
-				setPools
+				setPools,
+				buyAmount,
+				setBuyAmount,
+				sellAmount,
+				setSellAmount,
+				depositAmount,
+				setDepositAmount,
+				dollarAmount,
+				setDollarAmount
 			}}
 		>
 			{children}

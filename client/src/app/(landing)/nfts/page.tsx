@@ -42,13 +42,13 @@ export default function NFTs() {
 		create: <>create</>,
 	};
 
-	function renderTabContent(): ReactNode {
-		return activeTabContent[activeTab] || null;
-	}
-
 	useEffect(() => {
 		setSelectedNFTs([]);
 	}, [activeTab, setSelectedNFTs]);
+
+	function renderTabContent(): ReactNode {
+		return activeTabContent[activeTab] || null;
+	}
 
 	return (
 		<>
