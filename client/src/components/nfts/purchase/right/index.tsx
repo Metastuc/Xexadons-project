@@ -8,7 +8,7 @@ import { commonProps } from "@/types";
 import { getNFTCollections, getUserCollectionNFTs } from "@/api";
 import { useAccount } from "wagmi";
 import { useQuery } from "@tanstack/react-query";
-import { getCoinPrice, getSellPrice, getDepositAmount } from "@/utils/app";
+import { getCoinPrice, getSellPrice, getDepositAmount, getCurrency } from "@/utils/app";
 import { formatEther } from "viem";
 
 type PurchaseNFTRightProps = commonProps & {
@@ -23,8 +23,13 @@ export function PurchaseNFTRight({ group, activeTab }: PurchaseNFTRightProps) {
 	const _chainId = status === "connected" ? chainId : 80002;
 
 	const {
-		nftContext: { selectedNFTs, pools, setBuyAmount, setSellAmount, setDollarAmount, setDepositAmount },
+		nftContext: { selectedNFTs, pools, setBuyAmount, setSellAmount, setDollarAmount, setDepositAmount, buyPrices, setBuyPrices },
 	} = ContextWrapper();
+
+	interface PoolPrice {
+		poolAddress: string;
+		nextPrice: string;
+	}
 
 	useEffect(() => {
         const calculateBuyAmount = async () => {
@@ -33,13 +38,20 @@ export function PurchaseNFTRight({ group, activeTab }: PurchaseNFTRightProps) {
                 const C = selectedNFTs.filter(nft => nft.poolAddress === pool.poolAddress);
                 return sum + ((pool.reserve1 * C.length) / (pool.reserve0 - C.length));
             }, 0);
-            // const poolPrices = pools.reduce((acc, pool) => {
-            //     const C = selectedNFTs.filter(nft => nft.poolAddress === pool.poolAddress);
-            //     const next_price = (pool.reserve1 * C.length) / (pool.reserve0 - C.length);
-            //     acc[pool.poolAddress] = next_price;
-            //     return acc;
-            // }, {});
-            // console.log(poolPrices);
+			const poolPrices: PoolPrice[] = pools.reduce((acc: PoolPrice[], pool) => {
+				const C = selectedNFTs.filter(nft => nft.poolAddress === pool.poolAddress);
+				const _next_price = Math.ceil(((pool.reserve1 * (C.length + 1)) / (pool.reserve0 - (C.length + 1))) * 100) / 100;
+				const currency = getCurrency(_chainId);
+				const next_price = (formatEther(BigInt(_next_price))) + currency;
+			
+				acc.push({
+					poolAddress: pool.poolAddress,
+					nextPrice: next_price
+				});
+			
+				return acc;
+			}, []);
+			setBuyPrices(poolPrices);
 			const _coinPrice = await getCoinPrice(_chainId);
 			const coinPrice = Number(_coinPrice);
 			const newTotalAmountIn_ = BigInt(newTotalAmountIn);
@@ -192,7 +204,10 @@ export function PurchaseNFTRight({ group, activeTab }: PurchaseNFTRightProps) {
 		
 						<section className={`${group}__bottom`}>
 							<div>
-								{[...NFTs].map((nft, index) => (
+							{[...NFTs].map((nft, index) => {
+								const buyPrice = buyPrices.find(price => price.poolAddress === nft.poolAddress) || { nextPrice: 'N/A' };
+
+								return (
 									<NFT
 										key={index}
 										id={index}
@@ -201,17 +216,20 @@ export function PurchaseNFTRight({ group, activeTab }: PurchaseNFTRightProps) {
 										imageUrl={nft.src}
 										nftId={nft.id}
 										name={nft.name}
-										price={nft.price}
+										price={selectedNFTs.length === 0 ? nft.price : buyPrice.nextPrice}
+										chainId={_chainId}
 									/>
-								))}
+								);
+							})}
+
 							</div>
 		
-							{/* {activeTab === "liquidity" && (
+							{activeTab === "liquidity" && (
 								<div className={`${group}__liquidity`}>
 									<span>{selectedNFTs.length}</span>
 									<span>nft{selectedNFTs.length > 1 ? "s" : ""} selected</span>
 								</div>
-							)} */}
+							)}
 						</section>
 					</div>
 				</section>

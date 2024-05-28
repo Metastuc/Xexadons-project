@@ -506,7 +506,7 @@ app.get("/getCollection", async(req, res) => {
   
         // use function that returns only one uint
         const buyPrice = await curveContract.getBuyPriceSingle(1, reserve0, reserve1, poolAddresses[i]);
-        const _buyPrice = roundDownToTwoDecimals(Number(ethers.formatEther(buyPrice))) + currencies[chainId];
+        const _buyPrice = roundDownToTwoDecimals(Number(ethers.formatEther(buyPrice)));
         const nft = {
           id: Number(items[j].token_id),
           name: items[j].collection.name,
@@ -881,9 +881,9 @@ app.get("/getCoinPrice", async(req, res) => {
 })
 
 function roundDownToTwoDecimals(number) {
-  const shiftedNumber = Math.floor(number * 100);
+  const shiftedNumber = Math.ceil(number * 100);
   const roundedNumber = shiftedNumber / 100;
-  return roundedNumber.toFixed(2);
+  return roundedNumber;
 }
 
 startServer();
