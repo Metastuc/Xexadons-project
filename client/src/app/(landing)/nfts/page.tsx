@@ -38,7 +38,7 @@ export default function NFTs() {
 				activeTab={activeTab}
 			/>
 		),
-		withdraw: <>withdraw</>,
+		withdraw: <>withdraw</>, // create right side for withdraw and create
 		create: <>create</>,
 	};
 

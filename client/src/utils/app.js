@@ -351,8 +351,17 @@ const rpcUrls = {
   97: "https://data-seed-prebsc-1-s1.bnbchain.org:8545"
 }
 
+const currencyNames = {
+  80002: "matic",
+  97: "bnb"
+}
+
 export const getAppAddress = (chainId) => {
   return deploymentAddresses.xexadon[chainId];
+}
+
+export const getCurrency = (chainId) => {
+  return currencyNames[chainId];
 }
 
 export const createPool = async(ids, ethAmount, nftAddress, fee, chainId, signer) => {

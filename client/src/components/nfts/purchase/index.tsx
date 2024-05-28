@@ -1,12 +1,12 @@
 "use client"
 import "./index.scss";
 
-import { ArrowDeg90, Polygon, Xexadons } from "@/assets";
+import { ArrowDeg90, Polygon, BSC, Xexadons } from "@/assets";
 import { commonProps } from "@/types";
 import { contentWrapper } from "@/views";
 import { ContextWrapper } from "@/hooks";
 import { JsonRpcSigner } from 'ethers';
-import { buyNFT, sellNFT } from "@/utils/app";
+import { buyNFT, sellNFT, getCurrency } from "@/utils/app";
 
 type purchaseNftProps = commonProps & {
 	activeTab: string;
@@ -54,7 +54,7 @@ function renderContent({ group, activeTab, signer, userAddress, _chainId }: cont
 		<section className={`${group}__content`}>
 			<>
 				{contentWrapper({
-					children: renderTopContent({ group, activeTab }),
+					children: renderTopContent({ group, activeTab, signer, userAddress, _chainId }),
 				})}
 			</>
 
@@ -67,7 +67,7 @@ function renderContent({ group, activeTab, signer, userAddress, _chainId }: cont
 	);
 }
 
-function renderTopContent({ group, activeTab }: purchaseNftProps) {
+function renderTopContent({ group, activeTab, signer, userAddress, _chainId }: contentProps) {
 
 	const {
 		nftContext: { selectedNFTs, buyAmount, sellAmount, dollarAmount },
@@ -112,8 +112,17 @@ function renderTopContent({ group, activeTab }: purchaseNftProps) {
 				<>
 					<article className={`${group}__currency`}>
 						<span>
-							<i>{Polygon()}</i>
-							<span>polygon</span>
+						{_chainId === 97 ? (
+							<>
+							<i>{BSC()}</i> <span>BSC</span>
+							</>
+						) : _chainId === 80002 ? (
+							<>
+							<i>{Polygon()}</i> <span>Polygon</span>
+							</>
+						) : (
+							<span>Wrong Network</span>
+						)}
 						</span>
 
 						<span>
@@ -131,8 +140,17 @@ function renderTopContent({ group, activeTab }: purchaseNftProps) {
 						</span>
 
 						<span>
-							<i>{Polygon()}</i>
-							<span>polygon</span>
+						{_chainId === 97 ? (
+							<>
+							<i>{BSC()}</i> <span>BSC</span>
+							</>
+						) : _chainId === 80002 ? (
+							<>
+							<i>{Polygon()}</i> <span>Polygon</span>
+							</>
+						) : (
+							<span>Wrong Network</span>
+						)}
 						</span>
 					</article>
 				</>
@@ -145,6 +163,8 @@ function renderBottomContent({ group, activeTab, signer, userAddress, _chainId }
 	const {
 		nftContext: { selectedNFTs, buyAmount, sellAmount },
 	} = ContextWrapper();
+
+	const currency = getCurrency(_chainId);
 
 	const buyNFTs = async() => {
         await buyNFT(selectedNFTs, _chainId, signer);
@@ -225,8 +245,18 @@ function renderBottomContent({ group, activeTab, signer, userAddress, _chainId }
 				<>
 					<article className={`${group}__swap`}>
 						<span>
-							<i>{Polygon()}</i>
-							<span>{buyAmount} matic</span>
+						{_chainId === 97 ? (
+											<>
+											<i>{BSC()}</i>
+											</>
+										) : _chainId === 80002 ? (
+											<>
+											<i>{Polygon()}</i>
+											</>
+										) : (
+											<span>Wrong Network</span>
+										)}
+							<span>{buyAmount} {currency}</span>
 						</span>
 
 						<i>{ArrowDeg90()}</i>
@@ -248,8 +278,9 @@ function renderBottomContent({ group, activeTab, signer, userAddress, _chainId }
 						<i>{ArrowDeg90()}</i>
 
 						<span>
+
 							<i>{Polygon()}</i>
-							<span>{sellAmount} matic</span>
+							<span>{sellAmount} {currency}</span>
 						</span>
 					</article>
 				</>
@@ -258,13 +289,23 @@ function renderBottomContent({ group, activeTab, signer, userAddress, _chainId }
 			{group.includes("buy") ? (
 				<>
 					<p className={`${group}__description`}>
-						~swap {buyAmount} matic <i>{Polygon()}</i> for {selectedNFTs.length} xexadons
+						~swap {buyAmount} {currency} {_chainId === 97 ? (
+											<>
+											<i>{BSC()}</i>
+											</>
+										) : _chainId === 80002 ? (
+											<>
+											<i>{Polygon()}</i>
+											</>
+										) : (
+											<span>Wrong Network</span>
+										)} for {selectedNFTs.length} xexadons
 					</p>
 				</>
 			) : (
 				<>
 					<p className={`${group}__description`}>
-						~swap {selectedNFTs.length} xexadons for {sellAmount} matic <i></i>
+						~swap {selectedNFTs.length} xexadons for {sellAmount} {currency} <i></i>
 					</p>
 				</>
 			)}
