@@ -2,14 +2,15 @@
 
 import "./index.scss";
 
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useState, useEffect } from "react";
 
 import { ContextWrapper } from "@/hooks";
-import { Polygon, Xexadons } from "@/assets";
+import { Polygon, Xexadons, BSC } from "@/assets";
 import { commonProps } from "@/types";
 import { contentWrapper } from "@/views";
 import { JsonRpcSigner } from 'ethers';
-import { addLiquidity } from "@/utils/app";
+import { addLiquidity, getCurrency, getChain, getUserBalance } from "@/utils/app";
+import { formatEther } from "viem";
 
 type poolProps = commonProps & {
 	activeTab: string;
@@ -102,14 +103,17 @@ function renderTabs({ handleTabClick, currentPool }: renderTabProps) {
 function Deposit({ group, signer, userAddress, _chainId }: depositProps) {
 	const styleClass = `${group}__deposit`;
 
+	const {
+		nftContext: { depositAmount, dollarAmount, selectedNFTs, poolAddress, userBalance, setUserBalance },
+	} = ContextWrapper();
+
+	const currency = getCurrency(_chainId);
+	const chain = getChain(_chainId);
+
 	const depositLiquidity = async() => {
-        await addLiquidity(selectedNFTs, _chainId, signer);
+        await addLiquidity(selectedNFTs, _chainId, poolAddress, signer);
         console.log("successfully");
     }
-
-	const {
-		nftContext: { depositAmount, dollarAmount, selectedNFTs,  },
-	} = ContextWrapper();
 
 	return (
 		<>
@@ -130,10 +134,20 @@ function Deposit({ group, signer, userAddress, _chainId }: depositProps) {
 
 									<aside>
 										<div>
+											<i>{_chainId === 97 ? (
+											<>
+											<i>{BSC()}</i>
+											</>
+										) : _chainId === 80002 ? (
+											<>
 											<i>{Polygon()}</i>
-											<span>polygon</span>
+											</>
+										) : (
+											<span>Wrong Network</span>
+										)}</i>
+											<span>{chain}</span>
 										</div>
-										<span>845matic available</span>
+										<span>{userBalance}{currency} available</span>
 									</aside>
 								</div>
 							</section>
@@ -174,12 +188,22 @@ function Deposit({ group, signer, userAddress, _chainId }: depositProps) {
 								<article className={`${styleClass}_swap`}>
 									<div>
 										<i>{Xexadons()}</i>
-										<i>{Polygon()}</i>
+										<i>{_chainId === 97 ? (
+											<>
+											<i>{BSC()}</i>
+											</>
+										) : _chainId === 80002 ? (
+											<>
+											<i>{Polygon()}</i>
+											</>
+										) : (
+											<span>Wrong Network</span>
+										)}</i>
 									</div>
 
-									<span>{selectedNFTs.length} xexadons & {depositAmount}matic</span>
+									<span>{selectedNFTs.length} xexadons & {depositAmount}{currency}</span>
 
-									<p>~deposit {selectedNFTs.length} xexadons and {depositAmount}matic </p>
+									<p>~deposit {selectedNFTs.length} xexadons and {depositAmount}{currency} </p>
 								</article>
 
 								<div className={`${styleClass}_confirm`}>

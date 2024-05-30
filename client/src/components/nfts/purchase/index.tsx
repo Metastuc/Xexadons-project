@@ -245,17 +245,17 @@ function renderBottomContent({ group, activeTab, signer, userAddress, _chainId }
 				<>
 					<article className={`${group}__swap`}>
 						<span>
-						{_chainId === 97 ? (
-											<>
-											<i>{BSC()}</i>
-											</>
-										) : _chainId === 80002 ? (
-											<>
-											<i>{Polygon()}</i>
-											</>
-										) : (
-											<span>Wrong Network</span>
-										)}
+							{_chainId === 97 ? (
+								<>
+								<i>{BSC()}</i>
+								</>
+							) : _chainId === 80002 ? (
+								<>
+								<i>{Polygon()}</i>
+								</>
+							) : (
+								<span>Wrong Network</span>
+							)}
 							<span>{buyAmount} {currency}</span>
 						</span>
 
@@ -278,8 +278,17 @@ function renderBottomContent({ group, activeTab, signer, userAddress, _chainId }
 						<i>{ArrowDeg90()}</i>
 
 						<span>
-
-							<i>{Polygon()}</i>
+							{_chainId === 97 ? (
+								<>
+								<i>{BSC()}</i>
+								</>
+							) : _chainId === 80002 ? (
+								<>
+								<i>{Polygon()}</i>
+								</>
+							) : (
+								<span>Wrong Network</span>
+							)}
 							<span>{sellAmount} {currency}</span>
 						</span>
 					</article>
@@ -305,7 +314,18 @@ function renderBottomContent({ group, activeTab, signer, userAddress, _chainId }
 			) : (
 				<>
 					<p className={`${group}__description`}>
-						~swap {selectedNFTs.length} xexadons for {sellAmount} {currency} <i></i>
+						~swap {selectedNFTs.length} xexadons for {sellAmount} {currency} 
+						{_chainId === 97 ? (
+							<>
+							<i>{BSC()}</i>
+							</>
+						) : _chainId === 80002 ? (
+							<>
+							<i>{Polygon()}</i>
+							</>
+						) : (
+							<span>Wrong Network</span>
+						)}<i></i>
 					</p>
 				</>
 			)}

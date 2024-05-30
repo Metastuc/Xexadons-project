@@ -356,12 +356,21 @@ const currencyNames = {
   97: "bnb"
 }
 
+const chainNames = {
+  80002: "Polygon",
+  97: "BSC"
+}
+
 export const getAppAddress = (chainId) => {
   return deploymentAddresses.xexadon[chainId];
 }
 
 export const getCurrency = (chainId) => {
   return currencyNames[chainId];
+}
+
+export const getChain = (chainId) => {
+  return chainNames[chainId];
 }
 
 export const createPool = async(ids, ethAmount, nftAddress, fee, chainId, signer) => {
@@ -609,10 +618,10 @@ export const sellNFT = async(tokenIds, nftAddress, chainId, signer) => {
   }
 }
 
-export const getDepositAmount = async(length, chainId) => { // take in the pool address value
+export const getDepositAmount = async(length, poolAddress, chainId) => {
   const provider = new ethers.JsonRpcProvider(rpcUrls[chainId]);
   // get reserves
-  const pairContract = new ethers.Contract("0x48bDf8aD32FAcE0Bb3887D4c771A184383864260", pairABI, provider);
+  const pairContract = new ethers.Contract(poolAddress, pairABI, provider);
   const _reserve0 = await pairContract.reserve0();
   const _reserve1 = await pairContract.reserve1();
   console.log(_reserve0, _reserve1);
@@ -626,22 +635,25 @@ export const getDepositAmount = async(length, chainId) => { // take in the pool 
 
 // get user balance function
 export const getUserBalance = async(chainId, userAddress) => {
-  const provider = new ethers.JsonRpcProvider(rpcUrls[chainId]);
+  try {
+    const _userAddress = userAddress;
+    const provider = new ethers.JsonRpcProvider(rpcUrls[chainId]);
+    const userBalance = await provider.getBalance(_userAddress);
+    console.log(userBalance);
 
-  const userBalance = await provider.getBalance(userAddress);
-
-  return userBalance;
+    return userBalance;
+  } catch (error) {
+    console.log(error);
+  }
 }
 
-export const addLiquidity = async(nfts, chainId, signer) => { // take in poolAddress param
+export const addLiquidity = async(nfts, chainId, poolAddress, signer) => {
   const nftAddress = nfts[0].address;
   const ids = nfts.map(nft => nft.id);
   const userAddress = await signer.getAddress();
   // get the eth value
-  const amount = await getDepositAmount(nfts.length, chainId);
+  const amount = await getDepositAmount(nfts.length, poolAddress,  chainId);
   const liqAmount = BigInt(amount);
-  // get the pool address
-  const poolAddress = "0x48bDf8aD32FAcE0Bb3887D4c771A184383864260";
   // call function to perform transaction
   const nftContract = new ethers.Contract(nftAddress, nftABI, signer);
 

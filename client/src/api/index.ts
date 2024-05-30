@@ -16,10 +16,16 @@ export async function getNFTCollections(chain: number, address: string): Promise
 	}
 }
 
-export async function getUserCollectionNFTs(chain: number, address: string, userAddress: `0x${string}`): Promise<any> {
+export async function getUserCollectionNFTs(chain: number, address: string, userAddress: `0x${string}`, poolAddress: string,  tab: string): Promise<any> {
 	let URL: string, RESPONSE: any;
 
-	URL = `${API_URL}getUserCollectionNFTs?chainId=${chain}&nftAddress=${address}&userAddress=${userAddress}`;
+	// "";
+
+	if (tab === "sell") {
+		URL = `${API_URL}getUserCollectionNFTsSell?chainId=${chain}&nftAddress=${address}&userAddress=${userAddress}`;
+	} else {
+		URL = `${API_URL}getUserCollectionNFTsDeposit?chainId=${chain}&nftAddress=${address}&userAddress=${userAddress}&poolAddress=${poolAddress}`;
+	}
 
 	try {
 		RESPONSE = await axios.get(URL);
