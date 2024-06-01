@@ -55,7 +55,7 @@ export function renderLeftContent({
 			break;
 
 		case "create":
-			content = Create({ group: "create_left" });
+			content = Create({ group: "create_left", signer, userAddress, _chainId });
 			break;
 	}
 

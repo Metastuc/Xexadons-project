@@ -3,6 +3,8 @@
 import { ReactNode, useEffect } from "react";
 
 import { PurchaseNFTRight } from "@/components/nfts/purchase/right";
+import { WithdrawRight } from "@/components/nfts/liquidity/right";
+import { CreateRight } from "@/components/nfts/create/right";
 import { ContextWrapper, useTabSwitcher } from "@/hooks";
 import {
 	GlassyBackground,
@@ -37,9 +39,9 @@ export default function NFTs() {
 				group="deposit_right"
 				activeTab={activeTab}
 			/>
-		),
-		withdraw: <>withdraw</>, // create right side for withdraw and create
-		create: <>create</>,
+		), 
+		withdraw: <WithdrawRight group="withdraw_right"/>,
+		create: <CreateRight group="create_right"/>
 	};
 
 	useEffect(() => {

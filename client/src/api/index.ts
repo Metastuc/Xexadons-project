@@ -16,16 +16,44 @@ export async function getNFTCollections(chain: number, address: string): Promise
 	}
 }
 
-export async function getUserCollectionNFTs(chain: number, address: string, userAddress: `0x${string}`, poolAddress: string,  tab: string): Promise<any> {
+export async function getPoolNFTs(chain: number, address: string, poolAddress: string): Promise<any> {
 	let URL: string, RESPONSE: any;
 
-	// "";
+	URL = `${API_URL}getPoolNFTs?chainId=${chain}&nftAddress=${address}&poolAddress=${poolAddress}`;
+
+	try {
+		RESPONSE = await axios.get(URL);
+		console.log(RESPONSE.data);
+		return RESPONSE.data;
+	} catch (error) {
+		console.error(`error trying to fetch nft collections: ${error}`);
+		throw error;
+	}
+}
+
+export async function getUserCollectionNFTs(chain: number, address: string, userAddress: `0x${string}`, poolAddress: string,  tab: string): Promise<any> {
+	let URL: string, RESPONSE: any;
 
 	if (tab === "sell") {
 		URL = `${API_URL}getUserCollectionNFTsSell?chainId=${chain}&nftAddress=${address}&userAddress=${userAddress}`;
 	} else {
 		URL = `${API_URL}getUserCollectionNFTsDeposit?chainId=${chain}&nftAddress=${address}&userAddress=${userAddress}&poolAddress=${poolAddress}`;
 	}
+
+	try {
+		RESPONSE = await axios.get(URL);
+		console.log(RESPONSE.data);
+		return RESPONSE.data;
+	} catch (error) {
+		console.error(`error trying to fetch user collection NFTs: ${error}`);
+		throw error;
+	}
+}
+
+export async function getUserNFTs(chain: number, address: string, userAddress: `0x${string}`): Promise<any> {
+	let URL: string, RESPONSE: any;
+
+	URL = `${API_URL}getUserCollectionNFTsSell?chainId=${chain}&nftAddress=${address}&userAddress=${userAddress}`;
 
 	try {
 		RESPONSE = await axios.get(URL);

@@ -111,7 +111,7 @@ export function PurchaseNFTRight({ group, activeTab }: PurchaseNFTRightProps) {
         const calculateDepositAmount = async () => {
             let depositAmount = 0;
             if (selectedNFTs.length > 0) {
-                const amount = await getDepositAmount(selectedNFTs.length, _chainId)
+                const amount = await getDepositAmount(selectedNFTs.length, poolAddress, _chainId)
                 depositAmount = amount!== undefined? amount : 0;
             }
             const _depositAmount = formatEther(BigInt(depositAmount));
@@ -238,7 +238,7 @@ export function PurchaseNFTRight({ group, activeTab }: PurchaseNFTRightProps) {
 										price={
 											selectedNFTs.length === 0
 												? nft.price
-												: (activeTab === "buy" ? buyPrice?.nextPrice : nextSellPrice) || nft.price
+												: (activeTab === "buy" ? buyPrice?.nextPrice : activeTab === "sell" ? nextSellPrice : nft.price) || nft.price
 										}
 										chainId={_chainId}
 									/>

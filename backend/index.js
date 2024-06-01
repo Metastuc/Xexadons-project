@@ -134,6 +134,19 @@ const ABIs = {
       },
       {
         "inputs": [],
+        "name": "totalSupply",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
         "name": "reserve0",
         "outputs": [
           {
@@ -473,6 +486,66 @@ app.get("/getUserCollectionNFTsDeposit", async(req, res) => {
   }
 });
 
+app.get("/getPoolNFTs", async(req, res) => {
+  // include chain param
+  const chainId = req.query.chainId;
+  const nftAddress = req.query.nftAddress;
+  const poolAddress = req.query.poolAddress;
+
+  const provider = new ethers.JsonRpcProvider(rpcUrls[chainId]);
+
+  const nftContract = new ethers.Contract(nftAddress, ABIs.nftABI, provider);
+  const nftName = await nftContract.name();
+  const icon = await nftContract.tokenURI(0);
+
+  const pairContract = new ethers.Contract(poolAddress, ABIs.pairABI, provider);
+  const reserve1 = await pairContract.reserve1();
+
+  const poolBalance = await provider.getBalance(poolAddress);
+  const _feesEarned = poolBalance - reserve1;
+  const feesEarned = Number(_feesEarned);
+
+  var poolNFTs = [];
+  const options = {
+    method: 'GET',
+    url: `https://api.simplehash.com/api/v0/nfts/owners?chains=${chainNames[chainId]}&wallet_addresses=${poolAddress}&contract_addresses=${nftAddress}`,
+    headers: {
+      accept: 'application/json',
+      'X-API-KEY': simpleHashKey
+    }
+  };
+
+  try {
+    const response = await axios(options);
+    const items = response.data.nfts;
+
+    // check if contract address matches tokenAddress
+    for (let i = 0; i < items.length; i++) {
+      const imageUrl = items[i].image_url;
+      const nft = {
+        id: items[i].token_id,
+        name: nftName,
+        src: imageUrl,
+        price: " "
+      }
+      poolNFTs.push(nft);
+    }
+
+    const collection = {
+      icon: icon,
+      pools: [],
+      NFTs: poolNFTs,
+      feesEarned: feesEarned
+    }
+
+    res.status(200).json(collection);
+  } catch (error) {
+    // Handle errors
+    console.error("Error fetching pool NFTs:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
 app.get("/getProtocolCollections", async (req, res) => {
   try {
     const chainId = req.query.chainId;
@@ -749,10 +822,7 @@ async function getUserBalance(userAddress, chainId) {
     const nativeBalance = Math.floor(balanceEth);
     const dollarBalance = Math.floor(dollarWorth);
 
-    const balance = {
-      nativeBalance: nativeBalance,
-      dollarBalance: dollarBalance
-    }
+    const balance = dollarBalance
 
     console.log(balance);
     return balance;

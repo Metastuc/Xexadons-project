@@ -3,13 +3,12 @@
 import "./index.scss";
 
 import { ChangeEvent, useState, useEffect } from "react";
-
 import { ContextWrapper } from "@/hooks";
 import { Polygon, Xexadons, BSC } from "@/assets";
 import { commonProps } from "@/types";
 import { contentWrapper } from "@/views";
 import { JsonRpcSigner } from 'ethers';
-import { addLiquidity, getCurrency, getChain, getUserBalance } from "@/utils/app";
+import { addLiquidity, getCurrency, getChain, getUserBalance, removeLiquidity } from "@/utils/app";
 import { formatEther } from "viem";
 
 type poolProps = commonProps & {
@@ -21,7 +20,7 @@ type poolProps = commonProps & {
 	_chainId: number;
 };
 
-type depositProps = commonProps & {
+type liquidityProps = commonProps & {
 	signer: JsonRpcSigner | undefined;
 	userAddress: string;
 	_chainId: number;
@@ -39,7 +38,7 @@ export function Liquidity({ group, handleTabClick, currentPool, signer, userAddr
 				return <Deposit group={group} signer={signer} userAddress={userAddress} _chainId={_chainId}/>;
 
 			case "withdraw":
-				return <Withdraw group={group} />;
+				return <Withdraw group={group} signer={signer} userAddress={userAddress} _chainId={_chainId}/>;
 		}
 	}
 
@@ -100,7 +99,7 @@ function renderTabs({ handleTabClick, currentPool }: renderTabProps) {
 	);
 }
 
-function Deposit({ group, signer, userAddress, _chainId }: depositProps) {
+function Deposit({ group, signer, userAddress, _chainId }: liquidityProps) {
 	const styleClass = `${group}__deposit`;
 
 	const {
@@ -220,9 +219,21 @@ function Deposit({ group, signer, userAddress, _chainId }: depositProps) {
 	);
 }
 
-function Withdraw({ group }: commonProps) {
+function Withdraw({ group, signer, userAddress, _chainId }: liquidityProps) {
 	const styleClass = `${group}__withdraw`;
 	const [amount, setAmount] = useState<number | null>(50);
+
+	const {
+		nftContext: { dollarAmount, poolAddress, withdrawAmount, feesEarned, selectedNFTs},
+	} = ContextWrapper();
+
+	const currency = getCurrency(_chainId);
+	const chain = getChain(_chainId);
+
+	const withdrawLiquidity = async() => {
+        await removeLiquidity(selectedNFTs, poolAddress, signer);
+        console.log("successfully");
+    }
 
 	function handleAmountInput(event: ChangeEvent<HTMLInputElement>) {
 		const inputValue = event.target.value.replace(/\D/g, "");
@@ -246,15 +257,25 @@ function Withdraw({ group }: commonProps) {
 
 								<div>
 									<article>
-										<span>500</span>
+										<span>{withdrawAmount}</span>
 
 										<div>
+											<i>{_chainId === 97 ? (
+											<>
+											<i>{BSC()}</i>
+											</>
+										) : _chainId === 80002 ? (
+											<>
 											<i>{Polygon()}</i>
-											<span>polygon</span>
+											</>
+										) : (
+											<span>Wrong Network</span>
+										)}</i>
+											<span>{chain}</span>
 										</div>
 									</article>
 
-									<span>$560</span>
+									<span>${dollarAmount}</span>
 								</div>
 							</section>
 						</>
@@ -271,11 +292,21 @@ function Withdraw({ group }: commonProps) {
 
 								<div>
 									<article>
-										<span>35matic</span>
+										<span>{feesEarned}</span>
 
 										<div>
+											<i>{_chainId === 97 ? (
+											<>
+											<i>{BSC()}</i>
+											</>
+										) : _chainId === 80002 ? (
+											<>
 											<i>{Polygon()}</i>
-											<span>polygon</span>
+											</>
+										) : (
+											<span>Wrong Network</span>
+										)}</i>
+											<span>{chain}</span>
 										</div>
 									</article>
 
@@ -293,7 +324,7 @@ function Withdraw({ group }: commonProps) {
 									</article>
 								</div>
 
-								<button>
+								<button onClick={withdrawLiquidity}>
 									<span>proceed</span>
 								</button>
 							</section>

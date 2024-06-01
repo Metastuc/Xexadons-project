@@ -1,9 +1,21 @@
 import "./index.scss";
 
-import { Polygon } from "@/assets";
+import { Polygon, BSC } from "@/assets";
 import { commonProps } from "@/types";
 import { contentWrapper } from "@/views";
-export function Create({ group }: commonProps) {
+import { JsonRpcSigner } from 'ethers';
+
+type createProps = commonProps & {
+	activeTab: string;
+	currentPool: string;
+	handleTabClick: Function;
+	signer: JsonRpcSigner | undefined;
+	userAddress: string;
+	_chainId: number;
+};
+
+export function Create({ group, signer, userAddress, _chainId }: createProps) {
+	
 	return (
 		<section className={group}>
 			<h2>create</h2>
@@ -40,7 +52,17 @@ export function Create({ group }: commonProps) {
 									<span>0.00</span>
 
 									<div>
-										<i>{Polygon()}</i>
+										<i>{_chainId === 97 ? (
+											<>
+											<i>{BSC()}</i>
+											</>
+										) : _chainId === 80002 ? (
+											<>
+											<i>{Polygon()}</i>
+											</>
+										) : (
+											<span>Wrong Network</span>
+										)}</i>
 										<span>polygon</span>
 									</div>
 								</div>

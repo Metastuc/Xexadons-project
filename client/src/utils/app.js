@@ -167,6 +167,24 @@ const pairABI = [
         },
         {
           "internalType": "address",
+          "name": "_to",
+          "type": "address"
+        }
+      ],
+      "name": "removeLiquidity",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256[]",
+          "name": "tokenIds",
+          "type": "uint256[]"
+        },
+        {
+          "internalType": "address",
           "name": "_from",
           "type": "address"
         }
@@ -620,6 +638,23 @@ export const sellNFT = async(tokenIds, nftAddress, chainId, signer) => {
 
 export const getDepositAmount = async(length, poolAddress, chainId) => {
   const provider = new ethers.JsonRpcProvider(rpcUrls[chainId]);
+  console.log(poolAddress, provider);
+  // get reserves
+  const pairContract = new ethers.Contract(poolAddress, pairABI, provider);
+  const _reserve0 = await pairContract.reserve0();
+  const _reserve1 = await pairContract.reserve1();
+  console.log(_reserve0, _reserve1);
+  const reserve0 = Number(_reserve0);
+  const reserve1 = Number(_reserve1);
+  // calculate amountIn
+  const amount = (reserve1 * length) / reserve0;
+  console.log(length, amount);
+  return amount;
+}
+
+export const getWithdrawAmount = async(length, poolAddress, chainId) => {
+  const provider = new ethers.JsonRpcProvider(rpcUrls[chainId]);
+  console.log(poolAddress, provider);
   // get reserves
   const pairContract = new ethers.Contract(poolAddress, pairABI, provider);
   const _reserve0 = await pairContract.reserve0();
@@ -652,7 +687,7 @@ export const addLiquidity = async(nfts, chainId, poolAddress, signer) => {
   const ids = nfts.map(nft => nft.id);
   const userAddress = await signer.getAddress();
   // get the eth value
-  const amount = await getDepositAmount(nfts.length, poolAddress,  chainId);
+  const amount = await getDepositAmount(nfts.length, poolAddress, chainId);
   const liqAmount = BigInt(amount);
   // call function to perform transaction
   const nftContract = new ethers.Contract(nftAddress, nftABI, signer);
@@ -666,6 +701,17 @@ export const addLiquidity = async(nfts, chainId, poolAddress, signer) => {
 
   await addLiqTx.wait();
   console.log("liquidity added");
+}
+
+export const removeLiquidity = async(nfts, poolAddress, signer) => {
+  const ids = nfts.map(nft => nft.id);
+  const userAddress = await signer.getAddress();
+
+  const pairContract = new ethers.Contract(poolAddress, pairABI, signer);
+  const removeLiqTx = await pairContract.removeLiquidity(ids, userAddress);
+
+  await removeLiqTx.wait();
+  console.log("liquidity removed");
 }
 
 export const getCoinPrice = async(chainId) => {

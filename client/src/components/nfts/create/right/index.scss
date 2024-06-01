@@ -1,0 +1,141 @@
+@use "@/styles/"as *;
+
+.create_right {
+
+    &__wrapper {
+        @include flex($d: column, $a: flex-start);
+        gap: 2rem;
+    }
+
+    &__top,
+    &__bottom {
+        width: 100%;
+    }
+
+    &__top {
+        @include flex($j: space-between);
+
+        h2 {
+            $size: map-get($map: $fz, $key: xlg) + .25rem;
+            @include font($f: clash, $s: $size, $w: reg);
+            text-transform: capitalize;
+        }
+
+        div {
+            @include flex;
+            gap: .5rem;
+            height: 2rem;
+            width: 6.5rem;
+            border-radius: .75rem;
+            background-color: #78758c;
+
+            span {
+                text-transform: capitalize;
+                @include font($f: clash, $s: lrg, $w: reg);
+            }
+
+            i {
+                @include equal(1.5rem);
+                @include font($f: clash, $s: sm, $w: reg);
+                background-color: white;
+                border-radius: 50%;
+                color: black;
+                font-style: normal;
+            }
+        }
+    }
+
+    &__bottom {
+        overflow-y: scroll;
+        height: 40rem;
+
+        >div:first-of-type {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: auto;
+            gap: .5rem 1rem;
+        }
+
+        article {
+            @include flex($d: column, $a: center, $j: space-between);
+            height: 12rem;
+            width: 9.5rem;
+            border-radius: 1rem;
+            border: .0625rem solid #5f576b;
+            padding: .5rem;
+
+            >span {
+                @include flex;
+                width: 8.5rem;
+                height: 7.75rem;
+                background-color: #5f576b;
+                border-radius: inherit;
+            }
+
+            section {
+                @include flex($d: column, $a: flex-start);
+                width: 100%;
+
+                >span {
+                    $size: map-get($map: $fz, $key: xs) - .25rem;
+                    @include font($f: clash, $s: $size, $w: reg);
+                    color: rgba($color: $white-100, $alpha: 70%);
+                }
+
+                >div {
+                    width: 100%;
+
+                    &:first-of-type {
+                        @include flex($j: flex-start);
+                        gap: .25rem;
+
+                        span {
+                            $size: map-get($map: $fz, $key: xs) - .25rem;
+                            @include font($f: clash, $s: $size, $w: med);
+                            color: rgba($color: $white-100, $alpha: 80%);
+                        }
+                    }
+
+                    &:last-of-type {
+                        @include flex($j: space-between);
+
+                        i {
+                            @include equal(1rem);
+                        }
+
+                        div {
+                            &:first-of-type {
+                                @include flex;
+                                gap: .25rem;
+
+                                span {
+                                    $size: map-get($map: $fz, $key: xs) - .25rem;
+                                    @include font($f: clash, $s: $size, $w: med);
+                                    color: rgba($color: $white-100, $alpha: 80%);
+                                }
+                            }
+
+                            &:last-of-type {
+                                @include flex;
+                                @include equal(1rem);
+                                margin-left: auto;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    &__liquidity {
+        @include flex($j: flex-start);
+        gap: .25rem;
+        margin-top: .75rem;
+
+        span {
+            @include font($f: clash, $s: nrm, $w: reg);
+            text-transform: capitalize;
+            color: rgba($color: $white-100, $alpha: 80%);
+        }
+    }
+}

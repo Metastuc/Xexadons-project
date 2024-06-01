@@ -1,0 +1,32 @@
+endpoint - /getUserPools
+query params - chainId, userAddress
+response - {pool[]}
+    pool - {
+        poolAddress: string(address),
+        owner: string(address),
+        buyPrice: number,
+        sellPrice: number,
+        nftAmount: number,
+        tokenAmount: number
+    }
+
+endpoint - /getUser
+query params - chainId, userAddress
+response - {
+    userCollections: userCollection[],
+    userBalance: number
+}
+    userCollection - {
+        address: string(address),
+        name: string,
+        image: string(url)
+    }
+
+endpoint - /getUserCollections
+query params - chainId, userAddress
+response - {userCollection[]}
+    userCollection - {
+        address: string(address),
+        name: string,
+        image: string(url)
+    }
