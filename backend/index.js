@@ -14,8 +14,7 @@ const admin = require('firebase-admin');
 const { initializeApp, applicationDefault, cert } = require('firebase-admin/app');
 const { getFirestore, Timestamp, FieldValue, Filter } = require('firebase-admin/firestore');
 
-const credentialPath = process.env.CREDPATH;
-const serviceAccount = require(credentialPath);
+const serviceAccount = JSON.parse(process.env.FIREBASE_CRED);
 
 const ABIs = {
   factoryABI: [
@@ -132,6 +131,19 @@ const ABIs = {
           ],
           "stateMutability": "view",
           "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "totalSupply",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
       },
       {
         "inputs": [],
@@ -357,7 +369,7 @@ app.get("/getUserCollections", async(req, res) => {
   }
 });
 
-app.get("/getUserCollectionNFTs", async(req, res) => {
+app.get("/getUserCollectionNFTsSell", async(req, res) => {
   // include chain param
   const userAddress = req.query.userAddress;
   const chainId = req.query.chainId;
@@ -384,25 +396,152 @@ app.get("/getUserCollectionNFTs", async(req, res) => {
     const items = response.data.nfts;
     console.log(items);
 
+    const _price = await getSellPrice(1, nftAddress, chainId);
+    const price = roundDownToTwoDecimals(_price);
+
     // check if contract address matches tokenAddress
     for (let i = 0; i < items.length; i++) {
       const imageUrl = items[i].image_url;
       const nft = {
         id: items[i].token_id,
         name: nftName,
-        src: imageUrl
+        src: imageUrl,
+        price: price
       }
       userCollectionNFTs.push(nft);
     }
     const collection = {
       icon: icon,
-      nfts: userCollectionNFTs
+      pools: [],
+      NFTs: userCollectionNFTs,
     }
 
     res.status(200).json(collection);
   } catch (error) {
     // Handle errors
     console.error("Error fetching user NFTs:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+app.get("/getUserCollectionNFTsDeposit", async(req, res) => {
+  // include chain param
+  const userAddress = req.query.userAddress;
+  const chainId = req.query.chainId;
+  const nftAddress = req.query.nftAddress;
+  const poolAddress = req.query.poolAddress;
+
+  const provider = new ethers.JsonRpcProvider(rpcUrls[chainId]);
+
+  const pairContract = new ethers.Contract(poolAddress, ABIs.pairABI, provider);
+  const _reserve0 = await pairContract.reserve0();
+  const _reserve1 = await pairContract.reserve1();
+  console.log(_reserve0, _reserve1);
+  const reserve0 = Number(_reserve0);
+  const reserve1 = Number(_reserve1);
+  // calculate amountIn
+  const amount = reserve1 / reserve0;
+  const depositAmount = (roundDownToTwoDecimals(Number(ethers.formatEther(BigInt(amount))))) + currencies[chainId];
+
+  const nftContract = new ethers.Contract(nftAddress, ABIs.nftABI, provider);
+  const nftName = await nftContract.name();
+  const icon = await nftContract.tokenURI(0);
+
+  var userCollectionNFTs = [];
+  const options = {
+    method: 'GET',
+    url: `https://api.simplehash.com/api/v0/nfts/owners?chains=${chainNames[chainId]}&wallet_addresses=${userAddress}&contract_addresses=${nftAddress}`,
+    headers: {
+      accept: 'application/json',
+      'X-API-KEY': simpleHashKey
+    }
+  };
+
+  try {
+    const response = await axios(options);
+    const items = response.data.nfts;
+
+    // check if contract address matches tokenAddress
+    for (let i = 0; i < items.length; i++) {
+      const imageUrl = items[i].image_url;
+      const nft = {
+        id: items[i].token_id,
+        name: nftName,
+        src: imageUrl,
+        price: depositAmount
+      }
+      userCollectionNFTs.push(nft);
+    }
+    const collection = {
+      icon: icon,
+      pools: [],
+      NFTs: userCollectionNFTs
+    }
+
+    res.status(200).json(collection);
+  } catch (error) {
+    // Handle errors
+    console.error("Error fetching user NFTs:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+app.get("/getPoolNFTs", async(req, res) => {
+  // include chain param
+  const chainId = req.query.chainId;
+  const nftAddress = req.query.nftAddress;
+  const poolAddress = req.query.poolAddress;
+
+  const provider = new ethers.JsonRpcProvider(rpcUrls[chainId]);
+
+  const nftContract = new ethers.Contract(nftAddress, ABIs.nftABI, provider);
+  const nftName = await nftContract.name();
+  const icon = await nftContract.tokenURI(0);
+
+  const pairContract = new ethers.Contract(poolAddress, ABIs.pairABI, provider);
+  const reserve1 = await pairContract.reserve1();
+
+  const poolBalance = await provider.getBalance(poolAddress);
+  const _feesEarned = poolBalance - reserve1;
+  const feesEarned = Number(_feesEarned);
+
+  var poolNFTs = [];
+  const options = {
+    method: 'GET',
+    url: `https://api.simplehash.com/api/v0/nfts/owners?chains=${chainNames[chainId]}&wallet_addresses=${poolAddress}&contract_addresses=${nftAddress}`,
+    headers: {
+      accept: 'application/json',
+      'X-API-KEY': simpleHashKey
+    }
+  };
+
+  try {
+    const response = await axios(options);
+    const items = response.data.nfts;
+
+    // check if contract address matches tokenAddress
+    for (let i = 0; i < items.length; i++) {
+      const imageUrl = items[i].image_url;
+      const nft = {
+        id: items[i].token_id,
+        name: nftName,
+        src: imageUrl,
+        price: " "
+      }
+      poolNFTs.push(nft);
+    }
+
+    const collection = {
+      icon: icon,
+      pools: [],
+      NFTs: poolNFTs,
+      feesEarned: feesEarned
+    }
+
+    res.status(200).json(collection);
+  } catch (error) {
+    // Handle errors
+    console.error("Error fetching pool NFTs:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
@@ -506,7 +645,7 @@ app.get("/getCollection", async(req, res) => {
   
         // use function that returns only one uint
         const buyPrice = await curveContract.getBuyPriceSingle(1, reserve0, reserve1, poolAddresses[i]);
-        const _buyPrice = roundDownToTwoDecimals(Number(ethers.formatEther(buyPrice))) + currencies[chainId];
+        const _buyPrice = roundDownToTwoDecimals(Number(ethers.formatEther(buyPrice)));
         const nft = {
           id: Number(items[j].token_id),
           name: items[j].collection.name,
@@ -569,12 +708,13 @@ app.get("/getPoolActivity", async(req, res) => {
     const activitySnapshot = await db.collection('poolActivity').doc(poolId).collection('activities').get();
 
     activitySnapshot.forEach((doc) => {
+      console.log(doc.data());
       allActivities.push(doc.data());
     });
 
     const activities = sortActivities(allActivities);
 
-    res.status(200).json({ response: activities });
+    res.status(200).json( activities );
   } catch (error) {
     res.status(500);
     res.json({ error: error.message });
@@ -683,10 +823,7 @@ async function getUserBalance(userAddress, chainId) {
     const nativeBalance = Math.floor(balanceEth);
     const dollarBalance = Math.floor(dollarWorth);
 
-    const balance = {
-      nativeBalance: nativeBalance,
-      dollarBalance: dollarBalance
-    }
+    const balance = dollarBalance
 
     console.log(balance);
     return balance;
@@ -734,26 +871,38 @@ async function getUserCollections(address, chainId) {
   }
 }
 
-function sortActivities(activities) {
-  // Filter events to include only objects from the past 7 days
-  const filteredEvents = activities.filter(activity => {
-    const activityTime = new Date(activity.time);
-    const now = new Date();
-    const diffInDays = Math.floor((now - activityTime) / (1000 * 60 * 60 * 24));
-    return diffInDays <= 7;
-  });
+// Helper function to convert time to relative format
+function timeAgo(date) {
+  const now = new Date();
+  const past = new Date(date);
+  const diff = Math.abs(now - past);
+  
+  const seconds = Math.floor(diff / 1000);
+  const minutes = Math.floor(seconds / 60);
+  const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
 
-  // Sort filteredEvents based on the time parameter
-  filteredEvents.sort((a, b) => new Date(a.time) - new Date(b.time));
-
-  return filteredEvents;
+  if (days > 0) {
+      return `${days} day${days > 1 ? 's' : ''} ago`;
+  } else if (hours > 0) {
+      return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+  } else if (minutes > 0) {
+      return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
+  } else {
+      return `${seconds} second${seconds > 1 ? 's' : ''} ago`;
+  }
 }
 
-app.get("/getSellPrice", async (req, res) => {
-  const tokenLength = req.query.tokenLength;
-  const nftAddress = req.query.nftAddress;
-  const chainId = req.query.chainId;
+function sortActivities(activities) {
+  const updatedActivities = activities.map(transaction => ({
+    ...transaction,
+    time: timeAgo(transaction.time)
+}));
 
+  return updatedActivities;
+}
+
+const getSellPrice = async(length, collectionAddress, chainId) => {
   const factoryAddress = deploymentAddresses.factory[chainId];
   const provider = new ethers.JsonRpcProvider(rpcUrls[chainId]);
   console.log(chainId, factoryAddress);
@@ -763,8 +912,8 @@ app.get("/getSellPrice", async (req, res) => {
   let sellAmount = 0;
 
   try {
-    const poolAddresses = await factoryContract.getPairs(nftAddress);
-    let tokens = tokenLength;
+    const poolAddresses = await factoryContract.getPairs(collectionAddress);
+    let tokens = length;
 
     for (let i = 0; i < poolAddresses.length; i++) {
       const pairContract = new ethers.Contract(poolAddresses[i], ABIs.pairABI, provider);
@@ -776,15 +925,15 @@ app.get("/getSellPrice", async (req, res) => {
 
       const amountOut = reserve1 * 0.7;
       
-      const tokenLength = (amountOut * reserve0) / (reserve1 - amountOut);
-      const maxNFTs = Math.floor(tokenLength);
+      const poolMax = (amountOut * reserve0) / (reserve1 - amountOut);
+      const maxNFTs = Math.floor(poolMax);
 
       if (maxNFTs <= 0) {
         continue;
       }
 
-      if (maxNFTs >= tokenLength) {
-        const amountOut = ((reserve1 * tokenLength) / (reserve0 + tokenLength));
+      if (maxNFTs >= length) {
+        const amountOut = ((reserve1 * length) / (reserve0 + length));
         sellAmount = sellAmount + amountOut;
       } else {
         tokens = tokens - maxNFTs;
@@ -793,12 +942,11 @@ app.get("/getSellPrice", async (req, res) => {
       }
     }
 
-    res.json({ sellAmount });
+    return roundDownToTwoDecimals(Number(ethers.formatEther(BigInt(sellAmount))));
   } catch (error) {
     console.log(error);
-    res.status(500).json({ error: 'An error occurred' });
   }
-});
+}
 
 app.get("/getSellRoute", async(req, res) => {
   const tokenLength = req.query.tokenLength;
@@ -881,9 +1029,9 @@ app.get("/getCoinPrice", async(req, res) => {
 })
 
 function roundDownToTwoDecimals(number) {
-  const shiftedNumber = Math.floor(number * 100);
+  const shiftedNumber = Math.ceil(number * 100);
   const roundedNumber = shiftedNumber / 100;
-  return roundedNumber.toFixed(2);
+  return roundedNumber;
 }
 
 startServer();
