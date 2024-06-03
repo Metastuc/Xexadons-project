@@ -8,7 +8,7 @@ import { commonProps } from "@/types";
 import { getNFTCollections, getUserCollectionNFTs } from "@/api";
 import { useAccount, useBalance } from "wagmi";
 import { useQuery } from "@tanstack/react-query";
-import { getCoinPrice, getSellPrice, getDepositAmount, getCurrency } from "@/utils/app";
+import { getCoinPrice, getSellPrice, getDepositAmount, getCurrency, getUserBalance } from "@/utils/app";
 import { formatEther } from "viem";
 
 type PurchaseNFTRightProps = commonProps & {
@@ -31,24 +31,26 @@ export function PurchaseNFTRight({ group, activeTab }: PurchaseNFTRightProps) {
 		nextPrice: string;
 	}
 
-	useEffect(() => {		
-        const getUserBalamce = async () => {
-						
-            setUserBalance(0);
-        };
-			getUserBalamce();
-    }, []);
-
 	useEffect(() => {
         const calculateBuyAmount = async () => {
             // Calculate total amountIn for all pools
             const newTotalAmountIn = pools.reduce((sum, pool) => {
                 const C = selectedNFTs.filter(nft => nft.poolAddress === pool.poolAddress);
-                return sum + ((pool.reserve1 * C.length) / (pool.reserve0 - C.length));
+				if (C.length === pool.reserve0) {
+					return sum + (pool.reserve1 * C.length);
+				} else {
+					return sum + ((pool.reserve1 * C.length) / (pool.reserve0 - C.length));
+				}
             }, 0);
 			const poolPrices: PoolPrice[] = pools.reduce((acc: PoolPrice[], pool) => {
 				const C = selectedNFTs.filter(nft => nft.poolAddress === pool.poolAddress);
-				const _next_price = Math.ceil(((pool.reserve1 * (C.length + 1)) / (pool.reserve0 - (C.length + 1))) * 100) / 100;
+				let _next_price = 0
+				if (pool.reserve0 > (C.length + 1)) {
+					_next_price = Math.ceil(((pool.reserve1 * (C.length + 1)) / (pool.reserve0 - (C.length + 1))) * 100) / 100;
+				}
+				else {
+					_next_price = Math.ceil(((pool.reserve1 * (C.length + 1))) * 100) / 100;
+				}
 				const currency = getCurrency(_chainId);
 				const next_price = (formatEther(BigInt(_next_price))) + currency;
 			

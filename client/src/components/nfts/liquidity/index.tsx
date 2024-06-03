@@ -109,6 +109,16 @@ function Deposit({ group, signer, userAddress, _chainId }: liquidityProps) {
 	const currency = getCurrency(_chainId);
 	const chain = getChain(_chainId);
 
+	useEffect(() => {		
+        const getUserBalamce = async () => {
+			const balance = await getUserBalance(_chainId, signer) ?? BigInt(0);
+			const userBalance = Math.ceil(Number(formatEther(balance)) * 100) / 100;
+
+            setUserBalance(userBalance);
+        };
+			getUserBalamce();
+    }, []);
+
 	const depositLiquidity = async() => {
         await addLiquidity(selectedNFTs, _chainId, poolAddress, signer);
         console.log("successfully");

@@ -708,12 +708,13 @@ app.get("/getPoolActivity", async(req, res) => {
     const activitySnapshot = await db.collection('poolActivity').doc(poolId).collection('activities').get();
 
     activitySnapshot.forEach((doc) => {
+      console.log(doc.data());
       allActivities.push(doc.data());
     });
 
     const activities = sortActivities(allActivities);
 
-    res.status(200).json({ response: activities });
+    res.status(200).json( activities );
   } catch (error) {
     res.status(500);
     res.json({ error: error.message });
@@ -870,19 +871,35 @@ async function getUserCollections(address, chainId) {
   }
 }
 
+// Helper function to convert time to relative format
+function timeAgo(date) {
+  const now = new Date();
+  const past = new Date(date);
+  const diff = Math.abs(now - past);
+  
+  const seconds = Math.floor(diff / 1000);
+  const minutes = Math.floor(seconds / 60);
+  const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
+
+  if (days > 0) {
+      return `${days} day${days > 1 ? 's' : ''} ago`;
+  } else if (hours > 0) {
+      return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+  } else if (minutes > 0) {
+      return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
+  } else {
+      return `${seconds} second${seconds > 1 ? 's' : ''} ago`;
+  }
+}
+
 function sortActivities(activities) {
-  // Filter events to include only objects from the past 7 days
-  const filteredEvents = activities.filter(activity => {
-    const activityTime = new Date(activity.time);
-    const now = new Date();
-    const diffInDays = Math.floor((now - activityTime) / (1000 * 60 * 60 * 24));
-    return diffInDays <= 7;
-  });
+  const updatedActivities = activities.map(transaction => ({
+    ...transaction,
+    time: timeAgo(transaction.time)
+}));
 
-  // Sort filteredEvents based on the time parameter
-  filteredEvents.sort((a, b) => new Date(a.time) - new Date(b.time));
-
-  return filteredEvents;
+  return updatedActivities;
 }
 
 const getSellPrice = async(length, collectionAddress, chainId) => {
@@ -925,7 +942,7 @@ const getSellPrice = async(length, collectionAddress, chainId) => {
       }
     }
 
-    return roundDownToTwoDecimals(Number(ethers.formatEther(sellAmount)));
+    return roundDownToTwoDecimals(Number(ethers.formatEther(BigInt(sellAmount))));
   } catch (error) {
     console.log(error);
   }

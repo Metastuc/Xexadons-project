@@ -30,3 +30,27 @@ response - {userCollection[]}
         name: string,
         image: string(url)
     }
+
+endpoint - /getPoolActivity
+query params - poolId(address)
+response - activity[]
+    activity - {
+        "item": string(image url),
+        "price": number(amount),
+        "link": string(blockexplorer link),
+        "from": string(address),
+        "to": "string(address)",
+        "time": string("x days ago"),
+        "event": string
+    }
+example - [
+            {
+                "item": "https://raw.seadn.io/files/09928ecca2f2ade3e154a1e0c15f34cf.png",
+                "price": 1.0199999999999999e+35,
+                "link": "https://polygonscan.com/tx/0xa3a4363e14612cbda03df677d72d3712962bb0c5409e5ae475de61cb0a7aef6d",
+                "from": "0x72De66bFDEf75AE89aD98a52A1524D3C5dB5fB24",
+                "to": "0x48bDf8aD32FAcE0Bb3887D4c771A184383864260",
+                "time": "17 days ago",
+                "event": "Buy"
+            }
+          ]

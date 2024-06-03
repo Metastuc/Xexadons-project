@@ -391,14 +391,14 @@ export const getChain = (chainId) => {
   return chainNames[chainId];
 }
 
-export const createPool = async(ids, ethAmount, nftAddress, fee, chainId, signer) => {
+export const createPool = async(ids, ethAmount, nftAddress, chainId, signer) => {
   //get factory Contract, call createpair, approve pair, add 
   const factoryAddress = deploymentAddresses.factory[chainId];
   const routerAddress = deploymentAddresses.router[chainId];
   const curveAddress = deploymentAddresses.curve[chainId];
   const userAddress = await signer.getAddress();
 
-  const _fee = fee * 10;
+  const _fee = 1 * 10;
   const factoryContract = new ethers.Contract(factoryAddress, factoryABI, signer);
   const createTx = await factoryContract.createPair(nftAddress, routerAddress, curveAddress, _fee);
 
@@ -465,12 +465,14 @@ export const buyNFT = async(nfts, chainId, signer) => {
         console.log("bought");
         const ids = result[i].ids
 
+        const price_ = Number(ethers.formatEther(price));
+
         const poolAddress = result[i].poolAddress
         const reqBody = {
           event: "Buy",
           chainId: chainId,
           item: ids[0],
-          price: Number(ethers.formatEther(price)),
+          price: price_,
           from: userAddress,
           to: poolAddress,
           hash: buyTx.hash,
@@ -669,11 +671,11 @@ export const getWithdrawAmount = async(length, poolAddress, chainId) => {
 }
 
 // get user balance function
-export const getUserBalance = async(chainId, userAddress) => {
+export const getUserBalance = async(chainId, signer) => {
   try {
-    const _userAddress = userAddress;
+    const userAddress = await signer.getAddress();
     const provider = new ethers.JsonRpcProvider(rpcUrls[chainId]);
-    const userBalance = await provider.getBalance(_userAddress);
+    const userBalance = await provider.getBalance(userAddress);
     console.log(userBalance);
 
     return userBalance;
