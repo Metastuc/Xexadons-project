@@ -102,11 +102,11 @@ export function NFTContextProvider({ children }: { children: ReactNode }) {
 	const [dollarAmount, setDollarAmount] = useState<number>(0);
 	const [buyPrices, setBuyPrices] = useState<buyPrice[]>([]);
 	const [nextSellPrice, setNextSellPrice] = useState<string>(" ");
-	const [poolAddress, setPoolAddress] = useState<`0x${string}`>("0x48bDf8aD32FAcE0Bb3887D4c771A184383864260");
+	const [poolAddress, setPoolAddress] = useState<`0x${string}`>("0x6a13d552528B0C53f4007A9cb847358ee8A50f9a");
 	const [userBalance, setUserBalance] = useState<number | undefined>(0);
 	const [withdrawAmount, setWithdrawAmount] = useState<number>(0);
 	const [feesEarned, setFeesEarned] = useState<string>("0");
-	const [collectionAddress, setCollectionAddress] = useState<`0x${string}`>("0x64dCb39317940d74b711eCE72595b6a80D37B8ad"); 
+	const [collectionAddress, setCollectionAddress] = useState<`0x${string}`>("0xC616fDfBF0008F82433E287279FC99434A7164f8"); 
 	const [createAmount, setCreateAmount] = useState<number | null>(1);
 
 	return (
