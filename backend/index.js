@@ -322,7 +322,8 @@ const chainNames = {
 
 const raribleApiKey = process.env.RARIBLE_APIKEY;
 const moralisApiKey = process.env.MORALIS_API_KEY;
-const simpleHashKey = process.env.SIMPLEHASH_API_KEY;
+const _simpleHashKey = process.env.SIMPLEHASH_API_KEY;
+const simpleHashKey = removeEquals(_simpleHashKey);
 
 const CREDENTIALS = JSON.parse(
   Buffer.from(process.env.CRED, 'base64').toString('utf-8')
@@ -592,6 +593,10 @@ app.get("/getProtocolCollections", async (req, res) => {
   }
 });
 
+function removeEquals(str) {
+  return str.replace(/=/g, '');
+}
+
 app.get("/getCollection", async(req, res) => {
   const collectionAddress = req.query.collectionAddress;
   const chainId = req.query.chainId;
@@ -617,6 +622,7 @@ app.get("/getCollection", async(req, res) => {
         method: 'GET',
         url: `https://api.simplehash.com/api/v0/nfts/owners?chains=${chainNames[chainId]}&wallet_addresses=${poolAddresses[i]}&contract_addresses=${collectionAddress}`,
         headers: {
+          'Authorization': 'Bearer ' + simpleHashKey,
           accept: 'application/json',
           'X-API-KEY': simpleHashKey
         }
