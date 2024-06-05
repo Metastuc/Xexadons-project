@@ -14,7 +14,8 @@ const admin = require('firebase-admin');
 const { initializeApp, applicationDefault, cert } = require('firebase-admin/app');
 const { getFirestore, Timestamp, FieldValue, Filter } = require('firebase-admin/firestore');
 
-// const serviceAccount  JSON.parse(process.env.FIREBASE_CRED);
+const cred = process.env.FIREBASE_CRED;
+const serviceAccount = JSON.parse(cred);
 
 const ABIs = {
   factoryABI: [
@@ -327,8 +328,7 @@ const moralisApiKey = process.env.MORALIS_API_KEY;
 const simpleHashKey = process.env.SIMPLEHASH_API_KEY;
 
 initializeApp({
-  // credential: cert(serviceAccount),
-  credential: cert(JSON.parse(process.env.FIREBASE_CRED))
+  credential: cert(serviceAccount),
 });
 
 const db = getFirestore();
