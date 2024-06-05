@@ -320,8 +320,8 @@ const chainNames = {
   97: "bsc-testnet"
 }
 
-const raribleApiKey = process.env.RARIBLE_APIKEY;
-const moralisApiKey = process.env.MORALIS_API_KEY;
+const _moralisApiKey = process.env.MORALIS_API_KEY;
+const moralisApiKey = removeEquals(_moralisApiKey);
 const _simpleHashKey = process.env.SIMPLEHASH_API_KEY;
 const simpleHashKey = removeEquals(_simpleHashKey);
 
