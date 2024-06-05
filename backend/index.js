@@ -388,6 +388,7 @@ app.get("/getUserCollectionNFTsSell", async(req, res) => {
     method: 'GET',
     url: `https://api.simplehash.com/api/v0/nfts/owners?chains=${chainNames[chainId]}&wallet_addresses=${userAddress}&contract_addresses=${nftAddress}`,
     headers: {
+      'Authorization': 'Bearer ' + simpleHashKey,
       accept: 'application/json',
       'X-API-KEY': simpleHashKey
     }
