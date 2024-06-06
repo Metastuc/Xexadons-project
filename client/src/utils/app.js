@@ -1,6 +1,6 @@
 const { ethers } = require("ethers");
 
-const baseAPIURL = "http://localhost:3300/"
+const baseAPIURL = "https://xexadons.up.railway.app/"
 
 const factoryABI = [
     {
