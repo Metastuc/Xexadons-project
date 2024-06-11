@@ -846,20 +846,25 @@ async function getUserBalance(userAddress, chainId) {
 async function getUserCollections(address, chainId) {
   let userNFTs = []
   const provider = new ethers.JsonRpcProvider(rpcUrls[chainId]);
+  const chain = chainNames[chainId];
   const options = {
     method: 'GET',
-    url: `https://api.simplehash.com/api/v0/nfts/collections_by_wallets_v2?chains=${chainNames[chainId]}&wallet_addresses=${address}`,
+    url: `https://api.simplehash.com/api/v0/nfts/collections_by_wallets_v2?chains=${chain}&wallet_addresses=${address}`,
     headers: {
+      'Authorization': 'Bearer ' + simpleHashKey,
       accept: 'application/json',
       'X-API-KEY': simpleHashKey
     }
   };
+  
   try {
     const response = await axios(options);
     const items = response.data.collections;
 
+    console.log(items, items[0].collection_details.top_contracts);
+
     for (let i = 0; i < items.length; i++) {
-      const _collectionAddress = items[i].top_contracts[0];
+      const _collectionAddress = items[i].collection_details.top_contracts[0];
       const parts = _collectionAddress.split('.');
       const collectionAddress = parts[1];
       const nftContract = new ethers.Contract(collectionAddress, ABIs.nftABI, provider);
