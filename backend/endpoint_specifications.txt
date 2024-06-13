@@ -1,4 +1,4 @@
-endpoint - /getUserPools
+endpoint - https://xexadons.up.railway.app/getUserPools
 query params - chainId, userAddress
 response - {pool[]}
     pool - {
@@ -10,7 +10,7 @@ response - {pool[]}
         tokenAmount: number
     }
 
-endpoint - /getUser
+endpoint - https://xexadons.up.railway.app/getUser
 query params - chainId, userAddress
 response - {
     userCollections: userCollection[],
@@ -22,7 +22,7 @@ response - {
         image: string(url)
     }
 
-endpoint - /getUserCollections
+endpoint - https://xexadons.up.railway.app/getUserCollections
 query params - chainId, userAddress
 response - {userCollection[]}
     userCollection - {
@@ -31,7 +31,7 @@ response - {userCollection[]}
         image: string(url)
     }
 
-endpoint - /getPoolActivity
+endpoint - https://xexadons.up.railway.app/getPoolActivity
 query params - poolId(address)
 response - activity[]
     activity - {
