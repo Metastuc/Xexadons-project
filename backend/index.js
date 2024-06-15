@@ -14,8 +14,6 @@ const admin = require('firebase-admin');
 const { initializeApp, applicationDefault, cert } = require('firebase-admin/app');
 const { getFirestore, Timestamp, FieldValue, Filter } = require('firebase-admin/firestore');
 
-const serviceAccount = JSON.parse(process.env.FIREBASE_CRED);
-
 const ABIs = {
   factoryABI: [
       {
@@ -280,20 +278,20 @@ const ABIs = {
 
 const deploymentAddresses = {
   factory: {
-    80002: "0x63f52C7d448cFdd3ED6F8B4Ad92272B1419895b0",
-    97: "0xFa2C0D7AD5bf7259F564380D707cF95683CBe264"
+    80002: "0x615A1bae9c0DA60F32eA6B3C3ad4793ab9207423",
+    97: "0xE7691bec5E7B442f8256f3924cb0836c5d7a77DA"
   },
   curve: {
-    80002: "0x471367B20F644E058F7092a34b2d2Ea90B26BB0d",
-    97: "0xCc045dCb5C6FEf4273B498e0c364f760F0415997"
+    80002: "0x8c54cbb9e358888B902725593a5006A96a8C9551",
+    97: "0xc9c0FeFfc23A5F867aef994Ada4821Cfd9549dA4"
   },
   router: {
-    80002: "0x7937b7787E1236685162EedE657b9d631025F2Fb",
-    97: "0x5C67Bf96A7508bFf7a8B3bfe53E6108066F7b41E"
+    80002: "0xe9E3b91C58ACcc2EeA22323da2C7594dE75Ffd43",
+    97: "0x77564393EC0C53f2d97D6A3b1D51E6F93bDD8620"
   },
   xexadon: {
-    80002: "0x64dCb39317940d74b711eCE72595b6a80D37B8ad",
-    97: "0x5f74e9D1EDA4fcd81B2Aa9C842eB1EE47561f70d"
+    80002: "0xC616fDfBF0008F82433E287279FC99434A7164f8",
+    97: "0x8E38c348f27C451996735a48766F705495D36a9b"
   }
 }
 
@@ -322,12 +320,17 @@ const chainNames = {
   97: "bsc-testnet"
 }
 
-const raribleApiKey = process.env.RARIBLE_APIKEY;
-const moralisApiKey = process.env.MORALIS_API_KEY;
-const simpleHashKey = process.env.SIMPLEHASH_API_KEY;
+const _moralisApiKey = process.env.MORALIS_API_KEY;
+const moralisApiKey = removeEquals(_moralisApiKey);
+const _simpleHashKey = process.env.SIMPLEHASH_API_KEY;
+const simpleHashKey = removeEquals(_simpleHashKey);
+
+const CREDENTIALS = JSON.parse(
+  Buffer.from(process.env.CRED, 'base64').toString('utf-8')
+);
 
 initializeApp({
-  credential: cert(serviceAccount),
+  credential: cert(CREDENTIALS),
 });
 
 const db = getFirestore();
@@ -386,6 +389,7 @@ app.get("/getUserCollectionNFTsSell", async(req, res) => {
     method: 'GET',
     url: `https://api.simplehash.com/api/v0/nfts/owners?chains=${chainNames[chainId]}&wallet_addresses=${userAddress}&contract_addresses=${nftAddress}`,
     headers: {
+      'Authorization': 'Bearer ' + simpleHashKey,
       accept: 'application/json',
       'X-API-KEY': simpleHashKey
     }
@@ -589,6 +593,10 @@ app.get("/getProtocolCollections", async (req, res) => {
   }
 });
 
+function removeEquals(str) {
+  return str.replace(/=/g, '');
+}
+
 app.get("/getCollection", async(req, res) => {
   const collectionAddress = req.query.collectionAddress;
   const chainId = req.query.chainId;
@@ -614,6 +622,7 @@ app.get("/getCollection", async(req, res) => {
         method: 'GET',
         url: `https://api.simplehash.com/api/v0/nfts/owners?chains=${chainNames[chainId]}&wallet_addresses=${poolAddresses[i]}&contract_addresses=${collectionAddress}`,
         headers: {
+          'Authorization': 'Bearer ' + simpleHashKey,
           accept: 'application/json',
           'X-API-KEY': simpleHashKey
         }
@@ -837,20 +846,25 @@ async function getUserBalance(userAddress, chainId) {
 async function getUserCollections(address, chainId) {
   let userNFTs = []
   const provider = new ethers.JsonRpcProvider(rpcUrls[chainId]);
+  const chain = chainNames[chainId];
   const options = {
     method: 'GET',
-    url: `https://api.simplehash.com/api/v0/nfts/collections_by_wallets_v2?chains=${chainNames[chainId]}&wallet_addresses=${address}`,
+    url: `https://api.simplehash.com/api/v0/nfts/collections_by_wallets_v2?chains=${chain}&wallet_addresses=${address}`,
     headers: {
+      'Authorization': 'Bearer ' + simpleHashKey,
       accept: 'application/json',
       'X-API-KEY': simpleHashKey
     }
   };
+  
   try {
     const response = await axios(options);
     const items = response.data.collections;
 
+    console.log(items, items[0].collection_details.top_contracts);
+
     for (let i = 0; i < items.length; i++) {
-      const _collectionAddress = items[i].top_contracts[0];
+      const _collectionAddress = items[i].collection_details.top_contracts[0];
       const parts = _collectionAddress.split('.');
       const collectionAddress = parts[1];
       const nftContract = new ethers.Contract(collectionAddress, ABIs.nftABI, provider);
