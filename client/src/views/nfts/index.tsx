@@ -17,10 +17,7 @@ type renderRightContentProps = {
 	renderTabContent: () => ReactNode;
 };
 
-export function renderLeftContent({
-	activeTab,
-	handleTabClick,
-}: renderLeftContentProps) {
+export function renderLeftContent({ activeTab, handleTabClick }: renderLeftContentProps) {
 	let content: ReactNode;
 	let currentPool = activeTab == "liquidity" ? "deposit" : "withdraw";
 
@@ -36,16 +33,18 @@ export function renderLeftContent({
 		case "liquidity":
 		case "deposit":
 		case "withdraw":
-			content = Liquidity({
-				group: "liquidity_left",
-				activeTab: "liquidity",
-				handleTabClick,
-				currentPool,
-			});
+			content = (
+				<Liquidity
+					group="liquidity_left"
+					handleTabClick={handleTabClick}
+					currentPool={currentPool}
+					activeTab="liquidity"
+				/>
+			);
 			break;
 
 		case "create":
-			content = Create({ group: "create_left" });
+			content = <Create group="create_left" />;
 			break;
 	}
 
@@ -62,9 +61,7 @@ export function renderLeftContent({
 	);
 }
 
-export function renderRightContent({
-	renderTabContent,
-}: renderRightContentProps) {
+export function renderRightContent({ renderTabContent }: renderRightContentProps) {
 	return (
 		<section className="nfts__content">
 			<GlassyBackground>{renderTabContent()}</GlassyBackground>

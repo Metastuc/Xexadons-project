@@ -4,16 +4,12 @@ import { ReactNode, useEffect } from "react";
 
 import { PurchaseNFTRight } from "@/components/nfts/purchase/right";
 import { ContextWrapper, useTabSwitcher } from "@/hooks";
-import {
-	GlassyBackground,
-	renderLeftContent,
-	renderRightContent,
-} from "@/views";
+import { GlassyBackground, renderLeftContent, renderRightContent } from "@/views";
 
 type activeTabProps = Record<string, ReactNode>;
 
 export default function NFTs() {
-	const { activeTab, handleTabClick, tabIsActive } = useTabSwitcher("create");
+	const { activeTab, handleTabClick, tabIsActive } = useTabSwitcher("buy");
 
 	const activeTabContent: activeTabProps = {
 		buy: (

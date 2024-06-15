@@ -2,8 +2,10 @@
 
 import "./index.scss";
 
-import { ChangeEvent, MouseEvent, useCallback, useState } from "react";
+import { ChangeEvent, MouseEvent, useCallback, useEffect, useState } from "react";
+import { useAccount } from "wagmi";
 
+import { getNFTCollections } from "@/api";
 import { Close, Polygon } from "@/assets";
 import { NextOptimizedImage } from "@/components/reusable";
 import { commonProps } from "@/types";
@@ -14,8 +16,8 @@ type SelectCollectionModalProps = commonProps & {
 };
 
 export function Create({ group }: commonProps) {
-	const [isModalOpen, setIsModalOpen] = useState(false);
-	console.log({ isModalOpen });
+	const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+	// console.log({ isModalOpen });
 
 	const toggleModal = useCallback(() => {
 		setIsModalOpen((prevIsModalOpen) => !prevIsModalOpen);
@@ -25,9 +27,7 @@ export function Create({ group }: commonProps) {
 		<section className={group}>
 			<h2>create</h2>
 
-			<p>
-				~ deposit both tokens & NFTs to create a pool, earn trading fees
-			</p>
+			<p>~ deposit both tokens & NFTs to create a pool, earn trading fees</p>
 
 			<div className={`${group}__content`}>
 				<h3>Create new pool</h3>
@@ -90,9 +90,7 @@ export function Create({ group }: commonProps) {
 				</div>
 			</div>
 
-			<p>
-				~ select collection and input token amount to set up your pool
-			</p>
+			<p>~ select collection and input token amount to set up your pool</p>
 		</section>
 	);
 }
@@ -111,6 +109,18 @@ function SelectCollectionModal({ group, onClose }: SelectCollectionModalProps) {
 	const filteredCollections = collections.filter((collection) =>
 		collection.title.toLowerCase().includes(searchQuery.toLowerCase()),
 	);
+
+	const { chainId, address } = useAccount();
+
+	useEffect(() => {
+		const fetchCollections = async () => {
+			if (chainId !== undefined && address !== undefined) {
+				const collections = await getNFTCollections(chainId, address);
+				console.log({ collections });
+			}
+		};
+		fetchCollections();
+	}, [address, chainId]);
 
 	return (
 		<section
