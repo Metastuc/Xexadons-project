@@ -2,13 +2,14 @@
 
 import "./index.scss";
 
-import { ChangeEvent, MouseEvent, useCallback, useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { ChangeEvent, MouseEvent, useCallback, useState } from "react";
 import { useAccount } from "wagmi";
 
-import { getNFTCollections } from "@/api";
+import { getUserCollections } from "@/api";
 import { Close, Polygon } from "@/assets";
 import { NextOptimizedImage } from "@/components/reusable";
-import { commonProps } from "@/types";
+import { commonProps, UserCollection } from "@/types";
 import { contentWrapper } from "@/views";
 
 type SelectCollectionModalProps = commonProps & {
@@ -96,31 +97,53 @@ export function Create({ group }: commonProps) {
 }
 
 function SelectCollectionModal({ group, onClose }: SelectCollectionModalProps) {
+	const { chainId, address } = useAccount();
+
 	function stopPropagation(event: MouseEvent): void {
 		event.stopPropagation();
 	}
 	const [searchQuery, setSearchQuery] = useState<string>("");
+	// const [userCollections, setUserCollections] = useState<UserCollection[]>([]);
 
-	const collections = [
-		{ id: 1, image: "/image1.png", title: "Collection 1" },
-		{ id: 2, image: "/image2.png", title: "Collection 2" },
-	];
+	const fetchCollections = async () => {
+		if (chainId !== undefined && address !== undefined) {
+			const collections = await getUserCollections(chainId, address);
+			return collections;
+		}
+	};
 
-	const filteredCollections = collections.filter((collection) =>
-		collection.title.toLowerCase().includes(searchQuery.toLowerCase()),
-	);
+	const {
+		data: userCollections = [],
+		isLoading,
+		isError,
+	} = useQuery({
+		queryKey: ["collections", chainId, address],
+		queryFn: fetchCollections,
+	});
 
-	const { chainId, address } = useAccount();
+	let filteredCollections: UserCollection[] = [];
 
-	useEffect(() => {
-		const fetchCollections = async () => {
-			if (chainId !== undefined && address !== undefined) {
-				const collections = await getNFTCollections(chainId, address);
-				console.log({ collections });
-			}
-		};
-		fetchCollections();
-	}, [address, chainId]);
+	switch (Array.isArray(userCollections)) {
+		case true:
+			filteredCollections = userCollections.filter((collection: UserCollection) =>
+				collection.name.toLowerCase().includes(searchQuery.toLowerCase()),
+			);
+			break;
+
+		case false:
+			filteredCollections = [];
+			break;
+	}
+
+	console.log({ chainId, address });
+
+	if (isLoading) {
+		return <section className={`${group}__modal text-red-700`}>Loading...</section>;
+	}
+
+	if (isError) {
+		return <section className={`${group}__modal`}>Error</section>;
+	}
 
 	return (
 		<section
@@ -188,10 +211,10 @@ function SelectCollectionModal({ group, onClose }: SelectCollectionModalProps) {
 									<span>
 										<NextOptimizedImage
 											src={collection.image}
-											alt={collection.title}
+											alt={collection.name}
 										/>
 									</span>
-									<span>{collection.title}</span>
+									<span>{collection.name}</span>
 								</article>
 							</>
 						);
