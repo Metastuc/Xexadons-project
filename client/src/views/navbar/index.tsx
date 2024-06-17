@@ -5,14 +5,14 @@ import "./index.scss";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-import { Cart, Search } from "@/assets";
+import { Cart, chains, DropDown, Search } from "@/assets";
 import {
 	LeftNavigationLinks,
 	RightNavigationButton,
 	Web3ConnectButton,
 } from "@/components";
 import { ContextWrapper } from "@/hooks";
-import { commonProps } from "@/types";
+import { Chain, commonProps } from "@/types";
 
 type handleEnterAppButtonUIProps = commonProps & {
 	pathname: string;
@@ -29,21 +29,14 @@ export function NavigationBar({ group }: commonProps) {
 	} = ContextWrapper();
 
 	const [isCartOpen, setIsCartOpen] = useState<boolean>(false);
-	const [isScrolled, setIsScrolled] = useState<boolean>(
-		(windowEl?.scrollY || 0) <= 50,
-	);
+	const [isScrolled, setIsScrolled] = useState<boolean>((windowEl?.scrollY || 0) <= 50);
 
 	useEffect(() => {
-		const navBarParent = document.querySelector(
-			".header-navbar",
-		) as HTMLElement;
+		const navBarParent = document.querySelector(".header-navbar") as HTMLElement;
 
 		function handleScroll() {
 			if ((windowEl?.scrollY || 0) <= 50) {
-				navBarParent?.style.setProperty(
-					"background-color",
-					"transparent",
-				);
+				navBarParent?.style.setProperty("background-color", "transparent");
 
 				setIsScrolled(false);
 			} else {
@@ -117,6 +110,57 @@ function handleEnterAppButtonUI({
 			);
 
 		case false:
-			return <>sumn</>;
+			return SwitchNetworkButton({ group });
 	}
+}
+
+function SwitchNetworkButton({ group }: commonProps) {
+	const [isOpen, setIsOpen] = useState<boolean>(false);
+	const [network, setNetwork] = useState<Chain>(chains[4]);
+
+	function handleToggle() {
+		setIsOpen(!isOpen);
+	}
+
+	function handleNetworkChange(selectedChain: Chain) {
+		setNetwork(selectedChain);
+		setIsOpen(false);
+	}
+
+	return (
+		<>
+			<button
+				className={`${group}__right-button !w-[10.25rem] space-x-1 relative`}
+				onClick={handleToggle}
+			>
+				<i>{network.icon()}</i>
+				<span>{network.name}</span>
+				<span className="flex items-center justify-center">
+					{isOpen ? (
+						<i className="rotate-180">
+							<DropDown />
+						</i>
+					) : (
+						<i>
+							<DropDown />
+						</i>
+					)}
+				</span>
+			</button>
+			{isOpen && (
+				<ul className="absolute top-[90%] border border-[#15BFFD] w-[13.375rem] rounded-[2rem] py-9 px-5 bg-[#1B111E] space-y-8">
+					{chains.map((chain, index) => (
+						<li
+							key={index}
+							onClick={() => handleNetworkChange(chain)}
+							className="flex items-center gap-3"
+						>
+							<span className="size-8">{chain.icon()}</span>
+							<span>{chain.name}</span>
+						</li>
+					))}
+				</ul>
+			)}
+		</>
+	);
 }

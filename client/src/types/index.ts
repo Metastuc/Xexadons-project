@@ -1,4 +1,5 @@
 export * from "./authentication";
+export * from "./chain";
 export * from "./commonProps";
 export * from "./features";
 export * from "./image";

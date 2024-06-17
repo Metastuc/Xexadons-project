@@ -144,8 +144,6 @@ function SelectCollectionModal({ group, onClose }: SelectCollectionModalProps) {
 			break;
 	}
 
-	console.log({ chainId, address });
-
 	if (isLoading) {
 		return (
 			<section className={`${group}__modal flex items-center justify-center`}>

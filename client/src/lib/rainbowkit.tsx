@@ -49,7 +49,7 @@ export const Web3Provider = ({ children }: { children: ReactNode }) => {
 		<WagmiProvider config={config}>
 			<QueryClientProvider client={queryClient}>
 				<RainbowKitProvider
-					initialChain={bscTestnet}
+					initialChain={polygonAmoy}
 					theme={darkTheme()}
 				>
 					{children}
