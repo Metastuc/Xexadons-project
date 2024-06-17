@@ -1,6 +1,7 @@
 /* eslint-disable indent */
 import axios, { AxiosResponse } from "axios";
-const API_URL = process.env.NEXT_PUBLIC_API_URL!;
+
+import { BASE_URL } from "@/lib";
 let URL: string, RESPONSE: AxiosResponse<any, any>;
 
 
@@ -30,7 +31,7 @@ async function makeRequest({ url = "", method = 'GET', params = {}, headers = {}
 };
 
 export async function getNFTCollections(chain: number, address: string): Promise<any> {
-    URL = `${API_URL}getCollection?chainId=${chain}&collectionAddress=${address}`;
+    URL = `${BASE_URL}getCollection?chainId=${chain}&collectionAddress=${address}`;
 
     try {
         RESPONSE = await axios.get(URL);
@@ -46,8 +47,7 @@ export async function getUserCollections(chainId: number, userAddress: string): 
     try {
         const RESPONSE = await makeRequest(
             {
-                url: `${API_URL}/getUserCollections`,
-                method: 'GET',
+                url: `${BASE_URL}/getUserCollections`,
                 // params: { chainId: 97, userAddress: "0x72De66bFDEf75AE89aD98a52A1524D3C5dB5fB24" }
                 params: { chainId, userAddress }
             }

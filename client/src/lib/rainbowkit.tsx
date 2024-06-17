@@ -17,14 +17,16 @@ import {
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactNode } from "react";
 import { WagmiProvider } from "wagmi";
-import { mainnet, polygonAmoy } from "wagmi/chains";
+import { bsc, bscTestnet, mainnet, polygonAmoy } from "wagmi/chains";
+
+import { WALLETCONNECT_ID } from "./constants";
 
 const { wallets }: { wallets: WalletList } = getDefaultWallets();
 
 const config = getDefaultConfig({
 	appName: "Xexadons",
-	chains: [mainnet, polygonAmoy],
-	projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_ID!,
+	chains: [mainnet, polygonAmoy, bscTestnet, bsc],
+	projectId: WALLETCONNECT_ID,
 	wallets: [
 		...wallets,
 		{
@@ -46,7 +48,10 @@ export const Web3Provider = ({ children }: { children: ReactNode }) => {
 	return (
 		<WagmiProvider config={config}>
 			<QueryClientProvider client={queryClient}>
-				<RainbowKitProvider theme={darkTheme()}>
+				<RainbowKitProvider
+					initialChain={bscTestnet}
+					theme={darkTheme()}
+				>
 					{children}
 				</RainbowKitProvider>
 			</QueryClientProvider>

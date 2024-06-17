@@ -1,3 +1,9 @@
+export const BASE_URL = process.env.NEXT_PUBLIC_API_URL!;
+
+export const WALLETCONNECT_ID = process.env.NEXT_PUBLIC_WALLETCONNECT_ID!;
+
+export const ALCHEMY_ID = process.env.NEXT_PUBLIC_ALCHEMY_ID!;
+
 export const DEPLOYMENT_ADDRESSES = {
 	factory: {
 		80002: "0x63f52C7d448cFdd3ED6F8B4Ad92272B1419895b0",

@@ -2,12 +2,14 @@
 
 import "./index.scss";
 
+import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { useQuery } from "@tanstack/react-query";
 import { ChangeEvent, MouseEvent, useCallback, useState } from "react";
+import { toast } from "sonner";
 import { useAccount } from "wagmi";
 
 import { getUserCollections } from "@/api";
-import { Close, Polygon } from "@/assets";
+import { Close, ModalSearch, Polygon } from "@/assets";
 import { NextOptimizedImage } from "@/components/reusable";
 import { commonProps, UserCollection } from "@/types";
 import { contentWrapper } from "@/views";
@@ -18,7 +20,6 @@ type SelectCollectionModalProps = commonProps & {
 
 export function Create({ group }: commonProps) {
 	const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-	// console.log({ isModalOpen });
 
 	const toggleModal = useCallback(() => {
 		setIsModalOpen((prevIsModalOpen) => !prevIsModalOpen);
@@ -37,7 +38,7 @@ export function Create({ group }: commonProps) {
 					{contentWrapper({
 						children: (
 							<button onClick={toggleModal}>
-								<span>image</span>
+								<span></span>
 
 								<p>
 									<span>Select a collection</span>
@@ -98,17 +99,24 @@ export function Create({ group }: commonProps) {
 
 function SelectCollectionModal({ group, onClose }: SelectCollectionModalProps) {
 	const { chainId, address } = useAccount();
+	const { openConnectModal } = useConnectModal();
 
 	function stopPropagation(event: MouseEvent): void {
 		event.stopPropagation();
 	}
+
 	const [searchQuery, setSearchQuery] = useState<string>("");
-	// const [userCollections, setUserCollections] = useState<UserCollection[]>([]);
 
 	const fetchCollections = async () => {
-		if (chainId !== undefined && address !== undefined) {
-			const collections = await getUserCollections(chainId, address);
-			return collections;
+		switch (true) {
+			case chainId !== undefined && address !== undefined:
+				const collections = await getUserCollections(chainId, address);
+				return collections;
+
+			case chainId === undefined || address === undefined:
+				toast.error("Please connect your wallet");
+				openConnectModal && (await openConnectModal());
+				break;
 		}
 	};
 
@@ -116,6 +124,7 @@ function SelectCollectionModal({ group, onClose }: SelectCollectionModalProps) {
 		data: userCollections = [],
 		isLoading,
 		isError,
+		error,
 	} = useQuery({
 		queryKey: ["collections", chainId, address],
 		queryFn: fetchCollections,
@@ -138,11 +147,23 @@ function SelectCollectionModal({ group, onClose }: SelectCollectionModalProps) {
 	console.log({ chainId, address });
 
 	if (isLoading) {
-		return <section className={`${group}__modal text-red-700`}>Loading...</section>;
+		return (
+			<section className={`${group}__modal flex items-center justify-center`}>
+				Loading...
+			</section>
+		);
 	}
 
 	if (isError) {
-		return <section className={`${group}__modal`}>Error</section>;
+		return (
+			<section className={`${group}__modal flex items-center justify-center`}>
+				{chainId === undefined || address === undefined ? (
+					<p>please connect your wallet</p>
+				) : (
+					<p>{error.toString()}</p>
+				)}
+			</section>
+		);
 	}
 
 	return (
@@ -153,7 +174,10 @@ function SelectCollectionModal({ group, onClose }: SelectCollectionModalProps) {
 			<div className={`${group}__modal-top`}>
 				<h3>Select Collection</h3>
 
-				<i onClick={onClose}>
+				<i
+					onClick={onClose}
+					className="cursor-pointer"
+				>
 					<Close />
 				</i>
 			</div>
@@ -161,37 +185,7 @@ function SelectCollectionModal({ group, onClose }: SelectCollectionModalProps) {
 			<div className={`${group}__modal-bottom`}>
 				<div>
 					<i>
-						<svg
-							width={17}
-							height={17}
-							viewBox="0 0 17 17"
-							fill="none"
-							xmlns="http://www.w3.org/2000/svg"
-						>
-							<g
-								clipPath="url(#clip0_24_7097)"
-								stroke="#F1F2F2"
-								strokeOpacity={0.58}
-							>
-								<circle
-									cx={8.14567}
-									cy={8.14585}
-									r={6.72917}
-								/>
-								<path
-									d="M14.166 14.167l1.417 1.416"
-									strokeLinecap="round"
-								/>
-							</g>
-							<defs>
-								<clipPath id="clip0_24_7097">
-									<path
-										fill="#fff"
-										d="M0 0H17V17H0z"
-									/>
-								</clipPath>
-							</defs>
-						</svg>
+						<ModalSearch />
 					</i>
 					<input
 						type="text"
@@ -203,10 +197,12 @@ function SelectCollectionModal({ group, onClose }: SelectCollectionModalProps) {
 					/>
 				</div>
 
-				<div>
-					{filteredCollections.map((collection, index) => {
-						return (
-							<>
+				<div className="space-y-4">
+					{filteredCollections.length === 0 ? (
+						<p>No collections found</p>
+					) : (
+						filteredCollections.map((collection, index) => {
+							return (
 								<article key={index}>
 									<span>
 										<NextOptimizedImage
@@ -216,9 +212,9 @@ function SelectCollectionModal({ group, onClose }: SelectCollectionModalProps) {
 									</span>
 									<span>{collection.name}</span>
 								</article>
-							</>
-						);
-					})}
+							);
+						})
+					)}
 				</div>
 			</div>
 		</section>
