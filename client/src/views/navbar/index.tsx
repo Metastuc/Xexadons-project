@@ -3,7 +3,7 @@
 import "./index.scss";
 
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { Cart, chains, DropDown, Search } from "@/assets";
 import {
@@ -117,6 +117,7 @@ function HandleEnterAppButtonUI({
 function SwitchNetworkButton({ group }: commonProps) {
 	const [isOpen, setIsOpen] = useState<boolean>(false);
 	const [network, setNetwork] = useState<Chain>(chains[4]);
+	const dropDownRef = useRef<HTMLUListElement>(null);
 
 	function handleToggle() {
 		setIsOpen(!isOpen);
@@ -126,6 +127,22 @@ function SwitchNetworkButton({ group }: commonProps) {
 		setNetwork(selectedChain);
 		setIsOpen(false);
 	}
+
+	function handleClickOutside(event: MouseEvent) {
+		if (
+			dropDownRef.current &&
+			!(dropDownRef.current as HTMLElement).contains(event.target as Node)
+		) {
+			setIsOpen(false);
+		}
+	}
+
+	useEffect(() => {
+		document.addEventListener("mousedown", handleClickOutside);
+		return () => {
+			document.removeEventListener("mousedown", handleClickOutside);
+		};
+	}, []);
 
 	return (
 		<>
@@ -147,8 +164,12 @@ function SwitchNetworkButton({ group }: commonProps) {
 					)}
 				</span>
 			</button>
+
 			{isOpen && (
-				<ul className="absolute top-[90%] border border-[#15BFFD] w-[13.375rem] rounded-[2rem] py-9 px-5 bg-[#1B111E] space-y-8">
+				<ul
+					ref={dropDownRef}
+					className="absolute top-[90%] border border-[#15BFFD] w-[13.375rem] rounded-[2rem] py-9 px-5 bg-[#1B111E] space-y-8"
+				>
 					{chains.map((chain, index) => (
 						<li
 							key={index}
