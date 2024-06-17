@@ -128,27 +128,27 @@
             span {
                 @include equal(1rem);
                 @include flex;
-                position: relative;
-                border-radius: 50%;
+                    position: relative;
+                    border-radius: 50%;
 
-                &:first-of-type {
-                    background-color: #98D076;
-                }
+                    &:first-of-type {
+                        background-color: #98D076;
+                    }
 
-                &:last-of-type {
-                    background-color: #B06ECF;
-                }
+                    &:last-of-type {
+                        background-color: #B06ECF;
+                    }
 
-                &::before {
-                    @include equal(62.5%);
-                    content: "";
-                    position: absolute;
-                    border-radius: inherit;
-                    background-color: white;
-                }
+                    &::before {
+                        @include equal(62.5%);
+                        content: "";
+                        position: absolute;
+                        border-radius: inherit;
+                        background-color: white;
+                    }
             }
 
-            i {
+            >i {
                 width: .0625rem;
                 height: 1.25rem;
                 border-right: dashed .0313rem rgba(241, 230, 230, 0.8);
@@ -206,6 +206,11 @@
             @include equal(1rem);
             margin-top: 2%;
             border-radius: 50%;
+            border: .0625rem solid #ffffff88;
+
+            svg{
+                @include equal(75%)
+            }
         }
 
         >*:not(i) {
