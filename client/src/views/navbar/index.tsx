@@ -73,11 +73,11 @@ export function NavigationBar({ group }: commonProps) {
 						</div>
 					)}
 
-					{handleEnterAppButtonUI({
-						pathname,
-						router,
-						group,
-					})}
+					<HandleEnterAppButtonUI
+						group={group}
+						pathname={pathname}
+						router={router}
+					/>
 
 					<Web3ConnectButton group={group} />
 
@@ -92,7 +92,7 @@ export function NavigationBar({ group }: commonProps) {
 	);
 }
 
-function handleEnterAppButtonUI({
+function HandleEnterAppButtonUI({
 	pathname,
 	group,
 	router,
