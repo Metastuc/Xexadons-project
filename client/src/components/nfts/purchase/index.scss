@@ -6,7 +6,7 @@
 .sell_left {
     @include flex($d: column, $a: flex-start);
     margin-top: 3.25rem;
-    gap: 5rem;
+    gap: 3.5rem;
 
     &__title {
         @include flex($d: column, $a: flex-start);
