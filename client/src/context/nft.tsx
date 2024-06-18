@@ -3,7 +3,7 @@
 import { createContext, Dispatch, ReactNode, SetStateAction, useState } from "react";
 
 import { DEPLOYMENT_ADDRESSES } from "@/lib";
-import { NFTprops } from "@/types";
+import { BuyPrice, NFTprops, Pool } from "@/types";
 
 type NFTContextType = {
 	nftAddress: string;
@@ -19,6 +19,12 @@ type NFTCollection = {
 
 	selectedNFTs: NFTprops[];
 	setSelectedNFTs: Dispatch<SetStateAction<NFTprops[]>>;
+
+	pools: Pool[];
+	setPools: Dispatch<SetStateAction<Pool[]>>;
+
+	poolAddress: string;
+	setPoolAddress: Dispatch<SetStateAction<`0x${string}`>>;
 };
 
 type NFTPrices = {
@@ -33,6 +39,12 @@ type NFTPrices = {
 
 	dollarAmount: number;
 	setDollarAmount: Dispatch<SetStateAction<number>>;
+
+	buyPrices: BuyPrice[];
+	setBuyPrices: Dispatch<SetStateAction<BuyPrice[]>>;
+
+	nextSellPrice: string;
+	setNextSellPrice: Dispatch<SetStateAction<string>>;
 };
 
 type NFTProviderProps = NFTContextType & NFTCollection & NFTPrices;
@@ -43,6 +55,9 @@ let address = DEPLOYMENT_ADDRESSES.xexadon[80002];
 
 export function NFTContextProvider({ children }: { children: ReactNode }) {
 	const [nftAddress, setNftAddress] = useState<string>(address);
+	const [poolAddress, setPoolAddress] = useState<`0x${string}`>(
+		"0x6a13d552528B0C53f4007A9cb847358ee8A50f9a",
+	);
 	const [collection, setCollection] = useState<any | null>(null);
 	const [collectionName, setCollectionName] = useState<string>("");
 	const [selectedNFTs, setSelectedNFTs] = useState<NFTprops[]>([]);
@@ -50,6 +65,9 @@ export function NFTContextProvider({ children }: { children: ReactNode }) {
 	const [sellAmount, setSellAmount] = useState<number>(0);
 	const [depositAmount, setDepositAmount] = useState<number>(0);
 	const [dollarAmount, setDollarAmount] = useState<number>(0);
+	const [pools, setPools] = useState<Pool[]>([]);
+	const [buyPrices, setBuyPrices] = useState<BuyPrice[]>([]);
+	const [nextSellPrice, setNextSellPrice] = useState<string>(" ");
 
 	return (
 		<NFTContext.Provider
@@ -66,6 +84,12 @@ export function NFTContextProvider({ children }: { children: ReactNode }) {
 				selectedNFTs,
 				setSelectedNFTs,
 
+				poolAddress,
+				setPoolAddress,
+
+				pools,
+				setPools,
+
 				buyAmount,
 				setBuyAmount,
 
@@ -77,6 +101,12 @@ export function NFTContextProvider({ children }: { children: ReactNode }) {
 
 				dollarAmount,
 				setDollarAmount,
+
+				buyPrices,
+				setBuyPrices,
+
+				nextSellPrice,
+				setNextSellPrice,
 			}}
 		>
 			{children}
