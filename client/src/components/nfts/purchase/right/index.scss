@@ -59,6 +59,10 @@
             gap: .5rem 1rem;
         }
 
+        >p {
+            @include font($f: clash, $s: xlg, $w: reg);
+        }
+
         article {
             @include flex($d: column, $a: center, $j: space-between);
             height: 12rem;
