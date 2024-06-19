@@ -1,10 +1,9 @@
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 
-import { DropDown as DropDownIcon } from "@/assets";
 // import { ContextWrapper } from "@/hooks";
 import { commonProps } from "@/types";
 
-import { NextOptimizedImage } from "../reusable";
+import { RenderConnectedUI } from "./render-connected-button";
 
 type renderConnectProps = commonProps & {
 	openConnectModal: () => void | undefined;
@@ -12,11 +11,6 @@ type renderConnectProps = commonProps & {
 
 type renderInvalidNetworkProps = commonProps & {
 	openChainModal: () => void | undefined;
-};
-
-type renderConnectedUIProps = commonProps & {
-	openAccountModal: () => void | undefined;
-	account: any;
 };
 
 export function Web3ConnectButton({ group }: commonProps) {
@@ -30,7 +24,6 @@ export function Web3ConnectButton({ group }: commonProps) {
 				{({
 					account,
 					chain,
-					openAccountModal,
 					openChainModal,
 					openConnectModal,
 					authenticationStatus,
@@ -70,11 +63,12 @@ export function Web3ConnectButton({ group }: commonProps) {
 									});
 								}
 
-								return renderConnectedUI({
-									openAccountModal,
-									account,
-									group,
-								});
+								return (
+									<RenderConnectedUI
+										account={account}
+										group={group}
+									/>
+								);
 							})()}
 						</span>
 					);
@@ -111,34 +105,5 @@ function renderInvalidNetworkPrompt({
 		>
 			wrong network
 		</button>
-	);
-}
-
-function renderConnectedUI({
-	// openAccountModal,
-	account,
-	group,
-}: renderConnectedUIProps) {
-	return (
-		<>
-			<button
-				className={`${group}__right-button`}
-				style={{
-					width: "12.25rem",
-					gap: ".75rem",
-				}}
-			>
-				<span>
-					<NextOptimizedImage
-						src="/pf-icon.png"
-						alt="profile-icon"
-					/>
-				</span>
-
-				<span>{account.displayName}</span>
-
-				<i>{DropDownIcon({})}</i>
-			</button>
-		</>
 	);
 }

@@ -1,7 +1,12 @@
 import "./index.scss";
 
-import { ArrowDeg90, Polygon, Xexadons } from "@/assets";
+import { useAccount } from "wagmi";
+
+import { ArrowDeg90, BNB, Polygon, Xexadons } from "@/assets";
+import { ContextWrapper } from "@/hooks";
+import { buyNFT, getCurrency, sellNFT, useEthersSigner } from "@/lib";
 import { commonProps } from "@/types";
+import { truncateWalletAddress } from "@/utils";
 import { contentWrapper } from "@/views";
 
 type purchaseNftProps = commonProps & {
@@ -44,20 +49,35 @@ function renderContent({ group, activeTab }: purchaseNftProps) {
 		<section className={`${group}__content`}>
 			<>
 				{contentWrapper({
-					children: renderTopContent({ group, activeTab }),
+					children: (
+						<RenderTopContent
+							group={group}
+							activeTab={activeTab}
+						/>
+					),
 				})}
 			</>
 
 			<>
 				{contentWrapper({
-					children: renderBottomContent({ group, activeTab }),
+					// children: renderBottomContent({ group, activeTab }),
+					children: (
+						<RenderBottomContent
+							group={group}
+							activeTab={activeTab}
+						/>
+					),
 				})}
 			</>
 		</section>
 	);
 }
 
-function renderTopContent({ group, activeTab }: purchaseNftProps) {
+function RenderTopContent({ group, activeTab }: purchaseNftProps) {
+	const {
+		nftContext: { selectedNFTs, buyAmount, sellAmount, dollarAmount },
+	} = ContextWrapper();
+
 	return (
 		<div className={`${group}__content-top`}>
 			<article className={`${group}__from-to`}>
@@ -69,25 +89,31 @@ function renderTopContent({ group, activeTab }: purchaseNftProps) {
 				<>
 					<article className={`${group}__price`}>
 						<div>
-							<span>690</span>
-							<span>$800</span>
+							<span>{buyAmount}</span>
+							<span>${dollarAmount}</span>
 						</div>
 
 						<i>{ArrowDeg90()}</i>
 
-						<span>3 xexadons</span>
+						<span>
+							{selectedNFTs.length} xexadon
+							{selectedNFTs.length === 1 ? "" : "s"}
+						</span>
 					</article>
 				</>
 			) : (
 				<>
 					<article className={`${group}__price ${activeTab}`}>
-						<span>3 xexadons</span>
+						<span>
+							{selectedNFTs.length} xexadon
+							{selectedNFTs.length === 1 ? "" : "s"}
+						</span>
 
 						<i>{ArrowDeg90()}</i>
 
 						<div>
-							<span>690</span>
-							<span>$800</span>
+							<span>{sellAmount}</span>
+							<span>${dollarAmount}</span>
 						</div>
 					</article>
 				</>
@@ -126,7 +152,31 @@ function renderTopContent({ group, activeTab }: purchaseNftProps) {
 	);
 }
 
-function renderBottomContent({ group, activeTab }: purchaseNftProps) {
+function RenderBottomContent({ group, activeTab }: purchaseNftProps) {
+	const { chainId, address } = useAccount();
+	const signer = useEthersSigner();
+
+	const {
+		nftContext: { buyAmount, selectedNFTs, sellAmount },
+	} = ContextWrapper();
+
+	const userAddress: string =
+		address === undefined ? "account" : truncateWalletAddress(address);
+
+	const chain: number = chainId === undefined ? 80002 : chainId;
+
+	async function handlePurchase() {
+		switch (true) {
+			case activeTab === "buy":
+				await buyNFT(selectedNFTs, chain, signer);
+				break;
+
+			case activeTab === "sell":
+				await sellNFT(selectedNFTs, selectedNFTs[0].address, chain, signer);
+				break;
+		}
+	}
+
 	return (
 		<div className={`${group}__content-bottom`}>
 			{group.includes("buy") ? (
@@ -139,7 +189,7 @@ function renderBottomContent({ group, activeTab }: purchaseNftProps) {
 						</div>
 
 						<div className={`${group}__detail-2`}>
-							<span>nft pool</span>
+							<span>router</span>
 							<span>receiver</span>
 						</div>
 
@@ -150,8 +200,8 @@ function renderBottomContent({ group, activeTab }: purchaseNftProps) {
 						</div>
 
 						<div className={`${group}__detail-4`}>
-							<span>account</span>
-							<span>account</span>
+							<span>0xe9c...26Ca</span>
+							<span>{userAddress}</span>
 						</div>
 					</article>
 				</>
@@ -176,8 +226,8 @@ function renderBottomContent({ group, activeTab }: purchaseNftProps) {
 						</div>
 
 						<div className={`${group}__detail-4`}>
-							<span>account</span>
-							<span>account</span>
+							<span>0xe9c...26Ca</span>
+							<span>{userAddress}</span>
 						</div>
 					</article>
 				</>
@@ -187,15 +237,27 @@ function renderBottomContent({ group, activeTab }: purchaseNftProps) {
 				<>
 					<article className={`${group}__swap`}>
 						<span>
-							<i>{Polygon()}</i>
-							<span>690 matic</span>
+							<i>
+								{chain === 97 ? (
+									<BNB />
+								) : chain === 80002 ? (
+									<Polygon />
+								) : (
+									<span className="text-xs">Wrong network</span>
+								)}
+							</i>
+							<span className="text-nowrap">
+								{buyAmount} {getCurrency(chain)}
+							</span>
 						</span>
 
 						<i>{ArrowDeg90()}</i>
 
 						<span>
 							<i>{Xexadons()}</i>
-							<span>3 xexadons</span>
+							<span className="text-nowrap">
+								{selectedNFTs.length} xexadons
+							</span>
 						</span>
 					</article>
 				</>
@@ -204,14 +266,26 @@ function renderBottomContent({ group, activeTab }: purchaseNftProps) {
 					<article className={`${group}__swap`}>
 						<span>
 							<i>{Xexadons()}</i>
-							<span>3 xexadons</span>
+							<span className="text-nowrap">
+								{selectedNFTs.length} xexadons
+							</span>
 						</span>
 
 						<i>{ArrowDeg90()}</i>
 
 						<span>
-							<i>{Polygon()}</i>
-							<span>690 matic</span>
+							<i>
+								{chain === 97 ? (
+									<BNB />
+								) : chain === 80002 ? (
+									<Polygon />
+								) : (
+									<span className="text-xs">Wrong network</span>
+								)}
+							</i>
+							<span className="text-nowrap">
+								{sellAmount} {getCurrency(chain)}
+							</span>
 						</span>
 					</article>
 				</>
@@ -220,19 +294,39 @@ function renderBottomContent({ group, activeTab }: purchaseNftProps) {
 			{group.includes("buy") ? (
 				<>
 					<p className={`${group}__description`}>
-						~swap 690 matic <i>{Polygon()}</i> for 3 xexadons
+						~swap {buyAmount} {getCurrency(chain)}{" "}
+						<i>
+							{chain === 97 ? (
+								<BNB />
+							) : chain === 80002 ? (
+								<Polygon />
+							) : (
+								<span className="text-xs">Wrong network</span>
+							)}
+						</i>{" "}
+						for {selectedNFTs.length} xexadons
 					</p>
 				</>
 			) : (
 				<>
 					<p className={`${group}__description`}>
-						~swap 3 xexadons for 690 matic <i></i>
+						~swap {selectedNFTs.length} xexadons for {sellAmount}{" "}
+						{getCurrency(chain)}{" "}
+						<i>
+							{chain === 97 ? (
+								<BNB />
+							) : chain === 80002 ? (
+								<Polygon />
+							) : (
+								<span className="text-xs">Wrong network</span>
+							)}
+						</i>
 					</p>
 				</>
 			)}
 
 			<article className={`${group}__confirmation`}>
-				<button>proceed</button>
+				<button onClick={handlePurchase}>proceed</button>
 			</article>
 		</div>
 	);

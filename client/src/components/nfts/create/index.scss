@@ -13,33 +13,39 @@
     }
 
     &__content {
-        h3 {
+        >h3 {
             @include font($f: clash, $s: xlg, $w: reg);
             margin: 2rem 0 .75rem 0;
         }
 
         &-top>section {
-            @include flex($j: flex-start);
             padding: .5rem 1rem;
-            gap: .75rem;
 
-            >span {
-                @include equal(5rem);
-                @include flex;
-                border-radius: 1rem;
-                background-color: #3d3540;
-            }
-
-            p {
-                @include flex;
+            button {
+                @include flex($j: flex-start);
                 gap: .75rem;
+                @include equal(100%);
+                position: relative;
 
-                span {
-                    @include font($f: clash, $s: lrg, $w: reg);
+                >span {
+                    @include equal(5rem);
+                    @include flex;
+                    border-radius: 1rem;
+                    background-color: #3d3540;
                 }
 
-                i {
-                    @include equal(1.25rem);
+                p {
+                    @include flex;
+                    gap: .75rem;
+
+                    span {
+                        @include font($f: clash, $s: lrg, $w: reg);
+                        color: rgba($color: $white-100, $alpha: 80%)
+                    }
+
+                    i {
+                        @include equal(1.25rem);
+                    }
                 }
             }
         }
@@ -78,6 +84,103 @@
                     span {
                         @include font($f: lufga, $s: lrg, $w: reg);
                         text-transform: capitalize;
+                    }
+                }
+            }
+        }
+    }
+
+    &__modal {
+        position: absolute;
+        border: 1px solid #4b434e;
+        width: 32.5rem;
+        height: 25.75rem;
+        top: -15%;
+        left: -2rem;
+        background-color: #1b111e;
+        @include flex($d: column, $a: flex-start);
+        border-radius: 1.875rem;
+        cursor: default;
+        overflow: hidden;
+
+        &-top {
+            @include flex($j: space-between);
+            width: 100%;
+            height: 4rem;
+            padding: .5rem 1rem;
+            border-bottom: .0625rem solid #4b434e;
+
+            i {
+                @include equal(1rem);
+            }
+
+            h3 {
+                @include font($f: clash, $s: 1.625rem, $w: reg);
+                color: white;
+            }
+        }
+
+        &-bottom {
+            @include flex($d: column, $a: flex-start, $j: flex-start);
+            gap: 1.5rem;
+            padding: 1rem;
+            @include equal(100%);
+            flex: 1;
+
+            >div {
+                @include flex();
+                width: 100%;
+
+                &:first-of-type {
+                    height: 3.25rem;
+                    background-color: #241b2b;
+                    border-radius: .75rem;
+                    @include flex($j: flex-start);
+                    padding: .75rem;
+                    gap: 1rem;
+
+                    i {
+                        @include equal(1rem);
+                    }
+
+                    input {
+                        flex: 1;
+                        color: rgba($color: $white-100, $alpha: 80%);
+                        @include font($f: clash, $s: nrm, $w: reg);
+                    }
+                }
+
+                &:last-of-type {
+                    display: block;
+                    height: 14.75rem;
+                    overflow: scroll;
+
+                    article {
+                        height: 4.5rem;
+                        width: inherit;
+                        @include flex($j: flex-start);
+                        padding-inline: .75rem;
+                        gap: 1rem;
+                        background-color: #241b2b;
+                        border-radius: .75rem;
+                        cursor: pointer;
+
+                        span:first-of-type {
+                            @include equal(3.25rem);
+                            @include flex;
+                            border-radius: .625rem;
+                            overflow: hidden;
+
+                            img {
+                                opacity: .4;
+                            }
+                        }
+                    }
+
+                    span {
+                        text-transform: capitalize;
+                        color: rgba($color: $white-100, $alpha: 80%);
+                        @include font($f: clash, $s: nrm, $w: reg);
                     }
                 }
             }

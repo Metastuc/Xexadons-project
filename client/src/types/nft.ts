@@ -1,7 +1,16 @@
 export interface NFTprops {
-    id: string;
-    name: string;
-    poolAddress: string;
-    src: string;
     address: string;
+    id: number;
+    poolAddress: string;
+}
+
+export interface Pool {
+    poolAddress: string;
+    reserve0: number;
+    reserve1: number;
+};
+
+export interface BuyPrice {
+    poolAddress: string;
+    nextPrice: string;
 }

@@ -2,7 +2,8 @@
 
 .buy_right,
 .sell_right,
-.deposit_right {
+.deposit_right,
+.withdraw_right {
 
     &__wrapper {
         @include flex($d: column, $a: flex-start);
@@ -138,6 +139,31 @@
             @include font($f: clash, $s: nrm, $w: reg);
             text-transform: capitalize;
             color: rgba($color: $white-100, $alpha: 80%);
+        }
+    }
+}
+
+.withdraw_right__top {
+    @include flex($d:column, $a: flex-start);
+    gap: 2rem;
+
+    div {
+        @include flex($j: flex-start);
+        gap: .75rem;
+        width: 100%;
+        background-color: transparent;
+    }
+
+    button {
+        @include flex;
+        background-color: #78758c;
+        width: 6.75rem;
+        height: 1.75rem;
+        border-radius: $radius - .25rem;
+
+        span {
+            @include font($f: lufga, $s: sm, $w: reg);
+            color: white;
         }
     }
 }

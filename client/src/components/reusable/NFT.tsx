@@ -1,29 +1,55 @@
-// import { NFTprops } from "@/types";
+import { BNB, NFTChecked, NFTNotChecked, Polygon } from "@/assets";
 
-import { NFTChecked, NFTNotChecked, Polygon } from "@/assets";
+import { NextOptimizedImage } from "./image";
 
-// export function NFT({ address, id, name, poolAddress, src }: NFTprops) {
-export function NFT({ id, isSelected, onSelect }: any) {
+export function NFT({
+	id,
+	isSelected,
+	onSelect,
+	imageUrl,
+	nftId,
+	name,
+	price,
+	chainId,
+}: any) {
 	return (
 		<article>
-			<span>image</span>
+			<NextOptimizedImage
+				src={imageUrl}
+				alt=""
+				group="rounded-xl"
+			/>
 
 			<section>
-				<span>id</span>
+				<span>#{nftId}</span>
 
 				<div>
-					<span>name</span>
-					<span>id</span>
+					<span>{name}</span>
+					<span>{nftId}</span>
 				</div>
 
 				<div>
 					<div>
-						<i>
-							<Polygon />
-						</i>
-						<span>price</span>
+						{chainId === 97 ? (
+							<>
+								<i>
+									<BNB />
+								</i>
+							</>
+						) : chainId === 80002 ? (
+							<>
+								<i>
+									{" "}
+									<Polygon />{" "}
+								</i>
+							</>
+						) : (
+							<i>
+								<Polygon />
+							</i>
+						)}
+						<span>{price}</span>
 					</div>
-
 					<div onClick={() => onSelect(id)}>
 						{isSelected ? (
 							<>

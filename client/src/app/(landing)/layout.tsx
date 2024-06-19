@@ -2,6 +2,7 @@ import "@/styles/_index.scss";
 
 import type { Metadata } from "next";
 import { ReactNode } from "react";
+import { Toaster } from "sonner";
 
 import { ContextProvider } from "@/hooks";
 import { NavigationBar } from "@/views";
@@ -15,6 +16,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 	return (
 		<html lang="en">
 			<body className="app">
+				<Toaster />
 				<ContextProvider>{App({ children })}</ContextProvider>
 			</body>
 		</html>
