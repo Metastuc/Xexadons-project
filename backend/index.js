@@ -365,9 +365,63 @@ app.get("/getUserCollections", async(req, res) => {
 
   try {
     const userCollections = await getUserCollections(userAddress, chain)
+    userCollections.poolAddress = "0x";
+
     res.status(200).json(userCollections);
   } catch (error) {
     console.error("Error fetching user collections:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+app.get("/getUserCollectionNFTs", async(req, res) => {
+  // include chain param
+  const userAddress = req.query.userAddress;
+  const chainId = req.query.chainId;
+  const nftAddress = req.query.nftAddress;
+  const provider = new ethers.JsonRpcProvider(rpcUrls[chainId]);
+
+  const nftContract = new ethers.Contract(nftAddress, ABIs.nftABI, provider);
+  const nftName = await nftContract.name();
+  const icon = await nftContract.tokenURI(0);
+  console.log(nftName);
+
+  var userCollectionNFTs = [];
+  const options = {
+    method: 'GET',
+    url: `https://api.simplehash.com/api/v0/nfts/owners?chains=${chainNames[chainId]}&wallet_addresses=${userAddress}&contract_addresses=${nftAddress}`,
+    headers: {
+      'Authorization': 'Bearer ' + simpleHashKey,
+      accept: 'application/json',
+      'X-API-KEY': simpleHashKey
+    }
+  };
+
+  try {
+    const response = await axios(options);
+    const items = response.data.nfts;
+    console.log(items);
+
+    // check if contract address matches tokenAddress
+    for (let i = 0; i < items.length; i++) {
+      const imageUrl = items[i].image_url;
+      const nft = {
+        id: items[i].token_id,
+        name: nftName,
+        src: imageUrl
+      }
+      userCollectionNFTs.push(nft);
+    }
+    const collection = {
+      icon: icon,
+      pools: [],
+      NFTs: userCollectionNFTs,
+    }
+
+    res.status(200).json(collection);
+  } catch (error) {
+    // Handle errors
+    console.error("Error fetching user NFTs:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
