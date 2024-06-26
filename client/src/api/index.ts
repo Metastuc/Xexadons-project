@@ -71,8 +71,8 @@ export async function getUserCollections(chainId: number, userAddress: string): 
 export async function getUserCollectionsNFTs(chain: number, nftAddress: string, userAddress: `0x${string}`, poolAddress: string, tab: string): Promise<any> {
     try {
         RESPONSE = await makeRequest({
-            url: tab === "sell" ? `${BASE_URL}/getUserCollectionNFTsSell` : `${BASE_URL}/getUserCollectionNFTsDeposit`,
-            params: tab === "sell" ? { chainId: chain, nftAddress, userAddress } : { chainId: chain, nftAddress, userAddress, poolAddress }
+            url: tab === "sell" ? `${BASE_URL}/getUserCollectionNFTsSell` : tab === "liquidity" ? `${BASE_URL}/getUserCollectionNFTsDeposit` : tab === "create" ? `${BASE_URL}/getUserCollectionNFTs` : undefined,
+            params: tab === "liquidity" ? { chainId: chain, nftAddress, userAddress, poolAddress } : { chainId: chain, nftAddress, userAddress }
         });
 
         return RESPONSE || [];

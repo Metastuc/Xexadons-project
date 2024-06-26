@@ -12,3 +12,4 @@ frontend/src/app/rainbowKit.js
 smart contract/scripts/deployInitialize.js
 backend/xexadon-bf1cc-firebase-adminsdk-5o0n9-880adf9a97.json
 backend/getPoolReserves.js
+backend/buffer.js
