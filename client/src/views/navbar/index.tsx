@@ -118,6 +118,7 @@ function SwitchNetworkButton({ group }: commonProps) {
 	const [isOpen, setIsOpen] = useState<boolean>(false);
 	const [network, setNetwork] = useState<Chain>(chains[4]);
 	const dropDownRef = useRef<HTMLUListElement>(null);
+	const buttonRef = useRef<HTMLButtonElement>(null);
 
 	function handleToggle() {
 		setIsOpen(!isOpen);
@@ -131,7 +132,8 @@ function SwitchNetworkButton({ group }: commonProps) {
 	function handleClickOutside(event: MouseEvent) {
 		if (
 			dropDownRef.current &&
-			!(dropDownRef.current as HTMLElement).contains(event.target as Node)
+			!(dropDownRef.current as HTMLElement).contains(event.target as Node) &&
+			event.target !== buttonRef.current
 		) {
 			setIsOpen(false);
 		}
@@ -149,6 +151,7 @@ function SwitchNetworkButton({ group }: commonProps) {
 			<button
 				className={`${group}__right-button !w-[10.25rem] space-x-1 relative`}
 				onClick={handleToggle}
+				ref={buttonRef}
 			>
 				<i>{network.icon()}</i>
 				<span>{network.name}</span>

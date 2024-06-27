@@ -16,6 +16,7 @@ export function RenderConnectedUI({ account, group }: renderConnectedUIProps) {
 	const [isOpen, setIsOpen] = useState<boolean>(false);
 	const { disconnect } = useDisconnect();
 	const dropDownRef = useRef<HTMLUListElement>(null);
+	const buttonRef = useRef<HTMLButtonElement>(null);
 
 	function handleToggle() {
 		setIsOpen(!isOpen);
@@ -24,7 +25,8 @@ export function RenderConnectedUI({ account, group }: renderConnectedUIProps) {
 	function handleClickOutside(event: MouseEvent) {
 		if (
 			dropDownRef.current &&
-			!(dropDownRef.current as HTMLElement).contains(event.target as Node)
+			!(dropDownRef.current as HTMLElement).contains(event.target as Node) &&
+			event.target !== buttonRef.current
 		) {
 			setIsOpen(false);
 		}
@@ -46,6 +48,7 @@ export function RenderConnectedUI({ account, group }: renderConnectedUIProps) {
 					gap: ".75rem",
 				}}
 				onClick={handleToggle}
+				ref={buttonRef}
 			>
 				<span>
 					<NextOptimizedImage
