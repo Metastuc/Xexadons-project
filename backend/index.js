@@ -379,13 +379,8 @@ app.get("/getUserCollectionNFTs", async(req, res) => {
   const userAddress = req.query.userAddress;
   const chainId = req.query.chainId;
   const nftAddress = req.query.nftAddress;
-  const provider = new ethers.JsonRpcProvider(rpcUrls[chainId]);
-
-  const nftContract = new ethers.Contract(nftAddress, ABIs.nftABI, provider);
-  const nftName = await nftContract.name();
-  const icon = await nftContract.tokenURI(0);
-  console.log(nftName);
-
+  var icon;
+  
   var userCollectionNFTs = [];
   const options = {
     method: 'GET',
@@ -407,14 +402,13 @@ app.get("/getUserCollectionNFTs", async(req, res) => {
       const imageUrl = items[i].image_url;
       const nft = {
         id: items[i].token_id,
-        name: nftName,
+        name: items[i].collection.name,
         src: imageUrl
       }
       userCollectionNFTs.push(nft);
     }
+
     const collection = {
-      icon: icon,
-      pools: [],
       NFTs: userCollectionNFTs,
     }
 
