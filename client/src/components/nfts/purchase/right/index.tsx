@@ -30,6 +30,7 @@ export function PurchaseNFTRight({ group, activeTab }: PurchaseNFTRightProps) {
 			pools,
 			nextSellPrice,
 			collectionNfts,
+			userCollectionAddress,
 			setSelectedNFTs,
 			setCollectionNfts,
 			setCollection,
@@ -69,14 +70,22 @@ export function PurchaseNFTRight({ group, activeTab }: PurchaseNFTRightProps) {
 	): () => Promise<any> {
 		if (activeTab === "buy") {
 			return async () => getNFTCollections(chain, nftAddress);
+		} else if (activeTab === "create") {
+			return async () =>
+				getUserCollectionsNFTs(
+					"create",
+					chainId || 0,
+					userCollectionAddress as string,
+					address as `0x${string}`,
+				);
 		} else {
 			return async () =>
 				getUserCollectionsNFTs(
+					activeTab,
 					chain,
 					nftAddress,
 					address ?? "0x00000",
 					poolAddress,
-					activeTab,
 				);
 		}
 	}
@@ -92,41 +101,62 @@ export function PurchaseNFTRight({ group, activeTab }: PurchaseNFTRightProps) {
 		});
 	}
 
+	function selectAllNFTs() {
+		setSelectedNFTs(
+			collectionNfts.map((nft) => ({
+				address: nftAddress,
+				id: nft.id,
+				poolAddress: nft.poolAddress,
+			})),
+		);
+	}
+
+	function deselectAllNFTs() {
+		setSelectedNFTs([]);
+	}
 	const calculateBuyAmount: () => Promise<void> = useCallback(async () => {
-		const newTotalAmountIn: number = pools.reduce((sum, pool) => {
-			const C = selectedNFTs.filter((nft) => nft.poolAddress === pool.poolAddress);
-			if (C.length === pool.reserve0) {
-				return sum + pool.reserve1 * C.length;
-			} else {
-				return sum + (pool.reserve1 * C.length) / (pool.reserve0 - C.length);
-			}
-		}, 0);
+		const newTotalAmountIn: number =
+			pools &&
+			pools.reduce((sum, pool) => {
+				const C = selectedNFTs.filter(
+					(nft) => nft.poolAddress === pool.poolAddress,
+				);
+				if (C.length === pool.reserve0) {
+					return sum + pool.reserve1 * C.length;
+				} else {
+					return sum + (pool.reserve1 * C.length) / (pool.reserve0 - C.length);
+				}
+			}, 0);
 
-		const poolPrices: PoolPrice[] = pools.reduce((acc: PoolPrice[], pool) => {
-			const C = selectedNFTs.filter((nft) => nft.poolAddress === pool.poolAddress);
-			let _next_price = 0;
-			if (pool.reserve0 > C.length + 1) {
-				_next_price =
-					Math.ceil(
-						((pool.reserve1 * (C.length + 1)) /
-							(pool.reserve0 - (C.length + 1))) *
-							100,
-					) / 100;
-			} else {
-				_next_price = Math.ceil(pool.reserve1 * (C.length + 1) * 100) / 100;
-			}
-			const currency: number = getCurrency(chain);
-			const next_price: string = formatEther(BigInt(_next_price)) + currency;
+		const poolPrices: PoolPrice[] =
+			pools &&
+			pools.reduce((acc: PoolPrice[], pool) => {
+				const C = selectedNFTs.filter(
+					(nft) => nft.poolAddress === pool.poolAddress,
+				);
+				let _next_price = 0;
+				if (pool.reserve0 > C.length + 1) {
+					_next_price =
+						Math.ceil(
+							((pool.reserve1 * (C.length + 1)) /
+								(pool.reserve0 - (C.length + 1))) *
+								100,
+						) / 100;
+				} else {
+					_next_price = Math.ceil(pool.reserve1 * (C.length + 1) * 100) / 100;
+				}
+				const currency: number = getCurrency(chain);
+				const next_price: string = formatEther(BigInt(_next_price)) + currency;
 
-			acc.push({
-				poolAddress: pool.poolAddress,
-				nextPrice: next_price,
-			});
+				acc.push({
+					poolAddress: pool.poolAddress,
+					nextPrice: next_price,
+				});
 
-			return acc;
-		}, []);
+				return acc;
+			}, []);
 
-		const _newTotalAmountIn: string = formatEther(BigInt(newTotalAmountIn));
+		const _newTotalAmountIn: string = formatEther(BigInt(newTotalAmountIn || 0));
 		const coinPrice: number = Number(await getCoinPrice(chain));
 		const _dollarAmount: number = coinPrice * Number(_newTotalAmountIn);
 
@@ -257,7 +287,7 @@ export function PurchaseNFTRight({ group, activeTab }: PurchaseNFTRightProps) {
 
 							<div>
 								<span>pools</span>
-								<i>{pools.length}</i>
+								<i>{pools && pools.length}</i>
 							</div>
 						</>
 					);
@@ -278,70 +308,239 @@ export function PurchaseNFTRight({ group, activeTab }: PurchaseNFTRightProps) {
 						</>
 					);
 					break;
-			}
 
-			return (
-				<section className={`${group}`}>
-					<div className={`${group}__wrapper`}>
-						<div className={`${group}__top`}>{content}</div>
+				case "create":
+					content =
+						userCollectionAddress !== "" ? (
+							<>
+								<h2>select nfts</h2>
 
-						<section className={`${group}__bottom`}>
-							{collectionNfts.length > 0 ? (
 								<div>
-									{[...collectionNfts].map((nft, index) => {
-										const buyPrice = buyPrices.find(
-											(price) =>
-												price.poolAddress === nft.poolAddress,
-										);
+									<button
+										onClick={selectAllNFTs}
+										className="px-5"
+									>
+										<span>select all</span>
+									</button>
 
-										return (
-											<NFT
-												key={index}
-												id={index}
-												isSelected={selectedNFTs.some(
-													(selected) => selected.id === nft.id,
-												)}
-												onSelect={() =>
-													handleSelect({
-														address: nftAddress,
-														id: nft.id,
-														poolAddress: nft.poolAddress,
-													})
-												}
-												imageUrl={nft.src}
-												nftId={nft.id}
-												name={nft.name}
-												price={
-													selectedNFTs.length === 0
-														? nft.price
-														: (activeTab === "buy"
-															? buyPrice?.nextPrice
-															: activeTab === "sell"
-																? nextSellPrice
-																: nft.price) || nft.price
-												}
-												chainId={chain}
-											/>
-										);
-									})}
+									<button
+										onClick={deselectAllNFTs}
+										className="px-5"
+									>
+										<span>deselect all</span>
+									</button>
 								</div>
-							) : (
-								<p className="text-xl text-center">No NFTs found!</p>
-							)}
+							</>
+						) : null;
 
-							{activeTab === "liquidity" && collectionNfts.length > 0 && (
-								<div className={`${group}__liquidity`}>
-									<span>{selectedNFTs.length}</span>
-									<span>
-										nft{selectedNFTs.length > 1 ? "s" : ""} selected
-									</span>
-								</div>
-							)}
-						</section>
-					</div>
-				</section>
-			);
+				default:
+					break;
+			}
 	}
+
+	// return (
+	// 	<section className={`${group}`}>
+	// 		<div className={`${group}__wrapper`}>
+	// 			<div className={`${group}__top`}>{content}</div>
+
+	// 			<section className={`${group}__bottom`}>
+	// 				{activeTab === "create" ? (
+	// 					userCollectionAddress !== "" ? (
+	// 						<>
+	// 							{collectionNfts && collectionNfts.length > 0 ? (
+	// 								<div>
+	// 									{[...collectionNfts].map((nft, index) => {
+	// 										const buyPrice = buyPrices.find(
+	// 											(price) =>
+	// 												price.poolAddress === nft.poolAddress,
+	// 										);
+
+	// 										return (
+	// 											<NFT
+	// 												key={index}
+	// 												id={index}
+	// 												isSelected={selectedNFTs.some(
+	// 													(selected) =>
+	// 														selected.id === nft.id,
+	// 												)}
+	// 												onSelect={() =>
+	// 													handleSelect({
+	// 														address: nftAddress,
+	// 														id: nft.id,
+	// 														poolAddress: nft.poolAddress,
+	// 													})
+	// 												}
+	// 												imageUrl={nft.src}
+	// 												nftId={nft.id}
+	// 												name={nft.name}
+	// 												price={
+	// 													selectedNFTs.length === 0
+	// 														? nft.price
+	// 														: (activeTab === "buy"
+	// 																? buyPrice?.nextPrice
+	// 																: activeTab === "sell"
+	// 																? nextSellPrice
+	// 																: nft.price) ||
+	// 														  nft.price
+	// 												}
+	// 												chainId={chain}
+	// 											/>
+	// 										);
+	// 									})}
+	// 								</div>
+	// 							) : (
+	// 								<p className="text-xl text-center">No NFTs found!</p>
+	// 							)}
+	// 						</>
+	// 					) : (
+	// 						<p className="text-xl text-center">
+	// 							Select a collection from your wallet to proceed...
+	// 						</p>
+	// 					)
+	// 				) : (
+	// 					<>
+	// 						{collectionNfts && collectionNfts.length > 0 ? (
+	// 							<div>
+	// 								{[...collectionNfts].map((nft, index) => {
+	// 									const buyPrice =
+	// 										buyPrices &&
+	// 										buyPrices.find(
+	// 											(price) =>
+	// 												price.poolAddress === nft.poolAddress,
+	// 										);
+
+	// 									return (
+	// 										<NFT
+	// 											key={index}
+	// 											id={index}
+	// 											isSelected={selectedNFTs.some(
+	// 												(selected) => selected.id === nft.id,
+	// 											)}
+	// 											onSelect={() =>
+	// 												handleSelect({
+	// 													address: nftAddress,
+	// 													id: nft.id,
+	// 													poolAddress: nft.poolAddress,
+	// 												})
+	// 											}
+	// 											imageUrl={nft.src}
+	// 											nftId={nft.id}
+	// 											name={nft.name}
+	// 											price={
+	// 												selectedNFTs.length === 0
+	// 													? nft.price
+	// 													: (activeTab === "buy"
+	// 															? buyPrice?.nextPrice
+	// 															: activeTab === "sell"
+	// 															? nextSellPrice
+	// 															: nft.price) || nft.price
+	// 											}
+	// 											chainId={chain}
+	// 										/>
+	// 									);
+	// 								})}
+	// 							</div>
+	// 						) : (
+	// 							<p className="text-xl text-center">No NFTs found!</p>
+	// 						)}
+	// 					</>
+	// 				)}
+
+	// 				{activeTab === "liquidity" &&
+	// 					collectionNfts &&
+	// 					collectionNfts.length > 0 && (
+	// 						<div className={`${group}__liquidity`}>
+	// 							<span>{selectedNFTs.length}</span>
+	// 							<span>
+	// 								nft{selectedNFTs.length > 1 ? "s" : ""} selected
+	// 							</span>
+	// 						</div>
+	// 					)}
+	// 			</section>
+	// 		</div>
+	// 	</section>
+	// );
+
+	function renderNFTs() {
+		if (collectionNfts && collectionNfts.length > 0) {
+			return (
+				<div>
+					{[...collectionNfts].map((nft, index) => {
+						const buyPrice =
+							buyPrices &&
+							buyPrices.find(
+								(price) => price.poolAddress === nft.poolAddress,
+							);
+
+						return (
+							<NFT
+								key={index}
+								id={index}
+								isSelected={selectedNFTs.some(
+									(selected) => selected.id === nft.id,
+								)}
+								onSelect={() =>
+									handleSelect({
+										address: nftAddress,
+										id: nft.id,
+										poolAddress: nft.poolAddress,
+									})
+								}
+								imageUrl={nft.src}
+								nftId={nft.id}
+								name={nft.name}
+								price={
+									selectedNFTs.length === 0
+										? nft.price
+										: activeTab === "buy"
+											? buyPrice?.nextPrice
+											: activeTab === "sell"
+												? nextSellPrice
+												: nft.price || nft.price
+								}
+								chainId={chain}
+							/>
+						);
+					})}
+				</div>
+			);
+		} else {
+			return <p className="text-xl text-center">No NFTs found!</p>;
+		}
+	}
+
+	function renderLiquiditySection() {
+		return (
+			<div className={`${group}__liquidity`}>
+				<span>{selectedNFTs.length}</span>
+				<span>nft{selectedNFTs.length > 1 ? "s" : ""} selected</span>
+			</div>
+		);
+	}
+
+	return (
+		<section className={`${group}`}>
+			<div className={`${group}__wrapper`}>
+				<div className={`${group}__top`}>{content}</div>
+
+				<section className={`${group}__bottom`}>
+					{activeTab === "create" ? (
+						userCollectionAddress !== "" ? (
+							renderNFTs()
+						) : (
+							<p className="text-xl text-center">
+								Select a collection from your wallet to proceed...
+							</p>
+						)
+					) : (
+						renderNFTs()
+					)}
+
+					{activeTab === "liquidity" && renderLiquiditySection()}
+				</section>
+			</div>
+		</section>
+	);
 
 	function ContentWrapper({ children }: { children: ReactNode }) {
 		return <section className={`${group}__right`}>{children}</section>;

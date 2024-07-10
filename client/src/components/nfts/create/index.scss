@@ -64,7 +64,8 @@
                 @include flex($j: space-between);
                 width: 100%;
 
-                >span {
+                >span,
+                >input {
                     @include font($f: clash, $s: xlg, $w: reg);
                 }
 
@@ -85,6 +86,19 @@
                         @include font($f: lufga, $s: lrg, $w: reg);
                         text-transform: capitalize;
                     }
+                }
+            }
+        }
+
+        &+section {
+            div>section {
+                border-radius: 1rem;
+                width: 10.5rem;
+                height: 2.75rem;
+                padding: 0;
+
+                div>*{
+                    @include font($f: clash, $s: xlg, $w: reg);
                 }
             }
         }

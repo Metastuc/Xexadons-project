@@ -28,6 +28,9 @@ type NFTCollection = {
 
 	poolAddress: string;
 	setPoolAddress: Dispatch<SetStateAction<`0x${string}`>>;
+
+	userCollectionAddress: string;
+	setUserCollectionAddress: Dispatch<SetStateAction<string>>;
 };
 
 type NFTPrices = {
@@ -72,6 +75,7 @@ export function NFTContextProvider({ children }: { children: ReactNode }) {
 	const [pools, setPools] = useState<Pool[]>([]);
 	const [buyPrices, setBuyPrices] = useState<BuyPrice[]>([]);
 	const [nextSellPrice, setNextSellPrice] = useState<string>(" ");
+	const [userCollectionAddress, setUserCollectionAddress] = useState<string>("");
 
 	return (
 		<NFTContext.Provider
@@ -93,6 +97,9 @@ export function NFTContextProvider({ children }: { children: ReactNode }) {
 
 				poolAddress,
 				setPoolAddress,
+
+				userCollectionAddress,
+				setUserCollectionAddress,
 
 				pools,
 				setPools,

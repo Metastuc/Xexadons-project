@@ -771,3 +771,4 @@ export const BNB = function (): JSX.Element {
 		</>
 	);
 };
+
