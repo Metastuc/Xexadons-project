@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import { useAccount } from "wagmi";
 
 import { getUserCollections, getUserCollectionsNFTs } from "@/api";
-import { Close, DropDown, ModalSearch, Polygon } from "@/assets";
+import { Close, DropDown, ModalSearch, Polygon, Xexadons } from "@/assets";
 import { NextOptimizedImage } from "@/components/reusable";
 import { ContextWrapper } from "@/hooks";
 import { commonProps, Pool, UserCollection } from "@/types";
@@ -28,7 +28,7 @@ export function Create({ group }: commonProps) {
 
 	const [selectedPool, setSelectedPool] = useState<any | null>(null);
 
-	const [tokenAmount, setTokenAmount] = useState<string>("0.00");
+	const [tokenAmount, setTokenAmount] = useState<string>("");
 
 	const toggleModal = useCallback(() => {
 		setIsModalOpen((prevIsModalOpen) => !prevIsModalOpen);
@@ -39,34 +39,10 @@ export function Create({ group }: commonProps) {
 	} = ContextWrapper();
 
 	function handleTokenAmount(event: ChangeEvent<HTMLInputElement>) {
-		// const inputValue = event.target.value.replace(/\D/g, "");
-		// const numericValue = inputValue === "" ? null : Number(inputValue);
-		// setTokenAmount(numericValue);
-		let inputValue = event.target.value;
-
-		// Allow empty input to clear the field
-		if (inputValue === "") {
-			setTokenAmount("");
-			return;
-		}
-
-		// Validate the input to allow only numbers and up to two decimal places
-		const isValid = /^[0-9]*\.?[0-9]{0,2}$/.test(inputValue);
-
-		if (isValid) {
-			if (inputValue.startsWith(".")) {
-				inputValue = "0" + inputValue; // Ensure input like '.5' is treated as '0.5'
-			}
-
-			// let numericValue = parseFloat(inputValue);
-
-			// // Ensure numericValue does not exceed 100
-			// if (numericValue > 100) {
-			// 	numericValue = 100;
-			// 	setTokenAmount(numericValue.toString());
-			// } else {
-			// 	setTokenAmount(inputValue);
-			// }
+		const value = event.target.value;
+		const validNumberRegex = /^[0-9]*\.?[0-9]*$/;
+		if (validNumberRegex.test(value)) {
+			setTokenAmount(value);
 		}
 	}
 
@@ -286,6 +262,8 @@ function SelectCollectionModal({
 
 								onSelect(result);
 								onClose();
+
+								if (!result) onSelectCollection("");
 							}
 
 							return (
@@ -373,13 +351,17 @@ function PoolSelected({
 
 			{contentWrapper({
 				children: (
-					<div>
+					<div className="flex flex-col items-center justify-center gap-2">
 						{/* eslint-disable-next-line react/no-unescaped-entities */}
 						<p>~you are about to create a new pool by adding token & NFT</p>
 
-						<div>
-							<i></i>
-							<i></i>
+						<div className="relative">
+							<i className="absolute z-10 rounded-full left-1 size-8">
+								<Xexadons />
+							</i>
+							<i className="absolute right-0 rounded-full size-8 top-[0.125rem]">
+								<Polygon />
+							</i>
 						</div>
 
 						<p>
@@ -390,7 +372,7 @@ function PoolSelected({
 							to create pool
 						</p>
 
-						<button>
+						<button className="h-10 w-[8.75rem] bg-[#1B111E] rounded-[1.875rem]">
 							<span>Proceed</span>
 						</button>
 					</div>
