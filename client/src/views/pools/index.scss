@@ -1,0 +1,10 @@
+@use "@/styles/" as *;
+
+.pools {
+	// position: relative;
+	// overflow: hidden;
+	// height: 100vh;
+	// background-color: #1b111e;
+
+	@include debug-dark;
+}

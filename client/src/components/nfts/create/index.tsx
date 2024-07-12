@@ -129,7 +129,7 @@ export function Create({ group }: commonProps) {
 				</div>
 			</div>
 
-			{true ? (
+			{selectedPool ? (
 				<PoolSelected
 					selectedPool={selectedPool}
 					selectedNFTs={selectedNFTs}
