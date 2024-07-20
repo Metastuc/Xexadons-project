@@ -843,7 +843,7 @@ async function getUserPools(address, chain) {
       const sellPrice = await curveContract.getSellAmountSingle(1, reserve0, reserve1, userPools[i]);
       const _sellPrice = Number(ethers.formatEther(sellPrice));
 
-      const feeRef = db.collection('FeesEarned').doc(poolId);
+      const feeRef = db.collection('FeesEarned').doc(userPools[i]);
       const feeDoc = await feeRef.get();
       var feesEarned;
       if (feeDoc.exists) {
