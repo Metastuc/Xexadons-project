@@ -145,6 +145,19 @@ const ABIs = {
       },
       {
         "inputs": [],
+        "name": "feeMultiplier",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
         "name": "reserve0",
         "outputs": [
           {
@@ -738,6 +751,16 @@ app.post("/recordActivity/:poolId", async(req, res) => {
     const nftContract = new ethers.Contract(req.body.address, ABIs.nftABI, provider);
     const itemImage = await nftContract.tokenURI(req.body.item);
 
+    const feeRef = db.collection('FeesEarned').doc(poolId);
+    const feeDoc = await feeRef.get();
+    if (feeDoc.exists) {
+      const fee = feeDoc.data().fee;
+      const newFee = ((req.body.price * feeMultiplier) / 1000) + fee;
+      await feeRef.update({fess: newFee});
+    } else {
+      await feeRef.set(fee);
+    }
+    
     const activity = {
       event: req.body.event,
       item: itemImage,
@@ -820,13 +843,23 @@ async function getUserPools(address, chain) {
       const sellPrice = await curveContract.getSellAmountSingle(1, reserve0, reserve1, userPools[i]);
       const _sellPrice = Number(ethers.formatEther(sellPrice));
 
+      const feeRef = db.collection('FeesEarned').doc(poolId);
+      const feeDoc = await feeRef.get();
+      var feesEarned;
+      if (feeDoc.exists) {
+        feesEarned = feeDoc.data().fee;
+      } else {
+        feesEarned = 0;
+      }
+
       const pool = {
         poolAddress: userPools[i],
         owner: poolOwner,
         buyPrice: _buyPrice,
         sellPrice: _sellPrice,
         nftAmount: _reserve0,
-        tokenAmount: _reserve1
+        tokenAmount: _reserve1,
+        feesEarned: feesEarned
       }
 
       pools.push(pool);
