@@ -1,12 +1,12 @@
 export const metadata = {
-	title: "Nfts",
-	description: "Nfts",
+	title: "Pools",
+	description: "Pools",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
 	return (
 		<main
-			className="nfts"
+			className="pools"
 			data-group="parent"
 			style={{
 				marginTop: "4.5rem",

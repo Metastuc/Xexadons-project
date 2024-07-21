@@ -9,7 +9,7 @@ import { GlassyBackground, renderLeftContent, renderRightContent } from "@/views
 type activeTabProps = Record<string, ReactNode>;
 
 export default function NFTs() {
-	const { activeTab, handleTabClick, tabIsActive } = useTabSwitcher("buy");
+	const { activeTab, handleTabClick, tabIsActive } = useTabSwitcher();
 
 	const activeTabContent: activeTabProps = {
 		buy: (
@@ -36,7 +36,12 @@ export default function NFTs() {
 				activeTab={activeTab}
 			/>
 		),
-		create: <>create</>,
+		create: (
+			<PurchaseNFTRight
+				group="create_right"
+				activeTab={activeTab}
+			/>
+		),
 	};
 
 	function renderTabContent(): ReactNode {

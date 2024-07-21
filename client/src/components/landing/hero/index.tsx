@@ -4,6 +4,7 @@ import Link from "next/link";
 import { JSX } from "react";
 
 import { ArrowDeg45, HeroRightImage } from "@/assets";
+import { ContextWrapper } from "@/hooks";
 import { commonProps } from "@/types";
 
 export function Hero({ group }: commonProps): JSX.Element {
@@ -17,15 +18,19 @@ export function Hero({ group }: commonProps): JSX.Element {
 					className={`${group}__wrapper`}
 					data-group={`wrapper`}
 				>
-					{renderLeftContent({ group })}
-					{renderRightContent({ group })}
+					<RenderLeftContent group={group} />
+					<RenderRightContent group={group} />
 				</div>
 			</section>
 		</>
 	);
 }
 
-function renderLeftContent({ group }: commonProps): JSX.Element {
+function RenderLeftContent({ group }: commonProps): JSX.Element {
+	const {
+		navContext: { setActiveTab },
+	} = ContextWrapper();
+
 	return (
 		<>
 			<div className={`${group}__left`}>
@@ -35,13 +40,16 @@ function renderLeftContent({ group }: commonProps): JSX.Element {
 				</h1>
 
 				<p>
-					Xexadons are sentient dinosaur-like creatures and are part
-					of the society that revealed a formula that can transform
-					time into a resource, known as XEX
+					Xexadons are sentient dinosaur-like creatures and are part of the
+					society that revealed a formula that can transform time into a
+					resource, known as XEX
 				</p>
 
 				<div>
-					<Link href={"/nfts"}>
+					<Link
+						href={"/nfts"}
+						onClick={() => setActiveTab("buy")}
+					>
 						<span>enter app</span>
 						<span>
 							<i>{ArrowDeg45()}</i>
@@ -58,7 +66,7 @@ function renderLeftContent({ group }: commonProps): JSX.Element {
 	);
 }
 
-function renderRightContent({ group }: commonProps): JSX.Element {
+function RenderRightContent({ group }: commonProps): JSX.Element {
 	return (
 		<>
 			<div className={`${group}__right`}>

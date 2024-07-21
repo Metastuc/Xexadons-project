@@ -1,0 +1,17 @@
+@use "@/styles/" as *;
+
+.pools {
+	> div > section {
+		@include flex;
+	}
+
+	&__wrapper {
+		h2 {
+			$size: map-get(
+					$map: $fz,
+					$key: xlg,
+				) + 1.125rem;
+			@include font($f: clash, $s: $size, $w: med);
+		}
+	}
+}

@@ -1,169 +1,207 @@
-@use "@/styles/"as *;
+@use "@/styles/" as *;
 
 .buy_right,
 .sell_right,
 .deposit_right,
-.withdraw_right {
+.withdraw_right,
+.create_right {
+	&__wrapper {
+		@include flex($d: column, $a: flex-start);
+		gap: 2rem;
+	}
 
-    &__wrapper {
-        @include flex($d: column, $a: flex-start);
-        gap: 2rem;
-    }
+	&__top,
+	&__bottom {
+		width: 100%;
+	}
 
-    &__top,
-    &__bottom {
-        width: 100%;
-    }
+	&__top {
+		@include flex($j: space-between);
 
-    &__top {
-        @include flex($j: space-between);
+		h2 {
+			$size: map-get(
+					$map: $fz,
+					$key: xlg,
+				) + 0.25rem;
+			@include font($f: clash, $s: $size, $w: reg);
+			text-transform: capitalize;
+		}
 
-        h2 {
-            $size: map-get($map: $fz, $key: xlg) + .25rem;
-            @include font($f: clash, $s: $size, $w: reg);
-            text-transform: capitalize;
-        }
+		div {
+			@include flex;
+			gap: 0.5rem;
+			height: 2rem;
+			width: 6.5rem;
+			border-radius: 0.75rem;
+			background-color: #78758c;
 
-        div {
-            @include flex;
-            gap: .5rem;
-            height: 2rem;
-            width: 6.5rem;
-            border-radius: .75rem;
-            background-color: #78758c;
+			span {
+				text-transform: capitalize;
+				@include font($f: clash, $s: lrg, $w: reg);
+			}
 
-            span {
-                text-transform: capitalize;
-                @include font($f: clash, $s: lrg, $w: reg);
-            }
+			i {
+				@include equal(1.5rem);
+				@include font($f: clash, $s: sm, $w: reg);
+				background-color: white;
+				border-radius: 50%;
+				color: black;
+				font-style: normal;
+			}
+		}
+	}
 
-            i {
-                @include equal(1.5rem);
-                @include font($f: clash, $s: sm, $w: reg);
-                background-color: white;
-                border-radius: 50%;
-                color: black;
-                font-style: normal;
-            }
-        }
-    }
+	&__bottom {
+		overflow-y: scroll;
+		height: 40rem;
 
-    &__bottom {
-        overflow-y: scroll;
-        height: 40rem;
+		> div:first-of-type {
+			display: grid;
+			grid-template-columns: repeat(3, 1fr);
+			grid-template-rows: auto;
+			gap: 0.5rem 1rem;
+		}
 
-        >div:first-of-type {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            grid-template-rows: auto;
-            gap: .5rem 1rem;
-        }
+		> p {
+			@include font($f: clash, $s: xlg, $w: reg);
+		}
 
-        article {
-            @include flex($d: column, $a: center, $j: space-between);
-            height: 12rem;
-            width: 9.5rem;
-            border-radius: 1rem;
-            border: .0625rem solid #5f576b;
-            padding: .5rem;
+		article {
+			@include flex($d: column, $a: center, $j: space-between);
+			height: 12rem;
+			width: 9.5rem;
+			border-radius: 1rem;
+			border: 0.0625rem solid #5f576b;
+			padding: 0.5rem;
 
-            >span {
-                @include flex;
-                width: 8.5rem;
-                height: 7.75rem;
-                background-color: #5f576b;
-                border-radius: inherit;
-            }
+			> span {
+				@include flex;
+				width: 8.5rem;
+				height: 7.75rem;
+				background-color: #5f576b;
+				border-radius: inherit;
+			}
 
-            section {
-                @include flex($d: column, $a: flex-start);
-                width: 100%;
+			section {
+				@include flex($d: column, $a: flex-start);
+				width: 100%;
 
-                >span {
-                    $size: map-get($map: $fz, $key: xs) - .25rem;
-                    @include font($f: clash, $s: $size, $w: reg);
-                    color: rgba($color: $white-100, $alpha: 70%);
-                }
+				> span {
+					$size: map-get(
+							$map: $fz,
+							$key: xs,
+						) - 0.25rem;
+					@include font($f: clash, $s: $size, $w: reg);
+					color: rgba($color: $white-100, $alpha: 70%);
+				}
 
-                >div {
-                    width: 100%;
+				> div {
+					width: 100%;
 
-                    &:first-of-type {
-                        @include flex($j: flex-start);
-                        gap: .25rem;
+					&:first-of-type {
+						@include flex($j: flex-start);
+						gap: 0.25rem;
 
-                        span {
-                            $size: map-get($map: $fz, $key: xs) - .25rem;
-                            @include font($f: clash, $s: $size, $w: med);
-                            color: rgba($color: $white-100, $alpha: 80%);
-                        }
-                    }
+						span {
+							$size: map-get(
+									$map: $fz,
+									$key: xs,
+								) - 0.25rem;
+							@include font($f: clash, $s: $size, $w: med);
+							color: rgba($color: $white-100, $alpha: 80%);
+						}
+					}
 
-                    &:last-of-type {
-                        @include flex($j: space-between);
+					&:last-of-type {
+						@include flex($j: space-between);
 
-                        i {
-                            @include equal(1rem);
-                        }
+						i {
+							@include equal(1rem);
+						}
 
-                        div {
-                            &:first-of-type {
-                                @include flex;
-                                gap: .25rem;
+						div {
+							&:first-of-type {
+								@include flex;
+								gap: 0.25rem;
 
-                                span {
-                                    $size: map-get($map: $fz, $key: xs) - .25rem;
-                                    @include font($f: clash, $s: $size, $w: med);
-                                    color: rgba($color: $white-100, $alpha: 80%);
-                                }
-                            }
+								span {
+									$size: map-get(
+											$map: $fz,
+											$key: xs,
+										) - 0.25rem;
+									@include font($f: clash, $s: $size, $w: med);
+									color: rgba($color: $white-100, $alpha: 80%);
+								}
+							}
 
-                            &:last-of-type {
-                                @include flex;
-                                @include equal(1rem);
-                                margin-left: auto;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
+							&:last-of-type {
+								@include flex;
+								@include equal(1rem);
+								margin-left: auto;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
 
-    &__liquidity {
-        @include flex($j: flex-start);
-        gap: .25rem;
-        margin-top: .75rem;
+	&__liquidity {
+		@include flex($j: flex-start);
+		gap: 0.25rem;
+		margin-top: 0.75rem;
 
-        span {
-            @include font($f: clash, $s: nrm, $w: reg);
-            text-transform: capitalize;
-            color: rgba($color: $white-100, $alpha: 80%);
-        }
-    }
+		span {
+			@include font($f: clash, $s: nrm, $w: reg);
+			text-transform: capitalize;
+			color: rgba($color: $white-100, $alpha: 80%);
+		}
+	}
 }
 
 .withdraw_right__top {
-    @include flex($d:column, $a: flex-start);
-    gap: 2rem;
+	@include flex($d: column, $a: flex-start);
+	gap: 2rem;
 
-    div {
-        @include flex($j: flex-start);
-        gap: .75rem;
-        width: 100%;
-        background-color: transparent;
-    }
+	div {
+		@include flex($j: flex-start);
+		gap: 0.75rem;
+		width: 100%;
+		background-color: transparent;
+	}
 
-    button {
-        @include flex;
-        background-color: #78758c;
-        width: 6.75rem;
-        height: 1.75rem;
-        border-radius: $radius - .25rem;
+	button {
+		@include flex;
+		background-color: #78758c;
+		width: 6.75rem;
+		height: 1.75rem;
+		border-radius: $radius - 0.25rem;
 
-        span {
-            @include font($f: lufga, $s: sm, $w: reg);
-            color: white;
-        }
-    }
+		span {
+			@include font($f: lufga, $s: sm, $w: reg);
+			color: white;
+		}
+	}
+}
+
+.create_right__top {
+	@include flex($d: column, $a: flex-start);
+	gap: 2rem;
+
+	div {
+		@include flex($j: flex-start);
+		gap: 0.75rem;
+		width: 100%;
+		background-color: transparent;
+	}
+
+	button {
+		background-color: #78758c;
+		border-radius: 1.5rem;
+
+		span {
+			@include font($f: lufga, $s: sm, $w: reg);
+			color: white;
+		}
+	}
 }

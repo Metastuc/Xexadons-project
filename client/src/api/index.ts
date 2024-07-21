@@ -68,16 +68,58 @@ export async function getUserCollections(chainId: number, userAddress: string): 
     }
 }
 
-export async function getUserCollectionsNFTs(chain: number, nftAddress: string, userAddress: `0x${string}`, poolAddress: string, tab: string): Promise<any> {
+export async function getUserCollectionsNFTs(tab: string, chain: number, nftAddress: string, userAddress: `0x${string}`, poolAddress?: string): Promise<any> {
+
+    function setUrlAndParams(tab: string) {
+        switch (tab) {
+            case "sell":
+                return {
+                    url: `${BASE_URL}/getUserCollectionNFTsSell`,
+                    params: { chainId: chain, nftAddress, userAddress }
+                };
+
+            case "liquidity":
+                return {
+                    url: `${BASE_URL}/getUserCollectionNFTsDeposit`,
+                    params: { chainId: chain, nftAddress, userAddress, poolAddress }
+                };
+
+            case "create":
+                return {
+                    url: `${BASE_URL}/getUserCollectionNFTs`,
+                    params: { chainId: chain, nftAddress, userAddress }
+                    // params: { chainId: chain, nftAddress: "0xC616fDfBF0008F82433E287279FC99434A7164f8", userAddress: "0x72De66bFDEf75AE89aD98a52A1524D3C5dB5fB24" }
+                };
+
+            default:
+                return { url: "", params: {} };
+        }
+    }
+
+    const { url, params } = setUrlAndParams(tab);
+
+
     try {
-        RESPONSE = await makeRequest({
-            url: tab === "sell" ? `${BASE_URL}/getUserCollectionNFTsSell` : tab === "liquidity" ? `${BASE_URL}/getUserCollectionNFTsDeposit` : tab === "create" ? `${BASE_URL}/getUserCollectionNFTs` : undefined,
-            params: tab === "liquidity" ? { chainId: chain, nftAddress, userAddress, poolAddress } : { chainId: chain, nftAddress, userAddress }
-        });
+        RESPONSE = await makeRequest({ url, params });
 
         return RESPONSE || [];
     } catch (error) {
         console.error(`Error trying to fetch user collections NFTs: ${error}`);
         throw error;
     }
-} 
+}
+
+export async function getUserPools(chainId: number, userAddress: string): Promise<any> {
+    try {
+        RESPONSE = await makeRequest({
+            url: `${BASE_URL}/getUserPools`,
+            params: { chainId, userAddress }
+            // params: { chainId, userAddress: "0x72De66bFDEf75AE89aD98a52A1524D3C5dB5fB24" }
+        });
+
+        return RESPONSE || [];
+    } catch (error) {
+        console.error(`Error trying to fetch user pools: ${error}`);
+        throw error;
+    }
+}
