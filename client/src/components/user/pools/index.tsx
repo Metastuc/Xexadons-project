@@ -26,6 +26,8 @@ export function UserPools({ chainid, address }: { chainid: number; address: stri
 		},
 	});
 
+	console.log(userPools);
+
 	let children;
 
 	switch (true) {
@@ -81,6 +83,7 @@ function PoolCard({
 	sellPrice,
 	tokenAmount,
 	nftAmount,
+	feesEarned,
 }: any) {
 	const router = useRouter();
 	const {
@@ -149,7 +152,7 @@ function PoolCard({
 								<PoolItem
 									label="Token"
 									hasIcon={true}
-									value={Number(tokenAmount).toFixed(3)}
+									value={Number(tokenAmount)}
 								/>
 							</div>
 						),
@@ -159,7 +162,7 @@ function PoolCard({
 						<PoolItem
 							label="Fees Earned"
 							hasIcon={true}
-							value={85}
+							value={Number(feesEarned)}
 						/>
 					</div>
 
