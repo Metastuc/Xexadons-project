@@ -1,0 +1,21 @@
+@use "@/styles/" as *;
+
+.userNfts {
+
+    &__item {
+        >div {
+            span {
+                $size: map-get($map: $fz, $key: xs) - 0.25rem;
+                @include font($f: clash, $s: xs, $w: reg);
+
+                &:first-of-type {
+                    color: rgba($color: #ffffff, $alpha: .7);
+                }
+
+                &:last-of-type {
+                    color: rgba($color: #ffffff, $alpha: .8);
+                }
+            }
+        }
+    }
+}

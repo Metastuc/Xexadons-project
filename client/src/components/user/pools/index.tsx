@@ -26,8 +26,6 @@ export function UserPools({ chainid, address }: { chainid: number; address: stri
 		},
 	});
 
-	console.log(userPools);
-
 	let children;
 
 	switch (true) {
