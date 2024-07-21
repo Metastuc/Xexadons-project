@@ -1,16 +1,24 @@
 "use client";
+import "./index.scss";
 
 import { usePathname } from "next/navigation";
 import { useAccount } from "wagmi";
 
+import { UserPools } from "@/components";
+
 export function Pools() {
 	const pathname = usePathname();
-	const { address } = useAccount();
+	const { address, isConnecting, chainId } = useAccount();
 
 	let children;
 	switch (pathname) {
 		case `/${address}/pools`:
-			children = <UserPools />;
+			children = (
+				<UserPools
+					chainid={chainId!}
+					address={address!}
+				/>
+			);
 			break;
 
 		case `/${address}/nfts`:
@@ -18,20 +26,42 @@ export function Pools() {
 			break;
 
 		default:
-			children = <Loading />;
+			children = (
+				<Loading
+					address={address}
+					isConnecting={isConnecting}
+				/>
+			);
 			break;
 	}
-	return <>{children}</>;
+	return (
+		<section className="relative flex items-center justify-center size-full">
+			{children}
+		</section>
+	);
 }
 
 function UserNfts() {
 	return <>sad</>;
 }
 
-function UserPools() {
-	return <>happy</>;
-}
+function Loading({
+	address,
+	isConnecting,
+}: {
+	address: string | undefined;
+	isConnecting: boolean;
+}) {
+	let children;
+	switch (true) {
+		case isConnecting:
+			children = "Loading...";
+			break;
 
-function Loading() {
-	return <>Loading...</>;
+		case address === undefined:
+			children = "Please connect your wallet";
+			break;
+	}
+
+	return <>{children}</>;
 }

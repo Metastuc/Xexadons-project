@@ -1,14 +1,15 @@
 "use client";
 
-import { useState } from "react";
+
+import { ContextWrapper } from "./useContextWrapper";
 
 /**
  * Custom hook to manage tab switching functionality.
  * @param {string} initialTab - The initial active tab.
  * @returns {{ activeTab: string, handleTabClick: (tab: string) => void, tabIsActive: (tab: string) => string }}
  */
-export const useTabSwitcher = function (initialTab: string) {
-	const [activeTab, setActiveTab] = useState(initialTab);
+export const useTabSwitcher = function () {
+	const { navContext: { setActiveTab, activeTab } } = ContextWrapper();
 
 	// Function to handle tab change
 	const handleTabClick = (tab: string) => {

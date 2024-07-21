@@ -97,6 +97,10 @@ function HandleEnterAppButtonUI({
 	group,
 	router,
 }: handleEnterAppButtonUIProps) {
+	const {
+		navContext: { setActiveTab },
+	} = ContextWrapper();
+
 	switch (pathname === "/") {
 		case true:
 			return (
@@ -104,7 +108,10 @@ function HandleEnterAppButtonUI({
 					<RightNavigationButton
 						group={group}
 						content={"enter app"}
-						clickAction={() => router.push("/nfts")}
+						clickAction={() => {
+							router.push("/nfts");
+							setActiveTab("buy");
+						}}
 					/>
 				</>
 			);

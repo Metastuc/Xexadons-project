@@ -1,0 +1,64 @@
+@use "@/styles" as *;
+
+.pools {
+    &__wrapper {
+        >p {
+            @include font($f: lufga, $s: nrm, $w: reg);
+        }
+
+        >div:last-of-type {
+            p {
+                $size: map-get($map: $fz, $key: xs) - .125rem;
+                @include font($f: clash, $s: $size, $w: reg);
+                color: rgba($color: #ffffff, $alpha: 0.6);
+            }
+        }
+    }
+
+    &__item__right {
+        >section {
+            padding: 0;
+            border-radius: 0.25rem;
+        }
+    }
+
+    &__item__wrapper {
+        >section {
+            border-radius: 2rem;
+
+            p {
+                @include font($f: clash, $s: xs, $w: reg);
+                color: rgba($color: #ffffff, $alpha: 0.6);
+            }
+        }
+    }
+
+    &__actions {
+        span {
+            @include font($f: clash, $s: nrm, $w: reg);
+            color: rgba($color: #ffffff, $alpha: 0.8);
+        }
+    }
+
+    &__header {
+        >button {
+            span {
+                @include font($f: clash, $s: nrm, $w: reg);
+            }
+        }
+
+        >div {
+            span {
+                @include font($f: lufga, $s: nrm, $w: reg);
+                color: rgba($color: #ffffff, $alpha: 0.6);
+            }
+        }
+    }
+
+    &__item {
+        >span:nth-of-type(1) {
+            @include font($f: clash, $s: nrm, $w: reg);
+            color: rgba($color: #ffffff, $alpha: 0.8);
+        }
+    }
+}

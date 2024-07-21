@@ -87,8 +87,8 @@ export async function getUserCollectionsNFTs(tab: string, chain: number, nftAddr
             case "create":
                 return {
                     url: `${BASE_URL}/getUserCollectionNFTs`,
-                    // params: { chainId: chain, nftAddress, userAddress }
-                    params: { chainId: chain, nftAddress: "0xC616fDfBF0008F82433E287279FC99434A7164f8", userAddress: "0x72De66bFDEf75AE89aD98a52A1524D3C5dB5fB24" }
+                    params: { chainId: chain, nftAddress, userAddress }
+                    // params: { chainId: chain, nftAddress: "0xC616fDfBF0008F82433E287279FC99434A7164f8", userAddress: "0x72De66bFDEf75AE89aD98a52A1524D3C5dB5fB24" }
                 };
 
             default:
@@ -107,4 +107,19 @@ export async function getUserCollectionsNFTs(tab: string, chain: number, nftAddr
         console.error(`Error trying to fetch user collections NFTs: ${error}`);
         throw error;
     }
-} 
+}
+
+export async function getUserPools(chainId: number, userAddress: string): Promise<any> {
+    try {
+        RESPONSE = await makeRequest({
+            url: `${BASE_URL}/getUserPools`,
+            params: { chainId, userAddress }
+            // params: { chainId, userAddress: "0x72De66bFDEf75AE89aD98a52A1524D3C5dB5fB24" }
+        });
+
+        return RESPONSE || [];
+    } catch (error) {
+        console.error(`Error trying to fetch user pools: ${error}`);
+        throw error;
+    }
+}

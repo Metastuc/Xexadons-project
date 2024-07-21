@@ -1,10 +1,17 @@
 @use "@/styles/" as *;
 
 .pools {
-	// position: relative;
-	// overflow: hidden;
-	// height: 100vh;
-	// background-color: #1b111e;
+	> div > section {
+		@include flex;
+	}
 
-	@include debug-dark;
+	&__wrapper {
+		h2 {
+			$size: map-get(
+					$map: $fz,
+					$key: xlg,
+				) + 1.125rem;
+			@include font($f: clash, $s: $size, $w: med);
+		}
+	}
 }

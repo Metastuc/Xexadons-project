@@ -56,6 +56,7 @@ export function RenderConnectedUI({ account, group }: renderConnectedUIProps) {
 					<NextOptimizedImage
 						src="/pf-icon.png"
 						alt="profile-icon"
+						group="mix-blend-luminosity"
 					/>
 				</span>
 
