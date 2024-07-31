@@ -693,13 +693,29 @@ app.get("/getCollection", async(req, res) => {
       const items = response.data.nfts;
 
       const pairContract = new ethers.Contract(poolAddresses[i], ABIs.pairABI, provider);
+
+      const poolOwner = await pairContract.owner();
       const reserve0 = await pairContract.reserve0();
+      const _reserve0 = Number(reserve0);
       const reserve1 = await pairContract.reserve1();
+      const _reserve1 = Number(ethers.formatEther(reserve1));
+
+      const curveContract = new ethers.Contract(deploymentAddresses.curve[chainId], ABIs.curveABI, provider);
+
+      // use function that returns only one uint
+      const buyPrice = await curveContract.getBuyPriceSingle(1, reserve0, reserve1, poolAddresses[i]);
+      const _buyPrice = Number(ethers.formatEther(buyPrice));
+      const sellPrice = await curveContract.getSellAmountSingle(1, reserve0, reserve1, poolAddresses[i]);
+      const _sellPrice = Number(ethers.formatEther(sellPrice));
 
       const pool = {
-        poolAddress: poolAddresses[i].toString(),
-        reserve0: Number(reserve0),
-        reserve1: Number(reserve1)
+        poolAddress: poolAddresses[i],
+        owner: poolOwner,
+        buyPrice: _buyPrice,
+        sellPrice: _sellPrice,
+        nftAmount: _reserve0,
+        tokenAmount: _reserve1,
+        feesEarned: feesEarned
       }
 
       pools.push(pool);
