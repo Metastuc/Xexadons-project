@@ -708,9 +708,14 @@ app.get("/getCollection", async(req, res) => {
       const sellPrice = await curveContract.getSellAmountSingle(1, reserve0, reserve1, poolAddresses[i]);
       const _sellPrice = Number(ethers.formatEther(sellPrice));
 
-      const poolBalance = await provider.getBalance(poolAddresses[i]);
-      const _feesEarned = poolBalance - reserve1;
-      const feesEarned = Number(_feesEarned);
+      const feeRef = db.collection('FeesEarned').doc(poolAddresses[i]);
+      const feeDoc = await feeRef.get();
+      var feesEarned;
+      if (feeDoc.exists) {
+        feesEarned = feeDoc.data().fee;
+      } else {
+        feesEarned = 0;
+      }
 
       const pool = {
         poolAddress: poolAddresses[i],
