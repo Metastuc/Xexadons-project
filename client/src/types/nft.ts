@@ -5,9 +5,13 @@ export interface NFTprops {
 }
 
 export interface Pool {
-    poolAddress: string;
-    reserve0: number;
-    reserve1: number;
+    poolAddress: string,
+    owner: string,
+    buyPrice: number,
+    sellPrice: number,
+    nftAmount: number,
+    tokenAmount: number,
+    feesEarned: number
 };
 
 export interface BuyPrice {
