@@ -75,7 +75,7 @@ export function UserPools({ chainid, address }: { chainid: number; address: stri
 }
 
 function PoolCard({
-	// poolAddress,
+	poolAddress,
 	owner,
 	buyPrice,
 	sellPrice,
@@ -119,10 +119,15 @@ function PoolCard({
 
 			<div className="px-8 py-6 space-y-6">
 				<div className="flex items-center justify-start gap-2 pools__actions">
-					<span className="h-6 bg-[rgb(255,255,255,0.35)] rounded-3xl px-4">
+					<span className="h-6 bg-[rgb(255,255,255,0.35)] rounded-3xl px-4 cursor-pointer">
 						Pool info
 					</span>
-					<span className="h-6 bg-[rgb(255,255,255,0.35)] rounded-3xl px-2">
+					<span
+						className="h-6 bg-[rgb(255,255,255,0.35)] rounded-3xl px-2 cursor-pointer"
+						onClick={() => {
+							alert(`clicked pools/${poolAddress}`);
+						}}
+					>
 						<PoolTorch />
 					</span>
 				</div>
@@ -203,7 +208,7 @@ function PoolItem({
 						<div className="flex items-center justify-center gap-1 px-1">
 							<span className="text-center">{value}</span>
 							{hasIcon && (
-								<i className="size-5">
+								<i className="pt-0.5 size-5">
 									<Polygon />
 								</i>
 							)}

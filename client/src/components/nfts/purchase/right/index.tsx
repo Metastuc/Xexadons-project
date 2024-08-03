@@ -2,6 +2,7 @@ import "./index.scss";
 
 import { useQuery } from "@tanstack/react-query";
 import { formatEther } from "ethers";
+import { useRouter } from "next/navigation";
 import { JSX, ReactNode, useCallback, useEffect, useState } from "react";
 import { useAccount } from "wagmi";
 
@@ -21,6 +22,7 @@ interface PoolPrice {
 }
 
 export function PurchaseNFTRight({ group, activeTab }: PurchaseNFTRightProps) {
+	const router = useRouter();
 	const {
 		nftContext: {
 			selectedNFTs,
@@ -300,7 +302,12 @@ export function PurchaseNFTRight({ group, activeTab }: PurchaseNFTRightProps) {
 						<>
 							<h2>select nfts</h2>
 
-							<div>
+							<div
+								className="cursor-pointer"
+								onClick={() => {
+									router.push("/pools");
+								}}
+							>
 								<span>pools</span>
 								<i>{pools && pools.length}</i>
 							</div>

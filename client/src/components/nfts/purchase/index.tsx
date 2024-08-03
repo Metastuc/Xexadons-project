@@ -60,7 +60,6 @@ function renderContent({ group, activeTab }: purchaseNftProps) {
 
 			<>
 				{contentWrapper({
-					// children: renderBottomContent({ group, activeTab }),
 					children: (
 						<RenderBottomContent
 							group={group}
