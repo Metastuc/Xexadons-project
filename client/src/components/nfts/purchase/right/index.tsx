@@ -158,7 +158,7 @@ export function PurchaseNFTRight({ group, activeTab }: PurchaseNFTRightProps) {
 				}
 				const currency: number = getCurrency(chain);
 				console.log(pool, pool.tokenAmount, C.length);
-				const next_price: string = formatEther(BigInt(_next_price)) + currency;
+				const next_price: string = _next_price.toString() + currency;
 
 				acc.push({
 					poolAddress: pool.poolAddress,
@@ -167,8 +167,8 @@ export function PurchaseNFTRight({ group, activeTab }: PurchaseNFTRightProps) {
 
 				return acc;
 			}, []);
-
-		const _newTotalAmountIn: string = formatEther(BigInt(newTotalAmountIn || 0));
+			console.log(newTotalAmountIn);
+		const _newTotalAmountIn: string = newTotalAmountIn.toString();
 		const coinPrice: number = Number(await getCoinPrice(chain));
 		const _dollarAmount: number = coinPrice * Number(_newTotalAmountIn);
 
