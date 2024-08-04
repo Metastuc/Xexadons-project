@@ -134,7 +134,7 @@ export default function Page() {
 	);
 }
 
-export function PoolCard({
+function PoolCard({
 	poolAddress,
 	owner,
 	buyPrice,
