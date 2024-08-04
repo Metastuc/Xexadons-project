@@ -132,10 +132,12 @@ export function PurchaseNFTRight({ group, activeTab }: PurchaseNFTRightProps) {
 				const C = selectedNFTs.filter(
 					(nft) => nft.poolAddress === pool.poolAddress,
 				);
-				if (C.length === pool.reserve0) {
-					return sum + pool.reserve1 * C.length;
+				if (C.length === pool.nftAmount) {
+					return sum + pool.tokenAmount * C.length;
 				} else {
-					return sum + (pool.reserve1 * C.length) / (pool.reserve0 - C.length);
+					return (
+						sum + (pool.tokenAmount * C.length) / (pool.nftAmount - C.length)
+					);
 				}
 			}, 0);
 
@@ -146,18 +148,20 @@ export function PurchaseNFTRight({ group, activeTab }: PurchaseNFTRightProps) {
 					(nft) => nft.poolAddress === pool.poolAddress,
 				);
 				let _next_price = 0;
-				if (pool.reserve0 > C.length + 1) {
+				if (pool.nftAmount > C.length + 1) {
 					_next_price =
 						Math.ceil(
-							((pool.reserve1 * (C.length + 1)) /
-								(pool.reserve0 - (C.length + 1))) *
+							((pool.tokenAmount * (C.length + 1)) /
+								(pool.nftAmount - (C.length + 1))) *
 								100,
 						) / 100;
 				} else {
-					_next_price = Math.ceil(pool.reserve1 * (C.length + 1) * 100) / 100;
+					_next_price =
+						Math.ceil(pool.tokenAmount * (C.length + 1) * 100) / 100;
 				}
 				const currency: number = getCurrency(chain);
-				const next_price: string = formatEther(BigInt(_next_price)) + currency;
+				console.log(pool, pool.tokenAmount, C.length);
+				const next_price: string = _next_price.toString() + currency;
 
 				acc.push({
 					poolAddress: pool.poolAddress,
@@ -166,8 +170,8 @@ export function PurchaseNFTRight({ group, activeTab }: PurchaseNFTRightProps) {
 
 				return acc;
 			}, []);
-
-		const _newTotalAmountIn: string = formatEther(BigInt(newTotalAmountIn || 0));
+		console.log(newTotalAmountIn);
+		const _newTotalAmountIn: string = newTotalAmountIn.toString();
 		const coinPrice: number = Number(await getCoinPrice(chain));
 		const _dollarAmount: number = coinPrice * Number(_newTotalAmountIn);
 

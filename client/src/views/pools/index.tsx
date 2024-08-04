@@ -4,7 +4,7 @@ import "./index.scss";
 import { usePathname } from "next/navigation";
 import { useAccount } from "wagmi";
 
-import { UserPools } from "@/components";
+import { UserNfts, UserPools } from "@/components";
 
 export function Pools() {
 	const pathname = usePathname();
@@ -22,7 +22,12 @@ export function Pools() {
 			break;
 
 		case `/${address}/nfts`:
-			children = <UserNfts />;
+			children = (
+				<UserNfts
+					chainid={chainId!}
+					address={address!}
+				/>
+			);
 			break;
 
 		default:
@@ -39,10 +44,6 @@ export function Pools() {
 			{children}
 		</section>
 	);
-}
-
-function UserNfts() {
-	return <>sad</>;
 }
 
 function Loading({

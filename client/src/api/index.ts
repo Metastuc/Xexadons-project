@@ -32,13 +32,7 @@ async function makeRequest({ url = "", method = 'GET', params = {}, headers = {}
 };
 
 export async function getNFTCollections(chain: number, address: string): Promise<any> {
-    // URL = `${BASE_URL}getCollection?chainId=${chain}&collectionAddress=${address}`;
-
     try {
-        // RESPONSE = await axios.get(URL);
-        // console.log(RESPONSE.data);
-        // return RESPONSE.data;
-
         RESPONSE = await makeRequest({
             url: `${BASE_URL}/getCollection`,
             params: { chainId: chain, collectionAddress: address }
@@ -56,7 +50,6 @@ export async function getUserCollections(chainId: number, userAddress: string): 
         RESPONSE = await makeRequest(
             {
                 url: `${BASE_URL}/getUserCollections`,
-                // params: { chainId: 97, userAddress: "0x72De66bFDEf75AE89aD98a52A1524D3C5dB5fB24" }
                 params: { chainId, userAddress }
             }
         );
@@ -88,7 +81,6 @@ export async function getUserCollectionsNFTs(tab: string, chain: number, nftAddr
                 return {
                     url: `${BASE_URL}/getUserCollectionNFTs`,
                     params: { chainId: chain, nftAddress, userAddress }
-                    // params: { chainId: chain, nftAddress: "0xC616fDfBF0008F82433E287279FC99434A7164f8", userAddress: "0x72De66bFDEf75AE89aD98a52A1524D3C5dB5fB24" }
                 };
 
             default:
@@ -114,12 +106,25 @@ export async function getUserPools(chainId: number, userAddress: string): Promis
         RESPONSE = await makeRequest({
             url: `${BASE_URL}/getUserPools`,
             params: { chainId, userAddress }
-            // params: { chainId, userAddress: "0x72De66bFDEf75AE89aD98a52A1524D3C5dB5fB24" }
         });
 
         return RESPONSE || [];
     } catch (error) {
         console.error(`Error trying to fetch user pools: ${error}`);
+        throw error;
+    }
+}
+
+export async function getPoolActivity(poolId: string): Promise<any> {
+    try {
+        RESPONSE = await makeRequest({
+            url: `${BASE_URL}/getPoolActivity`,
+            params: { poolId }
+        });
+
+        return RESPONSE || [];
+    } catch (error) {
+        console.error(`Error trying to fetch pool activity: ${error}`);
         throw error;
     }
 }

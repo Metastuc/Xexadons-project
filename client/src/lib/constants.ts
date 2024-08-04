@@ -20,5 +20,9 @@ export const DEPLOYMENT_ADDRESSES = {
 	xexadon: {
 		80002: "0xC616fDfBF0008F82433E287279FC99434A7164f8",
 		97: "0x8E38c348f27C451996735a48766F705495D36a9b"
-	}
+	} as DeploymentAddresses
 };
+
+interface DeploymentAddresses {
+    [key: string]: string;
+}
