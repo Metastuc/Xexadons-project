@@ -786,7 +786,7 @@ app.post("/recordActivity/:poolId", async(req, res) => {
       await feeRef.set(fee);
     }
     
-    const price = (roundDownToTwoDecimals(Number(ethers.formatEther(BigInt(req.body.price)))));
+    const price = (roundDownToTwoDecimals(req.body.price)) + currencies[req.body.chainId];
     const activity = {
       event: req.body.event,
       item: itemImage,
