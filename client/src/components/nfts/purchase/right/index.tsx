@@ -2,6 +2,7 @@ import "./index.scss";
 
 import { useQuery } from "@tanstack/react-query";
 import { formatEther } from "ethers";
+import { useRouter } from "next/navigation";
 import { JSX, ReactNode, useCallback, useEffect, useState } from "react";
 import { useAccount } from "wagmi";
 
@@ -45,6 +46,7 @@ export function PurchaseNFTRight({ group, activeTab }: PurchaseNFTRightProps) {
 		},
 	} = ContextWrapper();
 
+	const router = useRouter();
 	const { chainId, address } = useAccount();
 	const chain: number = chainId === undefined ? 80002 : chainId;
 	const [currentUserCollectionAddress, setCurrentUserCollectionAddress] =
@@ -68,7 +70,9 @@ export function PurchaseNFTRight({ group, activeTab }: PurchaseNFTRightProps) {
 		),
 	});
 
-	!!data && (setPools(data.pools), setCollectionNfts(data.NFTs));
+	useEffect(() => {
+		data && (setPools(data.pools), setCollectionNfts(data.NFTs));
+	}, [data, setPools, setCollectionNfts]);
 
 	function getQueryFunction(
 		activeTab: string,
@@ -160,7 +164,6 @@ export function PurchaseNFTRight({ group, activeTab }: PurchaseNFTRightProps) {
 						Math.ceil(pool.tokenAmount * (C.length + 1) * 100) / 100;
 				}
 				const currency: number = getCurrency(chain);
-				console.log(pool, pool.tokenAmount, C.length);
 				const next_price: string = _next_price.toString() + currency;
 
 				acc.push({
@@ -170,8 +173,8 @@ export function PurchaseNFTRight({ group, activeTab }: PurchaseNFTRightProps) {
 
 				return acc;
 			}, []);
-		console.log(newTotalAmountIn);
-		const _newTotalAmountIn: string = newTotalAmountIn.toString();
+		const _newTotalAmountIn: string =
+			newTotalAmountIn !== undefined ? newTotalAmountIn.toString() : "";
 		const coinPrice: number = Number(await getCoinPrice(chain));
 		const _dollarAmount: number = coinPrice * Number(_newTotalAmountIn);
 
@@ -304,7 +307,12 @@ export function PurchaseNFTRight({ group, activeTab }: PurchaseNFTRightProps) {
 						<>
 							<h2>select nfts</h2>
 
-							<div>
+							<div
+								className="cursor-pointer"
+								onClick={() => {
+									router.push("/pools");
+								}}
+							>
 								<span>pools</span>
 								<i>{pools && pools.length}</i>
 							</div>

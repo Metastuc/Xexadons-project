@@ -7,7 +7,7 @@ export const NAVIGATION_LINKS: navigationLink[] = [
 	},
 	{
 		title: "discover",
-		url: "/"
+		url: "/nfts"
 	},
 	{
 		title: "collections",
