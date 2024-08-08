@@ -125,7 +125,7 @@ function PoolCard({
 					<span
 						className="h-6 bg-[rgb(255,255,255,0.35)] rounded-3xl px-2 cursor-pointer"
 						onClick={() => {
-							alert(`clicked pools/${poolAddress}`);
+							router.push(`/pools/${poolAddress}`);
 						}}
 					>
 						<PoolTorch />
