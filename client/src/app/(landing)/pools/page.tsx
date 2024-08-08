@@ -19,6 +19,7 @@ export default function Page() {
 	} = ContextWrapper();
 	const router = useRouter();
 	const { chainId } = useAccount();
+	const chain: number = chainId === undefined ? 80002 : chainId;
 
 	const {
 		data: allPools,
@@ -26,10 +27,9 @@ export default function Page() {
 		isError,
 		error,
 	} = useQuery({
-		queryKey: ["allPools", nftAddress, chainId],
+		queryKey: ["allPools", nftAddress, chain],
 		queryFn: async () => {
-			if (typeof chainId === "undefined") throw new Error("chainId is not defined");
-			const response = await getNFTCollections(chainId, nftAddress);
+			const response = await getNFTCollections(chain, nftAddress);
 			return response;
 		},
 	});
@@ -142,6 +142,8 @@ function PoolCard({
 	tokenAmount,
 	nftAmount,
 }: any) {
+	const router = useRouter();
+
 	return (
 		<div className="w-[28.5rem] h-[34.5rem] border border-[#797979] rounded-3xl bg-[#1a111f]">
 			<div className="flex items-center justify-between p-5 border-b border-b-[rgb(255,255,255,0.25)] pools__header">
@@ -166,7 +168,7 @@ function PoolCard({
 					<span
 						className="h-6 bg-[rgb(255,255,255,0.35)] rounded-3xl px-2 cursor-pointer"
 						onClick={() => {
-							alert(`clicked pools/${poolAddress}`);
+							router.push(`/pools/${poolAddress}`);
 						}}
 					>
 						<PoolTorch />
