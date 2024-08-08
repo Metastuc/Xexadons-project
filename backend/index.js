@@ -786,10 +786,11 @@ app.post("/recordActivity/:poolId", async(req, res) => {
       await feeRef.set(fee);
     }
     
+    const price = (roundDownToTwoDecimals(req.body.price)) + currencies[req.body.chainId];
     const activity = {
       event: req.body.event,
       item: itemImage,
-      price: req.body.price,
+      price: price,
       from: req.body.from,
       to: req.body.to,
       time: new Date().toISOString(),
