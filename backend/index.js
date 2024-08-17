@@ -358,6 +358,12 @@ app.use(cors({
 
 app.use(express.json());
 
+// Error-handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ message: 'Internal Server Error', error: err.message });
+});
+
 const startServer = async () => {
   await Moralis.start({
     apiKey: moralisApiKey,
@@ -774,15 +780,19 @@ app.post("/recordActivity/:poolId", async(req, res) => {
     const link = explorerUrls[req.body.chainId] + req.body.hash;
     const provider = new ethers.JsonRpcProvider(rpcUrls[req.body.chainId]);
     const nftContract = new ethers.Contract(req.body.address, ABIs.nftABI, provider);
+    const poolContract = new ethers.Contract(poolId, ABIs.pairABI, provider);
     const itemImage = await nftContract.tokenURI(req.body.item);
 
+    const _feeMultiplier = await poolContract.feeMultiplier();
+    const feeMultiplier = Number(_feeMultiplier);
     const feeRef = db.collection('FeesEarned').doc(poolId);
     const feeDoc = await feeRef.get();
     if (feeDoc.exists) {
-      const fee = feeDoc.data().fee;
-      const newFee = ((req.body.price * feeMultiplier) / 1000) + fee;
-      await feeRef.update({fess: newFee});
+      const accumulatedFee = feeDoc.data().fee;
+      const newFee = ((req.body.price * feeMultiplier) / 1000) + accumulatedFee;
+      await feeRef.update({fees: newFee});
     } else {
+      const fee = (req.body.price * feeMultiplier) / 1000;
       await feeRef.set(fee);
     }
     
@@ -841,6 +851,58 @@ app.get("/getUserPools", async(req, res) => {
   }
 })
 
+app.post("/recordCollection", async(req, res) => {
+  const collectionId = req.query.collectionId;
+  const chainId = req.query.chainId;
+  try { 
+    const chain = chainNames[chainId];
+    const collectionsRef = db.collection('Collections');
+    const options = {
+      method: 'GET',
+      url: `https://api.simplehash.com/api/v0/nfts/collections/${chain}/${collectionId}?limit=1`,
+      headers: {
+        'Authorization': 'Bearer ' + simpleHashKey,
+        accept: 'application/json',
+        'X-API-KEY': simpleHashKey
+      }
+    };
+    const response = await axios(options);
+    const imageUrl = response.data.collections[0].image_url;
+    const name = response.data.collections[0].name;
+    const collection = {
+      collectionAddress: collectionId,
+      collectionImage: imageUrl,
+      collectionName: name
+    }
+    await collectionsRef.add(collection);
+    res.status(200).json({ response: "successful"});
+  } catch (error) {
+    console.log(error);
+    res.status(500);
+    res.json({ error: error.message });
+  }
+})
+
+app.get("/getAllCollections", async (req, res, next) => {
+  try {
+    const collectionsRef = db.collection('Collections');
+    const snapshot = await collectionsRef.get();
+
+    if (snapshot.empty) {
+      return res.status(404).json({ message: 'No collections found.' });
+    }
+
+    const collections = [];
+    snapshot.forEach(doc => {
+      collections.push(doc.data());
+    });
+
+    res.status(200).json(collections);
+  } catch (error) {
+    next(error);
+  }
+});
+
 async function getUserPools(address, chain) {
   try {
     const provider = new ethers.JsonRpcProvider(rpcUrls[chain]);
@@ -873,9 +935,10 @@ async function getUserPools(address, chain) {
       const feeDoc = await feeRef.get();
       var feesEarned;
       if (feeDoc.exists) {
-        feesEarned = feeDoc.data().fee;
+        const _feesEarned = feeDoc.data().fee;
+        feesEarned = (roundDownToTwoDecimals(_feesEarned)) + currencies[chain];
       } else {
-        feesEarned = 0;
+        feesEarned = 0 + currencies[chain];
       }
 
       const pool = {
