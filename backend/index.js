@@ -448,8 +448,7 @@ app.get("/getUserCollectionNFTsSell", async(req, res) => {
 
   const nftContract = new ethers.Contract(nftAddress, ABIs.nftABI, provider);
   const nftName = await nftContract.name();
-  const icon = await nftContract.tokenURI(0);
-  console.log(nftName);
+  const icon = await getCollectionImage(chainId, nftAddress);
 
   var userCollectionNFTs = [];
   const options = {
@@ -516,7 +515,7 @@ app.get("/getUserCollectionNFTsDeposit", async(req, res) => {
 
   const nftContract = new ethers.Contract(nftAddress, ABIs.nftABI, provider);
   const nftName = await nftContract.name();
-  const icon = await nftContract.tokenURI(0);
+  const icon = await getCollectionImage(chainId, nftAddress);
 
   var userCollectionNFTs = [];
   const options = {
@@ -567,7 +566,7 @@ app.get("/getPoolNFTs", async(req, res) => {
 
   const nftContract = new ethers.Contract(nftAddress, ABIs.nftABI, provider);
   const nftName = await nftContract.name();
-  const icon = await nftContract.tokenURI(0);
+  const icon = await getCollectionImage(chainId, nftAddress);
 
   const pairContract = new ethers.Contract(poolAddress, ABIs.pairABI, provider);
   const reserve1 = await pairContract.reserve1();
@@ -672,8 +671,7 @@ app.get("/getCollection", async(req, res) => {
   const factoryAddress = deploymentAddresses.factory[chainId];
   const provider = new ethers.JsonRpcProvider(rpcUrls[chainId]);
 
-  const nftContract = new ethers.Contract(collectionAddress, ABIs.nftABI, provider);
-  const icon = await nftContract.tokenURI(0);
+  const icon = await getCollectionImage(chainId, collectionAddress);
 
   var pools = [];
   var poolAddresses;
@@ -779,9 +777,8 @@ app.post("/recordActivity/:poolId", async(req, res) => {
   try {
     const link = explorerUrls[req.body.chainId] + req.body.hash;
     const provider = new ethers.JsonRpcProvider(rpcUrls[req.body.chainId]);
-    const nftContract = new ethers.Contract(req.body.address, ABIs.nftABI, provider);
     const poolContract = new ethers.Contract(poolId, ABIs.pairABI, provider);
-    const itemImage = await nftContract.tokenURI(req.body.item);
+    const itemImage = await getNFTImage(req.body.chainId, req.body.address, req.body.item);
 
     const _feeMultiplier = await poolContract.feeMultiplier();
     const feeMultiplier = Number(_feeMultiplier);
@@ -1041,9 +1038,8 @@ async function getUserCollections(address, chainId) {
       const _collectionAddress = items[i].collection_details.top_contracts[0];
       const parts = _collectionAddress.split('.');
       const collectionAddress = parts[1];
-      const nftContract = new ethers.Contract(collectionAddress, ABIs.nftABI, provider);
       const name = items[i].collection_details.name;
-      const image = await nftContract.tokenURI(0);
+      const image = await getCollectionImage(chainId, collectionAddress);
       const nft = {
         address: collectionAddress,
         name: name,
@@ -1220,6 +1216,46 @@ function roundDownToTwoDecimals(number) {
   const shiftedNumber = Math.ceil(number * 100);
   const roundedNumber = shiftedNumber / 100;
   return roundedNumber;
+}
+
+async function getCollectionImage(chainId, collectionAddress) {
+  try {
+    const options = {
+      method: 'GET',
+      url: `https://api.simplehash.com/api/v0/nfts/collections/${chainId}/${collectionAddress}?limit=1`,
+      headers: {
+        'Authorization': 'Bearer ' + simpleHashKey,
+        accept: 'application/json',
+        'X-API-KEY': simpleHashKey
+      }
+    };
+    const response = await axios(options);
+    const imageUrl = response.data.collections[0].image_url;
+    return imageUrl;
+  } catch (error) {
+    console.log(error);
+    throw new Error(error.message);
+  }
+}
+
+async function getNFTImage(chainId, collectionAddress, nftId) {
+  try {
+    const options = {
+      method: 'GET',
+      url: `https://api.simplehash.com/api/v0/nfts/${chainId}/${collectionAddress}/${nftId}`,
+      headers: {
+        'Authorization': 'Bearer ' + simpleHashKey,
+        accept: 'application/json',
+        'X-API-KEY': simpleHashKey
+      }
+    };
+    const response = await axios(options);
+    const imageUrl = response.data.image_url;
+    return imageUrl;
+  } catch (error) {
+    console.log(error);
+    throw new Error(error.message);
+  }
 }
 
 startServer();
