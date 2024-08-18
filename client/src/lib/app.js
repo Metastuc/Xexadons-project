@@ -425,6 +425,19 @@ export const createPool = async (ids, ethAmount, nftAddress, chainId, signer) =>
 		const pairContract = new ethers.Contract(pairAddress, pairABI, signer);
 		const addLiqTx = await pairContract.addLiquidity(ids, userAddress, { value: ethLiq });
 		await addLiqTx.wait();
+		const recordResponse = await fetch(`${baseAPIURL}recordCollection?collectionId=${nftAddress}&chainId=${chainId}`, {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify(reqBody),
+		});
+
+		if (!recordResponse.ok) {
+			throw new Error("Failed to record collection");
+		} else {
+			console.log("collection recorded successfully");
+		}
 		console.log("Liquidity added");
 	} catch (error) {
 		console.error("An error occurred while creating the pool:", error);
@@ -520,7 +533,7 @@ export const buyNFT = async (nfts, chainId, signer) => {
 
 export const getCollections = async (chainId) => {
 	try {
-		const response = await fetch(`${baseAPIURL}getProtocolCollections?chainId=${chainId}`);
+		const response = await fetch(`${baseAPIURL}getAllCollections?chainId=${chainId}`);
 
 		if (!response.ok) {
 			throw new Error('Failed to fetch collections');
