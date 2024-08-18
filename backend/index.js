@@ -856,7 +856,7 @@ app.post("/recordCollection", async(req, res) => {
   const chainId = req.query.chainId;
   try { 
     const chain = chainNames[chainId];
-    const collectionsRef = db.collection('Collections');
+    const collectionsRef = db.collection('Collections').doc(collectionId);
     const options = {
       method: 'GET',
       url: `https://api.simplehash.com/api/v0/nfts/collections/${chain}/${collectionId}?limit=1`,
@@ -875,14 +875,14 @@ app.post("/recordCollection", async(req, res) => {
       collectionName: name,
       chain: chainId
     }
-    await collectionsRef.add(collection);
+    await collectionsRef.set(collection);
     res.status(200).json({ response: "successful"});
   } catch (error) {
     console.log(error);
     res.status(500);
     res.json({ error: error.message });
   }
-})
+});
 
 app.get("/getAllCollections", async (req, res, next) => {
   const chainId = req.query.chainId;
