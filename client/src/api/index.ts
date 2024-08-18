@@ -128,3 +128,17 @@ export async function getPoolActivity(poolId: string): Promise<any> {
         throw error;
     }
 }
+
+export async function getAllCollections(chainId: number): Promise<any> {
+    try {
+        RESPONSE = await makeRequest({
+            url: `${BASE_URL}/getAllCollections`,
+            params: { chainId }
+        });
+
+        return RESPONSE || [];
+    } catch (error) {
+        console.error(`Error trying to fetch pool activity: ${error}`);
+        throw error;
+    }
+}
