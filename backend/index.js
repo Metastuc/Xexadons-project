@@ -888,10 +888,12 @@ app.get("/getAllCollections", async (req, res, next) => {
   const chainId = req.query.chainId;
   try {
     const collectionsRef = db.collection('Collections');
-    const snapshot = await collectionsRef.get();
+    
+    const query = collectionsRef.where('chain', '==', chainId);
+    const snapshot = await query.get();
 
     if (snapshot.empty) {
-      return res.status(404).json({ message: 'No collections found.' });
+      return res.status(404).json({ message: 'No collections found for the given chainId.' });
     }
 
     const collections = [];
@@ -901,7 +903,7 @@ app.get("/getAllCollections", async (req, res, next) => {
 
     res.status(200).json(collections);
   } catch (error) {
-    next(error);
+    next(error); 
   }
 });
 
