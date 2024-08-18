@@ -872,7 +872,8 @@ app.post("/recordCollection", async(req, res) => {
     const collection = {
       collectionAddress: collectionId,
       collectionImage: imageUrl,
-      collectionName: name
+      collectionName: name,
+      chain: chainId
     }
     await collectionsRef.add(collection);
     res.status(200).json({ response: "successful"});
@@ -884,6 +885,7 @@ app.post("/recordCollection", async(req, res) => {
 })
 
 app.get("/getAllCollections", async (req, res, next) => {
+  const chainId = req.query.chainId;
   try {
     const collectionsRef = db.collection('Collections');
     const snapshot = await collectionsRef.get();
