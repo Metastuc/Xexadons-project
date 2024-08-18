@@ -392,153 +392,187 @@ export const getChain = (chainId) => {
 };
 
 export const createPool = async (ids, ethAmount, nftAddress, chainId, signer) => {
-	//get factory Contract, call createpair, approve pair, add
-	const factoryAddress = deploymentAddresses.factory[chainId];
-	const routerAddress = deploymentAddresses.router[chainId];
-	const curveAddress = deploymentAddresses.curve[chainId];
-	const userAddress = await signer.getAddress();
+	try {
+		const factoryAddress = deploymentAddresses.factory[chainId];
+		const routerAddress = deploymentAddresses.router[chainId];
+		const curveAddress = deploymentAddresses.curve[chainId];
+		const userAddress = await signer.getAddress();
 
-	const _fee = 1 * 10;
-	const factoryContract = new ethers.Contract(factoryAddress, factoryABI, signer);
-	const createTx = await factoryContract.createPair(
-		nftAddress,
-		routerAddress,
-		curveAddress,
-		_fee,
-	);
+		const _fee = 1 * 10; 
+		const factoryContract = new ethers.Contract(factoryAddress, factoryABI, signer);
 
-	await createTx.wait();
-	console.log("pool created");
+		const createTx = await factoryContract.createPair(
+			nftAddress,
+			routerAddress,
+			curveAddress,
+			_fee,
+		);
+		await createTx.wait();
+		console.log("Pool created");
 
-	const _poolCount = await factoryContract.getPoolCount();
-	const poolCount = Number(_poolCount) - 1;
+		const _poolCount = await factoryContract.getPoolCount();
+		const poolCount = Number(_poolCount) - 1;
 
-	const pairAddress = await factoryContract.allPairs(poolCount);
+		const pairAddress = await factoryContract.allPairs(poolCount);
+		const nftContract = new ethers.Contract(nftAddress, nftABI, signer);
 
-	const nftContract = new ethers.Contract(nftAddress, nftABI, signer);
+		const approveTx = await nftContract.setApprovalForAll(pairAddress, true);
+		await approveTx.wait();
+		console.log("Contract approved");
 
-	const approveTx = await nftContract.setApprovalForAll(pairAddress, true);
-	await approveTx.wait();
-	console.log("contract approved");
+		const ethLiq = ethers.parseEther(ethAmount.toString());
 
-	const strAmount = ethAmount.toString();
-	const ethLiq = ethers.parseEther(strAmount);
-
-	const pairContract = new ethers.Contract(pairAddress, pairABI, signer);
-	const addLiqTx = await pairContract.addLiquidity(ids, userAddress, { value: ethLiq });
-
-	await addLiqTx.wait();
-	console.log("liquidity added");
+		const pairContract = new ethers.Contract(pairAddress, pairABI, signer);
+		const addLiqTx = await pairContract.addLiquidity(ids, userAddress, { value: ethLiq });
+		await addLiqTx.wait();
+		console.log("Liquidity added");
+	} catch (error) {
+		console.error("An error occurred while creating the pool:", error);
+		throw new Error(error.message);
+	}
 };
 
 export const buyNFT = async (nfts, chainId, signer) => {
-	console.log(nfts, chainId, signer);
-	const userAddress = await signer.getAddress();
-	const collectionAddress = nfts[0].address;
-	// sort all nfts to get their pool addresses
-	const poolAddressMap = nfts.reduce((acc, obj) => {
-		if (!acc[obj.poolAddress]) {
-			acc[obj.poolAddress] = [];
-		}
-		acc[obj.poolAddress].push(obj.id);
-		return acc;
-	}, {});
+	try {
+		const userAddress = await signer.getAddress();
+		const collectionAddress = nfts[0].address;
 
-	const result = Object.entries(poolAddressMap).map(([poolAddress, ids]) => ({
-		ids,
-		length: ids.length,
-		poolAddress,
-	}));
-	console.log(result);
+		const poolAddressMap = nfts.reduce((acc, obj) => {
+			if (!acc[obj.poolAddress]) {
+				acc[obj.poolAddress] = [];
+			}
+			acc[obj.poolAddress].push(obj.id);
+			return acc;
+		}, {});
 
-	// calculate the buy price for each pool
-	const curveContract = new ethers.Contract(
-		deploymentAddresses.curve[chainId],
-		curveABI,
-		signer,
-	);
-	// run through a loop to calculate the price of all pools then sum up
-	for (let i = 0; i < result.length; i++) {
-		// get reserve0 and reserve1
-		const pairContract = new ethers.Contract(result[i].poolAddress, pairABI, signer);
-		const reserve0 = await pairContract.reserve0();
-		const reserve1 = await pairContract.reserve1();
-		console.log(reserve0, reserve1);
+		const result = Object.entries(poolAddressMap).map(([poolAddress, ids]) => ({
+			ids,
+			length: ids.length,
+			poolAddress,
+		}));
+		console.log(result);
 
-		const price = await curveContract.getBuyPriceSingle(
-			result[i].length,
-			reserve0,
-			reserve1,
-			result[i].poolAddress,
-		);
-		console.log(price);
-
-		const routerContract = new ethers.Contract(
-			deploymentAddresses.router[chainId],
-			routerABI,
+		const curveContract = new ethers.Contract(
+			deploymentAddresses.curve[chainId],
+			curveABI,
 			signer,
 		);
-		const buyTx = await routerContract.swapETHforNFT(
-			result[i].ids,
-			result[i].poolAddress,
-			userAddress,
-			{ value: price },
-		);
-		await buyTx.wait();
-		console.log("bought");
-		const ids = result[i].ids;
 
-		const price_ = Number(ethers.formatEther(price));
+		for (const { ids, length, poolAddress } of result) {
+			const pairContract = new ethers.Contract(poolAddress, pairABI, signer);
+			const reserve0 = await pairContract.reserve0();
+			const reserve1 = await pairContract.reserve1();
 
-		const poolAddress = result[i].poolAddress;
-		const reqBody = {
-			event: "Buy",
-			chainId: chainId,
-			item: ids[0],
-			price: price_,
-			from: userAddress,
-			to: poolAddress,
-			hash: buyTx.hash,
-			address: collectionAddress,
-		};
+			const price = await curveContract.getBuyPriceSingle(
+				length,
+				reserve0,
+				reserve1,
+				poolAddress,
+			);
+			console.log(price);
 
-		const response = await fetch(`${baseAPIURL}recordActivity/${poolAddress}`, {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify(reqBody),
-		});
+			const routerContract = new ethers.Contract(
+				deploymentAddresses.router[chainId],
+				routerABI,
+				signer,
+			);
+			const buyTx = await routerContract.swapETHforNFT(
+				ids,
+				poolAddress,
+				userAddress,
+				{ value: price },
+			);
+			await buyTx.wait();
+			console.log("NFT bought");
 
-		if (!response.ok) {
-			throw new Error("Server Error");
-		} else {
-			console.log("done");
+			const price_ = Number(ethers.formatEther(price));
+
+			const reqBody = {
+				event: "Buy",
+				chainId: chainId,
+				item: ids[0],
+				price: price_,
+				from: userAddress,
+				to: poolAddress,
+				hash: buyTx.hash,
+				address: collectionAddress,
+			};
+
+			const response = await fetch(`${baseAPIURL}recordActivity/${poolAddress}`, {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify(reqBody),
+			});
+
+			if (!response.ok) {
+				throw new Error("Failed to record activity");
+			} else {
+				console.log("Activity recorded");
+			}
 		}
+	} catch (error) {
+		console.error("An error occurred while buying NFT:", error);
+		throw new Error(error.message);
 	}
 };
 
 export const getCollections = async (chainId) => {
-	// *use chainId
-	const collections = fetch(`${baseAPIURL}getProtocolCollections?chainId=${chainId}`);
-	// const collections = fetch(`http://localhost:3300/getProtocolCollections?chainId=80002`);
-	return collections;
+	try {
+		const response = await fetch(`${baseAPIURL}getProtocolCollections?chainId=${chainId}`);
+
+		if (!response.ok) {
+			throw new Error('Failed to fetch collections');
+		}
+
+		const collections = await response.json();
+		return collections;
+	} catch (error) {
+		console.error('Error fetching collections:', error);
+		throw new Error(error.message);
+	}
 };
+
 
 export const getCollection = async (chainId, collectionAddress) => {
-	const collection = fetch(
-		`${baseAPIURL}getCollection?chainId=${chainId}&collectionAddress=${collectionAddress}`,
-	);
-	console.log(chainId, collectionAddress, collection);
-	return collection;
+	try {
+		const response = await fetch(
+			`${baseAPIURL}getCollection?chainId=${chainId}&collectionAddress=${collectionAddress}`,
+		);
+
+		if (!response.ok) {
+			throw new Error('Failed to fetch the collection');
+		}
+
+		const collection = await response.json();
+		console.log(chainId, collectionAddress, collection);
+		return collection;
+	} catch (error) {
+		console.error('Error fetching collection:', error);
+		throw new Error(error.message);
+	}
 };
 
+
 export const getUserCollectionNFTs = async (chainId, collectionAddress, address) => {
-	const nfts = fetch(
-		`${baseAPIURL}getUserCollectionNFTs?userAddress=${address}&chainId=${chainId}&nftAddress=${collectionAddress}`,
-	);
-	return nfts;
+	try {
+		const response = await fetch(
+			`${baseAPIURL}getUserCollectionNFTs?userAddress=${address}&chainId=${chainId}&nftAddress=${collectionAddress}`,
+		);
+
+		if (!response.ok) {
+			throw new Error('Failed to fetch NFTs');
+		}
+
+		const nfts = await response.json();
+		return nfts;
+	} catch (error) {
+		console.error('Error fetching user NFTs:', error);
+		throw new Error(error.message);
+	}
 };
+
 
 // export const fetchPrice = async(chainId) => {
 //   const name = chainName[chainId];
@@ -609,56 +643,58 @@ export const getSellPrice = async (length, collectionAddress, chainId) => {
 };
 
 export const sellNFT = async (tokenIds, nftAddress, chainId, signer) => {
-	console.log("nft address", nftAddress);
-	const route = await fetch(
-		`${baseAPIURL}getSellRoute?tokenLength=${tokenIds.length}&nftAddress=${nftAddress}&chainId=${chainId}`,
-	);
-	const routes = await route.json();
-	const userAddress = await signer.getAddress();
-
-	console.log(route, routes);
 	try {
+		console.log("nft address", nftAddress);
+
+		const routeResponse = await fetch(
+			`${baseAPIURL}getSellRoute?tokenLength=${tokenIds.length}&nftAddress=${nftAddress}&chainId=${chainId}`,
+		);
+		if (!routeResponse.ok) {
+			throw new Error('Failed to fetch sell routes');
+		}
+		const routes = await routeResponse.json();
+
+		const userAddress = await signer.getAddress();
+
+		console.log(routeResponse, routes);
+
 		const nftContract = new ethers.Contract(nftAddress, nftABI, signer);
 		const routerContract = new ethers.Contract(
 			deploymentAddresses.router[chainId],
 			routerABI,
 			signer,
 		);
-		let ids = tokenIds;
-		for (let i = 0; i < routes.length; i++) {
-			// get id array by reducing
-			const poolNFTs = ids.slice(0, routes[i].tokenLength);
-			const poolIds = poolNFTs.map((obj) => obj.id);
-			ids = ids.slice(routes[i].tokenLength);
 
-			const approvalTx = await nftContract.setApprovalForAll(
-				routes[i].poolAddress,
-				true,
-			);
+		let remainingIds = tokenIds;
+		for (const route of routes) {
+			const poolNFTs = remainingIds.slice(0, route.tokenLength);
+			const poolIds = poolNFTs.map((nft) => nft.id);
+			remainingIds = remainingIds.slice(route.tokenLength);
+
+			const approvalTx = await nftContract.setApprovalForAll(route.poolAddress, true);
 			await approvalTx.wait();
-			console.log("approved");
+			console.log("NFTs approved");
 
-			console.log(poolIds, routes[i].poolAddress, userAddress);
 			const swapTx = await routerContract.swapNFTforETH(
 				poolIds,
-				routes[i].poolAddress,
+				route.poolAddress,
 				userAddress,
 			);
 			await swapTx.wait();
-			console.log("swaped");
-			const poolAddress = routes[i].poolAddress;
+			console.log("NFTs swapped for ETH");
+
 			const reqBody = {
 				event: "Sell",
 				chainId: chainId,
 				item: poolIds[0],
 				price: poolIds.length,
 				from: userAddress,
-				to: poolAddress,
+				to: route.poolAddress,
 				hash: swapTx.hash,
 				address: nftAddress,
 			};
 
-			const response = await fetch(`${baseAPIURL}recordActivity/${poolAddress}`, {
+			const recordResponse = await fetch(`${baseAPIURL}recordActivity/${route.poolAddress}`, {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
@@ -666,100 +702,183 @@ export const sellNFT = async (tokenIds, nftAddress, chainId, signer) => {
 				body: JSON.stringify(reqBody),
 			});
 
-			if (!response.ok) {
-				throw new Error("Server Error");
+			if (!recordResponse.ok) {
+				throw new Error("Failed to record activity");
 			} else {
-				console.log("done");
+				console.log("Activity recorded successfully");
 			}
 		}
 	} catch (error) {
-		console.log(error);
+		console.error("Error during NFT sale:", error.message);
+		throw error; // Re-throw the error after logging it
 	}
 };
+
 
 export const getDepositAmount = async (length, poolAddress, chainId) => {
-	const provider = new ethers.JsonRpcProvider(rpcUrls[chainId]);
-	console.log(poolAddress, provider);
-	// get reserves
-	const pairContract = new ethers.Contract(poolAddress, pairABI, provider);
-	const _reserve0 = await pairContract.reserve0();
-	const _reserve1 = await pairContract.reserve1();
-	console.log(_reserve0, _reserve1);
-	const reserve0 = Number(_reserve0);
-	const reserve1 = Number(_reserve1);
-	// calculate amountIn
-	const amount = (reserve1 * length) / reserve0;
-	console.log(length, amount);
-	return amount;
-};
-
-export const getWithdrawAmount = async (length, poolAddress, chainId) => {
-	const provider = new ethers.JsonRpcProvider(rpcUrls[chainId]);
-	console.log(poolAddress, provider);
-	// get reserves
-	const pairContract = new ethers.Contract(poolAddress, pairABI, provider);
-	const _reserve0 = await pairContract.reserve0();
-	const _reserve1 = await pairContract.reserve1();
-	console.log(_reserve0, _reserve1);
-	const reserve0 = Number(_reserve0);
-	const reserve1 = Number(_reserve1);
-	// calculate amountIn
-	const amount = (reserve1 * length) / reserve0;
-	console.log(length, amount);
-	return amount;
-};
-
-// get user balance function
-export const getUserBalance = async (chainId, signer) => {
 	try {
-		const userAddress = await signer.getAddress();
 		const provider = new ethers.JsonRpcProvider(rpcUrls[chainId]);
-		const userBalance = await provider.getBalance(userAddress);
-		console.log(userBalance);
+		console.log(poolAddress, provider);
 
-		return userBalance;
+		const pairContract = new ethers.Contract(poolAddress, pairABI, provider);
+		const _reserve0 = await pairContract.reserve0();
+		const _reserve1 = await pairContract.reserve1();
+		console.log(_reserve0, _reserve1);
+
+		const reserve0 = ethers.BigNumber.from(_reserve0);
+		const reserve1 = ethers.BigNumber.from(_reserve1);
+
+		const amount = reserve1.mul(length).div(reserve0);
+
+		console.log(length, ethers.formatEther(amount));
+		return amount;
 	} catch (error) {
-		console.log(error);
+		console.error('Error calculating deposit amount:', error);
+		throw new Error(error.message || 'Failed to calculate deposit amount');
 	}
 };
 
+
+export const getWithdrawAmount = async (length, poolAddress, chainId) => {
+	try {
+		if (typeof length !== 'number' || length <= 0) {
+			throw new Error('Invalid length value.');
+		}
+		if (!ethers.utils.isAddress(poolAddress)) {
+			throw new Error('Invalid pool address.');
+		}
+		if (!rpcUrls[chainId]) {
+			throw new Error(`Invalid chainId: ${chainId}`);
+		}
+
+		const provider = new ethers.JsonRpcProvider(rpcUrls[chainId]);
+
+		const pairContract = new ethers.Contract(poolAddress, pairABI, provider);
+		const _reserve0 = await pairContract.reserve0();
+		const _reserve1 = await pairContract.reserve1();
+
+		const reserve0 = ethers.BigNumber.from(_reserve0);
+		const reserve1 = ethers.BigNumber.from(_reserve1);
+
+		const amount = reserve1.mul(length).div(reserve0);
+
+		console.log(`Length: ${length}, Withdraw Amount: ${ethers.formatEther(amount)} ETH`);
+		return amount;
+	} catch (error) {
+		console.error('Error calculating withdraw amount:', error);
+		throw new Error(error.message || 'Failed to calculate withdraw amount');
+	}
+};
+
+
+export const getUserBalance = async (chainId, signer) => {
+	try {
+		if (!rpcUrls[chainId]) {
+			throw new Error(`Invalid chainId: ${chainId}`);
+		}
+		if (!signer || typeof signer.getAddress !== 'function') {
+			throw new Error('Invalid signer provided.');
+		}
+
+		const userAddress = await signer.getAddress();
+
+		const provider = new ethers.JsonRpcProvider(rpcUrls[chainId]);
+
+		const userBalance = await provider.getBalance(userAddress);
+
+		console.log(`Balance for address ${userAddress} on chain ${chainId}:`, ethers.formatEther(userBalance), 'ETH');
+		return userBalance;
+	} catch (error) {
+		console.error('Error getting user balance:', error);
+		throw new Error(error.message || 'Failed to get user balance');
+	}
+};
+
+
 export const addLiquidity = async (nfts, chainId, poolAddress, signer) => {
-	const nftAddress = nfts[0].address;
-	const ids = nfts.map((nft) => nft.id);
-	const userAddress = await signer.getAddress();
-	// get the eth value
-	const amount = await getDepositAmount(nfts.length, poolAddress, chainId);
-	const liqAmount = BigInt(amount);
-	// call function to perform transaction
-	const nftContract = new ethers.Contract(nftAddress, nftABI, signer);
+	try {
+		if (!Array.isArray(nfts) || nfts.length === 0) {
+			throw new Error('NFTs array is empty or invalid.');
+		}
 
-	const approveTx = await nftContract.setApprovalForAll(poolAddress, true);
-	await approveTx.wait();
-	console.log("contract approved");
+		const nftAddress = nfts[0].address;
+		const ids = nfts.map((nft) => nft.id);
 
-	const pairContract = new ethers.Contract(poolAddress, pairABI, signer);
-	const addLiqTx = await pairContract.addLiquidity(ids, userAddress, {
-		value: liqAmount,
-	});
+		if (!ethers.utils.isAddress(poolAddress)) {
+			throw new Error('Invalid pool address.');
+		}
 
-	await addLiqTx.wait();
-	console.log("liquidity added");
+		if (!signer || typeof signer.getAddress !== 'function') {
+			throw new Error('Invalid signer provided.');
+		}
+
+		const userAddress = await signer.getAddress();
+
+		const amount = await getDepositAmount(nfts.length, poolAddress, chainId);
+		const liqAmount = BigInt(amount);
+
+		const nftContract = new ethers.Contract(nftAddress, nftABI, signer);
+		const approveTx = await nftContract.setApprovalForAll(poolAddress, true);
+		await approveTx.wait();
+		console.log("NFT contract approved for all.");
+
+		const pairContract = new ethers.Contract(poolAddress, pairABI, signer);
+		const addLiqTx = await pairContract.addLiquidity(ids, userAddress, {
+			value: liqAmount,
+		});
+
+		await addLiqTx.wait();
+		console.log("Liquidity successfully added.");
+	} catch (error) {
+		console.error('Error adding liquidity:', error);
+		throw new Error(error.message || 'Failed to add liquidity');
+	}
 };
 
 export const removeLiquidity = async (nfts, poolAddress, signer) => {
-	const ids = nfts.map((nft) => nft.id);
-	const userAddress = await signer.getAddress();
+	try {
+		if (!Array.isArray(nfts) || nfts.length === 0) {
+			throw new Error('NFTs array is empty or invalid.');
+		}
 
-	const pairContract = new ethers.Contract(poolAddress, pairABI, signer);
-	const removeLiqTx = await pairContract.removeLiquidity(ids, userAddress);
+		if (!ethers.utils.isAddress(poolAddress)) {
+			throw new Error('Invalid pool address.');
+		}
 
-	await removeLiqTx.wait();
-	console.log("liquidity removed");
+		if (!signer || typeof signer.getAddress !== 'function') {
+			throw new Error('Invalid signer provided.');
+		}
+
+		const ids = nfts.map((nft) => nft.id);
+		const userAddress = await signer.getAddress();
+
+		const pairContract = new ethers.Contract(poolAddress, pairABI, signer);
+		const removeLiqTx = await pairContract.removeLiquidity(ids, userAddress);
+
+		await removeLiqTx.wait();
+
+		console.log("Liquidity removed successfully");
+	} catch (error) {
+		console.error('Error removing liquidity:', error);
+		throw new Error(error.message || 'Failed to remove liquidity');
+	}
 };
 
 export const getCoinPrice = async (chainId) => {
-	const res = await fetch(`${baseAPIURL}getCoinPrice?chainId=${chainId}`);
-	const data = await res.json();
-	const price = data.price;
-	return price;
+	try {
+		const res = await fetch(`${baseAPIURL}getCoinPrice?chainId=${chainId}`);
+		if (!res.ok) {
+			throw new Error(`Failed to fetch price: ${res.status} ${res.statusText}`);
+		}
+		const data = await res.json();
+
+		if (!data || typeof data.price === 'undefined') {
+			throw new Error('Price data is missing from the response');
+		}
+
+		return data.price;
+	} catch (error) {
+		console.error('Error fetching coin price:', error);
+		throw new Error(error.message || 'Failed to fetch coin price');
+	}
 };
