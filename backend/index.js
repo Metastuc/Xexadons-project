@@ -1222,7 +1222,7 @@ async function getCollectionImage(chainId, collectionAddress) {
   try {
     const options = {
       method: 'GET',
-      url: `https://api.simplehash.com/api/v0/nfts/collections/${chainId}/${collectionAddress}?limit=1`,
+      url: `https://api.simplehash.com/api/v0/nfts/collections/${chainNames[chainId]}/${collectionAddress}?limit=1`,
       headers: {
         'Authorization': 'Bearer ' + simpleHashKey,
         accept: 'application/json',
