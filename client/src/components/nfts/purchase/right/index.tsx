@@ -103,48 +103,32 @@ export function PurchaseNFTRight({ group, activeTab }: PurchaseNFTRightProps) {
 	function handleSelect(selectedNFT: NFTprops): void {
 		setSelectedNFTs((previous) => {
 			const exists = previous.some((nft) => nft.id === selectedNFT.id);
+	
+			// Calculate or fetch a new price for the NFT using the updated list
+			const newPrice = calculatePrice(selectedNFT.poolAddress, previous);
+	
 			if (exists) {
+				// If NFT is already selected, remove it from the selected list
 				return previous.filter((nft) => nft.id !== selectedNFT.id);
 			} else {
-				return [...previous, selectedNFT];
+				// Add the NFT with the updated price
+				return [
+					...previous,
+					{
+						...selectedNFT,
+						price: newPrice, // Update the price here
+					},
+				];
 			}
-		});
+		});		
 	}
-
-	function selectAllNFTs() {
-		setSelectedNFTs(
-			collectionNfts.map((nft) => ({
-				address: nftAddress,
-				id: nft.id,
-				poolAddress: nft.poolAddress,
-			})),
-		);
-	}
-
-	function deselectAllNFTs() {
-		setSelectedNFTs([]);
-	}
-
-	const calculateBuyAmount: () => Promise<void> = useCallback(async () => {
-		const newTotalAmountIn: number =
-			pools &&
-			pools.reduce((sum, pool) => {
-				const C = selectedNFTs.filter(
-					(nft) => nft.poolAddress === pool.poolAddress,
-				);
-				if (C.length === pool.nftAmount) {
-					return sum + pool.tokenAmount * C.length;
-				} else {
-					return sum + (pool.tokenAmount * C.length) / (pool.nftAmount - C.length);
-				}
-			}, 0);
-
+	
+	// Modify calculatePrice to take the current list of selected NFTs
+	function calculatePrice(poolAddress: string, selectedNFTs: NFTprops[]): string {	
 		const poolPrices: PoolPrice[] =
 			pools &&
 			pools.reduce((acc: PoolPrice[], pool) => {
-				const C = selectedNFTs.filter(
-					(nft) => nft.poolAddress === pool.poolAddress,
-				);
+				const C = selectedNFTs.filter((nft) => nft.poolAddress === pool.poolAddress);
 				let _next_price = 0;
 				if (pool.nftAmount > C.length + 1) {
 					_next_price =
@@ -157,29 +141,98 @@ export function PurchaseNFTRight({ group, activeTab }: PurchaseNFTRightProps) {
 					_next_price = Math.ceil(pool.tokenAmount * (C.length + 1) * 100) / 100;
 				}
 				const currency: number = getCurrency(chain);
-				console.log(pool, pool.tokenAmount, C.length);
 				const next_price: string = _next_price.toString() + currency;
-
+	
 				acc.push({
 					poolAddress: pool.poolAddress,
 					nextPrice: next_price,
 				});
-
+	
 				return acc;
 			}, []);
-			console.log(newTotalAmountIn);
+	
+		const pool = poolPrices.find((price) => price.poolAddress === poolAddress);
+		// Return the nextPrice if the pool exists, otherwise return 0
+		return pool ? pool.nextPrice : "0";
+	}
+	
+
+	function selectAllNFTs() {
+		setSelectedNFTs(
+			collectionNfts.map((nft) => ({
+				address: nftAddress,
+				id: nft.id,
+				poolAddress: nft.poolAddress,
+				price: "0"
+			})),
+		);
+	}
+
+	function deselectAllNFTs() {
+		setSelectedNFTs([]);
+	}
+
+	const calculateBuyAmount: () => Promise<void> = useCallback(async () => {
+		console.log(selectedNFTs);
+		// Calculate the total amount in based on the selected NFTs and pools
+		const newTotalAmountIn: number =
+			pools &&
+			pools.reduce((sum, pool) => {
+				const C = selectedNFTs.filter(
+					(nft) => nft.poolAddress === pool.poolAddress,
+				);
+				if (C.length === pool.nftAmount) {
+					return sum + pool.tokenAmount * C.length;
+				} else {
+					return sum + (pool.tokenAmount * C.length) / (pool.nftAmount - C.length);
+				}
+			}, 0);
+	
+		// Continue with the rest of the calculations
+		const poolPrices: PoolPrice[] =
+			pools &&
+			pools.reduce((acc: PoolPrice[], pool) => {
+				const C = selectedNFTs.filter(
+					(nft) => nft.poolAddress === pool.poolAddress,
+				);
+				let _next_price = 0;
+				if (pool.nftAmount > C.length + 1) {
+					_next_price =
+						Math.ceil(
+							((pool.tokenAmount * (C.length + 1)) /
+								(pool.nftAmount - (C.length + 1))) *
+							100,
+						) / 100;
+				} else {
+					_next_price = Math.ceil(pool.tokenAmount * (C.length + 1) * 100) / 100;
+				}
+				const currency: number = getCurrency(chain);
+				console.log(pool, pool.tokenAmount, C.length);
+				const next_price: string = _next_price.toString() + currency;
+	
+				acc.push({
+					poolAddress: pool.poolAddress,
+					nextPrice: next_price,
+				});
+	
+				return acc;
+		}, []);
+	
+		console.log(newTotalAmountIn);
 		const _newTotalAmountIn: string = newTotalAmountIn.toString();
 		const coinPrice: number = Number(await getCoinPrice(chain));
 		const _dollarAmount: number = coinPrice * Number(_newTotalAmountIn);
-
+	
 		const amountIn: number = Math.ceil(Number(_newTotalAmountIn) * 100) / 100;
 		const dollarAmount: number = Math.ceil(_dollarAmount * 100) / 100;
-
+	
+		console.log(selectedNFTs);
+		console.log(poolPrices);
 		setBuyAmount(amountIn);
 		setBuyPrices(poolPrices);
 		setDollarAmount(dollarAmount);
 	}, [pools, selectedNFTs, chain, setBuyAmount, setBuyPrices, setDollarAmount]);
-
+	
 	const calculateSellAmount: () => Promise<void> = useCallback(async () => {
 		let sellAmount: number = 0;
 		let nextAmount: number = 0;
@@ -377,6 +430,7 @@ export function PurchaseNFTRight({ group, activeTab }: PurchaseNFTRightProps) {
 										address: nftAddress,
 										id: nft.id,
 										poolAddress: nft.poolAddress,
+										price: "0"
 									})
 								}
 								imageUrl={nft.src}
