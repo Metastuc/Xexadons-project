@@ -449,6 +449,7 @@ app.get("/getUserCollectionNFTsSell", async(req, res) => {
   const nftContract = new ethers.Contract(nftAddress, ABIs.nftABI, provider);
   const nftName = await nftContract.name();
   const icon = await getCollectionImage(chainId, nftAddress);
+  console.log(nftName);
 
   var userCollectionNFTs = [];
   const options = {
@@ -462,6 +463,25 @@ app.get("/getUserCollectionNFTsSell", async(req, res) => {
   };
 
   try {
+    const factoryAddress = deploymentAddresses.factory[chainId];
+    const factoryContract = new ethers.Contract(factoryAddress, ABIs.factoryABI, provider);
+    const poolAddresses = await factoryContract.getPairs(nftAddress);
+
+    const reserves = [];
+
+    for (let i = 0; i < poolAddresses.length; i++) {
+      const pairContract = new ethers.Contract(poolAddresses[i], ABIs.pairABI, provider);
+      const _reserve0 = await pairContract.reserve0();
+      const _reserve1 = await pairContract.reserve1();
+
+      reserves.push({
+        poolAddress: poolAddresses[i],
+        reserve0: Number(_reserve0),
+        reserve1: Number(_reserve1),
+      });
+    }
+
+
     const response = await axios(options);
     const items = response.data.nfts;
     console.log(items);
@@ -480,10 +500,12 @@ app.get("/getUserCollectionNFTsSell", async(req, res) => {
       }
       userCollectionNFTs.push(nft);
     }
+
     const collection = {
       icon: icon,
       pools: [],
       NFTs: userCollectionNFTs,
+      reserves: reserves
     }
 
     res.status(200).json(collection);
