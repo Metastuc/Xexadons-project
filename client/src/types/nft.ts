@@ -3,6 +3,9 @@ export interface NFTprops {
     id: number;
     poolAddress: string;
     price: string;
+    name: string;
+    collectionName: string;
+    image: string;
 }
 
 export interface Pool {

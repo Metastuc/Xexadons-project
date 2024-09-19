@@ -655,6 +655,40 @@ export const getSellPrice = async (length, collectionAddress, chainId) => {
 	}
 };
 
+export const getNFTSellPrice = (length, reserves) => {
+	console.log(reserves);
+	try {
+		let sellAmount = 0;
+
+		for (let i = 0; i < reserves.length; i++) {
+			const reserve0 = reserves[i].reserve0;
+			const reserve1 = reserves[i].reserve1;
+			console.log(reserve0, reserve1);
+
+			const amountOut = reserve1 * 0.7;
+
+			const poolMax = (amountOut * reserve0) / (reserve1 - amountOut);
+			const maxNFTs = Math.floor(poolMax);
+
+			if (maxNFTs <= 0) {
+				continue;
+			}
+
+			if (maxNFTs >= length) {
+				const amountOut = (reserve1 * length) / (reserve0 + length);
+				sellAmount = sellAmount + amountOut;
+			} else {
+				const amountOut = (reserve1 * maxNFTs) / (reserve0 + maxNFTs);
+				sellAmount = sellAmount + amountOut;
+			}
+		}
+
+		return sellAmount;
+	} catch (error) {
+		console.log(error);
+	}
+};
+
 export const sellNFT = async (tokenIds, nftAddress, chainId, signer) => {
 	try {
 		console.log("nft address", nftAddress);

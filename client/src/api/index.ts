@@ -90,7 +90,6 @@ export async function getUserCollectionsNFTs(tab: string, chain: number, nftAddr
 
     const { url, params } = setUrlAndParams(tab);
 
-
     try {
         RESPONSE = await makeRequest({ url, params });
 

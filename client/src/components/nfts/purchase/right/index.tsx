@@ -8,7 +8,7 @@ import { useAccount } from "wagmi";
 import { getNFTCollections, getUserCollectionsNFTs } from "@/api";
 import { NFT } from "@/components/reusable";
 import { ContextWrapper } from "@/hooks";
-import { getCoinPrice, getCurrency, getDepositAmount, getSellPrice } from "@/lib";
+import { getCoinPrice, getCurrency, getDepositAmount, getSellPrice, getNFTSellPrice } from "@/lib";
 import { commonProps, NFTprops } from "@/types";
 
 type PurchaseNFTRightProps = commonProps & {
@@ -69,6 +69,7 @@ export function PurchaseNFTRight({ group, activeTab }: PurchaseNFTRightProps) {
 	});
 
 	!!data && (setPools(data.pools), setCollectionNfts(data.NFTs));
+	console.log(data);
 
 	function getQueryFunction(
 		activeTab: string,
@@ -123,9 +124,10 @@ export function PurchaseNFTRight({ group, activeTab }: PurchaseNFTRightProps) {
 		});		
 	}
 	
-	// Modify calculatePrice to take the current list of selected NFTs
-	function calculatePrice(poolAddress: string, selectedNFTs: NFTprops[]): string {	
-		const poolPrices: PoolPrice[] =
+	
+	function calculatePrice(poolAddress: string, selectedNFTs: NFTprops[]): string {
+		if (activeTab === "buy") {
+			const poolPrices: PoolPrice[] =
 			pools &&
 			pools.reduce((acc: PoolPrice[], pool) => {
 				const C = selectedNFTs.filter((nft) => nft.poolAddress === pool.poolAddress);
@@ -154,16 +156,60 @@ export function PurchaseNFTRight({ group, activeTab }: PurchaseNFTRightProps) {
 		const pool = poolPrices.find((price) => price.poolAddress === poolAddress);
 		// Return the nextPrice if the pool exists, otherwise return 0
 		return pool ? pool.nextPrice : "0";
+		} else {
+			console.log(data.reserves);
+			
+			let sellAmount: number = 0;
+			let nextAmount: number = 0;
+	
+			if (selectedNFTs.length > 0) {
+				const price: number | undefined = getNFTSellPrice(
+					selectedNFTs.length,
+					data.reserves
+				);
+				const _price: number | undefined = getNFTSellPrice(
+					selectedNFTs.length + 1,
+					data.reserves
+				);
+	
+				sellAmount = price !== undefined ? price : 0;
+	
+				if (
+					_price !== undefined &&
+					price !== undefined &&
+					typeof _price === "number" &&
+					typeof price === "number"
+				) {
+					nextAmount = _price - price;
+				} else {
+					nextAmount = 0;
+				}
+			}
+	
+			const _nextAmount = formatEther(BigInt(nextAmount));
+
+			const currency = getCurrency(chain);
+
+			const nextPrice = (Math.floor(Number(_nextAmount) * 100) / 100).toString() + currency;
+			
+			console.log(nextPrice);
+			
+			return nextPrice;
+		}
 	}
 	
 
 	function selectAllNFTs() {
+		const currency = getCurrency(chain);
 		setSelectedNFTs(
 			collectionNfts.map((nft) => ({
 				address: nftAddress,
 				id: nft.id,
 				poolAddress: nft.poolAddress,
-				price: "0"
+				price: nft.price + currency,
+				name: nft.name + ` #${nft.id}`,
+				collectionName: nft.name,
+				image: nft.src
 			})),
 		);
 	}
@@ -188,7 +234,6 @@ export function PurchaseNFTRight({ group, activeTab }: PurchaseNFTRightProps) {
 				}
 			}, 0);
 	
-		// Continue with the rest of the calculations
 		const poolPrices: PoolPrice[] =
 			pools &&
 			pools.reduce((acc: PoolPrice[], pool) => {
@@ -265,6 +310,8 @@ export function PurchaseNFTRight({ group, activeTab }: PurchaseNFTRightProps) {
 
 		const _sellAmount = formatEther(BigInt(sellAmount));
 		const _nextAmount = formatEther(BigInt(nextAmount));
+		console.log(_sellAmount, _nextAmount);
+		
 		const coinPrice = Number(await getCoinPrice(chain));
 		const _dollarAmount = coinPrice * Number(_sellAmount);
 
@@ -430,7 +477,10 @@ export function PurchaseNFTRight({ group, activeTab }: PurchaseNFTRightProps) {
 										address: nftAddress,
 										id: nft.id,
 										poolAddress: nft.poolAddress,
-										price: "0"
+										price: "0",
+										name: nft.name + ` #${nft.id}`,
+										collectionName: nft.name,
+										image: nft.src
 									})
 								}
 								imageUrl={nft.src}
